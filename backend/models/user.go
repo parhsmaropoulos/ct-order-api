@@ -29,9 +29,9 @@ type User struct {
 
 	// User's info for the shop
 
-	// Comments
-	// Ratings
-	// Orders
+	Comments []Comment `json:"comments"`
+	Ratings  []Rating  `json:"ratings"`
+	Orders   []Order   `json:"orders"`
 	// Last Order
 
 	// Account info
@@ -80,7 +80,18 @@ func CreateProfile(c *gin.Context) {
 	zipcode := c.PostForm("zipcode")
 	bellname := c.PostForm("bellname")
 	details := c.PostForm("details")
-	user := User{username, password, email, name, surname, phone, address, zipcode, bellname, details, time.Now()}
+	user := User{
+		Username:   username,
+		Password:   password,
+		Email:      email,
+		Name:       name,
+		Surname:    surname,
+		Phone:      phone,
+		Address:    address,
+		Zipcode:    zipcode,
+		Bellname:   bellname,
+		Details:    details,
+		Created_at: time.Now()}
 
 	Users.InsertOne(context.Background(), user)
 
@@ -89,5 +100,4 @@ func CreateProfile(c *gin.Context) {
 		"data":    user,
 	})
 	return
-
 }

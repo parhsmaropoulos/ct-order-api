@@ -1,10 +1,15 @@
+################################ USER #####################################
+
 # Send Request
-POST http://localhost:8080/create_profile
+# Create profile
+POST http://localhost:8080/user/create_profile
 Content-Type: application/x-www-form-urlencoded
 
-username=paris&passowrd=1234&email=p@1.com&phone=6988702424
+username=paris123&passowrd=1234&email=p@1.com&phone=6988702424
 ### 
 
+################################ PRODUCTS #####################################
+# Create Product Choice
 # Post Request
 POST http://localhost:8080/products/create_product_choice
 Content-Type: application/json
@@ -30,7 +35,7 @@ Content-Type: application/json
 }
 
 ### 
-
+# Create Product Category
 # Post Request
 POST http://localhost:8080/products/create_product_category
 Content-Type: application/json
@@ -38,4 +43,71 @@ Content-Type: application/json
 {
     "name": "Kafedes",
     "description": "Kafedes"
+}
+
+### 
+# Create Product Ingredient
+# Post Request
+POST http://localhost:8080/products/create_product_ingredient
+Content-Type: application/json
+
+{
+    "name": "zabon",
+    "description": "alantikon",
+    "price": 1.3
+}
+
+### 
+# Create Product 
+# Post Request
+POST http://localhost:8080/products/create_product
+Content-Type: application/json
+
+{
+    "name": "fredo expreso",
+    "description": "Kafedes",
+    "price": 2.2,
+    "category": "Kafedes"
+}
+
+### 
+# GET choices 
+# GET Request
+GET http://localhost:8080/products/choices
+Content-Type: application/json
+
+### 
+# GET choices 
+# GET Request
+GET http://localhost:8080/products/categories
+Content-Type: application/json
+
+
+################################ ORDERS #####################################
+# CREATE order
+# POST Request
+POST http://localhost:8080/orders/send_order
+Content-Type: application/json
+
+{
+    "Product_Ids": [
+        "5ff1fd0492e2fccc5177c099",
+        "5ff20effee342ca7aaf856d6"
+
+    ],
+    "UserID": "5ff229e46de0f8cbe9ab8a5f",
+    "Payment_Type": "Cash and roll",
+    "Tips": 2.5
+}
+
+############### COMMENTS  ################
+
+# Post comment
+# POST Request
+POST http://localhost:8080/orders/post_comment
+Content-Type: application/json
+
+{
+    "Text": "Nice oneeee",
+    "UserID": "5ff229e46de0f8cbe9ab8a5f"
 }

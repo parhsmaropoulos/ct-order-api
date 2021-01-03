@@ -4,220 +4,26 @@ package models
 import (
 	"context"
 	"fmt"
+	"log"
+	"math"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type Product struct {
+	// Id          string  `json:"id"`
 	Name        string  `json:"name"`
 	Description string  `json:"description"`
-	Price       float32 `json:"price"`
+	Price       float64 `json:"price"`
+	Category    string  `json:"category"`
 	Image       []byte  `json:"image"`
 	Available   bool    `json:"available"`
 	Quantity    int8    `json:"quantity"`
-}
-
-type Product_Category struct {
-	Name              string       `json:"name"`
-	Description       string       `json:"description"`
-	Products          []Product    `json:"products"`
-	Choices           []Choice     `json:"choices"`
-	Ingredients       []Ingredient `json:"ingredients"`
-	Extra_Ingredients []Ingredient `json:"extra_ingredients"`
-}
-
-type Choice struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Choices     []struct {
-		Name        string  `json:"name"`
-		Description string  `json:"description"`
-		Price       float32 `json:"price"`
-	} `json:"choices"`
-	For_Classes []string `json:"for_classes"`
-}
-
-type Ingredient struct {
-	Name        string   `json:"name"`
-	Price       float32  `json:"price"`
-	Description string   `json:"description"`
-	For_Classes []string `json:"for_classes"`
-}
-
-// type Coffee struct {
-// 	Product_Core Product `json:"product_core"`
-// 	Size         string  `json:"size"`
-// 	Sugar        string  `json:"sugar"`
-// 	Sugar_Type   string  `json:"sugar_type"`
-// 	Milk         string  `json:"milk"`
-// 	Syrop        string  `json:"syrup"`
-// }
-
-// type Beverages struct {
-// 	Product_Core Product `json:"product_core"`
-// 	Sugar        string  `json:"sugar"`
-// 	Sugar_Type   string  `json:"sugar_type"`
-// 	Milk         string  `json:"milk"`
-// 	Syrop        string  `json:"syrup"`
-// }
-
-// type MilkShakes struct {
-// 	Product_Core Product `json:"product_core"`
-// 	Syrop        string  `json:"syrup"`
-// }
-
-// type Smoothies_Frozen struct {
-// 	Product_Core Product `json:"product_core"`
-// 	Flavor       string  `json:"flavor"`
-// 	// Choices?
-// }
-
-// type Puff_Pastry struct {
-// 	Product_Core Product `json:"product_core"`
-// }
-
-// type Donut_Cronut struct {
-// 	Product_Core Product `json:"product_core"`
-// }
-
-// type Toast_Bread_Roll struct {
-// 	Product_Core Product `json:"product_core"`
-// 	// Choices?
-// }
-
-// type Baguette struct {
-// 	Product_Core Product      `json:"product_core"`
-// 	Ingredients  []Ingredient `json:"ingredients"`
-// 	Color        string       `json:"color"`
-// 	// Choice color?
-// }
-
-// type Tortillas struct {
-// 	Product_Core Product      `json:"product_core"`
-// 	Ingredients  []Ingredient `json:"ingredients"`
-// 	// Choices?
-// }
-
-// type Sandwich struct {
-// 	Product_Core Product      `json:"product_core"`
-// 	Ingredients  []Ingredient `json:"ingredients"`
-// }
-
-// type Club_Sandwich struct {
-// 	Product_Core      Product      `json:"product_core"`
-// 	Ingredients       []Ingredient `json:"ingredients"`
-// 	Extra_Ingredients []Ingredient `json:"extra_ingredients"`
-// 	Dip               string       `json:"dip"`
-// 	// Choices?
-// }
-
-// type Burger struct {
-// 	Product_Core      Product      `json:"product_core"`
-// 	Ingredients       []Ingredient `json:"ingredients"`
-// 	Size              string       `json:"size"`
-// 	Extra_Ingredients []Ingredient `json:"extra_ingredients"`
-// }
-
-// type Pancake struct {
-// 	Size        string       `json:"size"`
-// 	Ingredients []Ingredient `json:"ingredients"`
-// 	// Choices?
-// }
-
-// type Sweet_Crepe_Waffle struct {
-// 	Size        string       `json:"size"`
-// 	Ingredients []Ingredient `json:"ingredients"`
-// 	Ice_cream   []Ingredient `json:"ice_creams`
-// 	// Choices?
-// }
-
-// type Savory_Crepe_Waffle struct {
-// 	Size        string       `json:"size"`
-// 	Ingredients []Ingredient `json:"ingredients"`
-// 	// Choices?
-// }
-
-func CreateProductChoice(c *gin.Context) {
-	if c.Request.Method != "POST" {
-		fmt.Println("Only put here man.")
-		return
-	}
-
-	var input Choice
-	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	choice := Choice{input.Name, input.Description, input.Choices, input.For_Classes}
-
-	Choices.InsertOne(context.Background(), choice)
-
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Choice created successfully",
-		"data":    choice,
-	})
-}
-
-func CreateIngredient(c *gin.Context) {
-	if c.Request.Method != "POST" {
-		fmt.Println("Only put here man.")
-		return
-	}
-
-	var input Ingredient
-	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	ingredient := Ingredient{input.Name, input.Price, input.Description, input.For_Classes}
-
-	Ingredients.InsertOne(context.Background(), ingredient)
-
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Ingredient created successfully",
-		"data":    ingredient,
-	})
-}
-
-func CreateProductCategory(c *gin.Context) {
-	if c.Request.Method != "POST" {
-		fmt.Println("Only put here man.")
-		return
-	}
-
-	var input Product_Category
-	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	prod_cat := Product_Category{Name: input.Name, Description: input.Description}
-
-	// // Get choices and append them
-	// choices, err := Choices.Find(context.Background(), bson.M{"for_classes": input.Name})
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// defer choices.Close(context.Background())
-	// for choices.Next(context.Background()) {
-	// 	var result Choice
-	// 	err := choices.Decode(&result)
-	// 	if err != nil {
-	// 		log.Fatal(err)
-	// 	}
-	// 	prod_cat.Choices = append(prod_cat.Choices, result)
-
-	// }
-
-	Products_Categories.InsertOne(context.Background(), prod_cat)
-
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Product category created successfully",
-		"data":    prod_cat,
-	})
 }
 
 func CreateProduct(c *gin.Context) {
@@ -232,12 +38,115 @@ func CreateProduct(c *gin.Context) {
 		return
 	}
 
-	product := Product{Name: input.Name, Price: input.Price, Description: input.Description}
+	product := Product{Name: input.Name, Price: input.Price, Description: input.Description, Category: input.Category}
+	product.Price = math.Round((product.Price * 100) / 100)
+	_, err := Products.InsertOne(context.Background(), product)
+	if err != nil {
+		log.Fatal(err)
+	}
+	// Append product to proper category.
+	// old_category := Products_Categories.FindOneAndUpdate(
+	cat, errs := Products_Categories.UpdateOne(
+		context.Background(),
+		bson.M{"name": input.Category},
+		bson.M{"$push": bson.M{"products": product}},
+		options.Update(),
+	)
 
-	Products.InsertOne(context.Background(), product)
-
+	if errs != nil {
+		// ErrNoDocuments means that the filter did not match any documents in the collection
+		if errs == mongo.ErrNoDocuments {
+			return
+		}
+		log.Fatal(errs)
+	}
 	c.JSON(http.StatusOK, gin.H{
-		"message": "Product  created successfully",
+		"message": "Product  created successfully so did the category updated",
 		"data":    product,
+		"new_cat": cat,
+	})
+}
+
+func GetProducts(c *gin.Context) {
+	if c.Request.Method != "GET" {
+		fmt.Println("Only get here man.")
+		return
+	}
+
+	products := []Product{}
+
+	cursor, err := Products.Find(context.Background(), bson.D{})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if err = cursor.All(context.Background(), &products); err != nil {
+		log.Fatal(err)
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Products found",
+		"data":    products,
+	})
+}
+
+func GetSingleProduct(c *gin.Context) {
+	if c.Request.Method != "GET" {
+		fmt.Println("Only get here no give!")
+		return
+	}
+
+	var product Product
+
+	id, errs := primitive.ObjectIDFromHex(c.Param("id"))
+	if errs != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Server error!",
+		})
+		return
+	}
+
+	err := Products.FindOne(context.Background(), bson.M{"_id": id}).Decode(&product)
+
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": "Product not found!",
+		})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"message": "Product found",
+		"data":    product,
+	})
+}
+
+func DeleteProduct(c *gin.Context) {
+	if c.Request.Method != "DELETE" {
+		fmt.Println("Only delete here nothing else!")
+		return
+	}
+
+	var product Product
+
+	id, errs := primitive.ObjectIDFromHex(c.Param("id"))
+	if errs != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Server error!",
+		})
+		return
+	}
+
+	err := Products.FindOneAndDelete(context.Background(), bson.M{"_id": id}).Decode(&product)
+
+	if err != nil {
+		c.JSON(404, gin.H{
+			"message": "Product not found",
+		})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"message":        "Product deleted",
+		"delete_product": product,
 	})
 }
