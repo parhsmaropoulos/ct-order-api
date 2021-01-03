@@ -1,0 +1,41 @@
+# Send Request
+POST http://localhost:8080/create_profile
+Content-Type: application/x-www-form-urlencoded
+
+username=paris&passowrd=1234&email=p@1.com&phone=6988702424
+### 
+
+# Post Request
+POST http://localhost:8080/products/create_product_choice
+Content-Type: application/json
+
+{
+    "name": "galaa",
+    "description": "posi zaxari",
+    "choices": [
+        {
+            "name": "sketo",
+            "description": "sket",
+            "price": 0
+        },
+        {
+            "name": "metrio",
+            "description": "sket",
+            "price": 1.0
+        }
+    ],
+    "for_classes": [
+        "Tsai"
+    ]
+}
+
+### 
+
+# Post Request
+POST http://localhost:8080/products/create_product_category
+Content-Type: application/json
+
+{
+    "name": "Kafedes",
+    "description": "Kafedes"
+}
