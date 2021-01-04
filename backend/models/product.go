@@ -17,13 +17,16 @@ import (
 
 type Product struct {
 	// Id          string  `json:"id"`
-	Name        string  `json:"name"`
-	Description string  `json:"description"`
-	Price       float64 `json:"price"`
-	Category    string  `json:"category"`
-	Image       []byte  `json:"image"`
-	Available   bool    `json:"available"`
-	Quantity    int8    `json:"quantity"`
+	Name                  string   `json:"name"`
+	Description           string   `json:"description"`
+	Price                 float64  `json:"price"`
+	Category              string   `json:"category"`
+	Image                 []byte   `json:"image"`
+	Choices_Ids           []string `json:"choice"`
+	Ingredients_Ids       []string `json:"Ingrdients"`
+	Extra_Ingredients_Ids []string `json:"Extra_Ingredients"`
+	Available             bool     `json:"available"`
+	Quantity              int8     `json:"quantity"`
 }
 
 func CreateProduct(c *gin.Context) {
@@ -38,7 +41,17 @@ func CreateProduct(c *gin.Context) {
 		return
 	}
 
-	product := Product{Name: input.Name, Price: input.Price, Description: input.Description, Category: input.Category}
+	product := Product{Name: input.Name, Price: input.Price, Description: input.Description, Category: input.Category, Image: []byte{}, Choices_Ids: []string{}, Ingredients_Ids: []string{}, Extra_Ingredients_Ids: []string{}}
+	if input.Choices_Ids != nil {
+		product.Choices_Ids = input.Choices_Ids
+	}
+	if input.Ingredients_Ids != nil {
+		product.Ingredients_Ids = input.Ingredients_Ids
+	}
+	if input.Extra_Ingredients_Ids != nil {
+		product.Extra_Ingredients_Ids = input.Extra_Ingredients_Ids
+	}
+
 	product.Price = math.Round((product.Price * 100) / 100)
 	_, err := Products.InsertOne(context.Background(), product)
 	if err != nil {
@@ -149,4 +162,52 @@ func DeleteProduct(c *gin.Context) {
 		"message":        "Product deleted",
 		"delete_product": product,
 	})
+}
+
+func (prod Product) AddChoice(id string, choice Choice) bool {
+	id_hex, errs := primitive.ObjectIDFromHex(id)
+	if errs != nil {
+		return false
+	}
+
+	// TODO need this as return?
+	_, err := Products.UpdateByID(
+		context.Background(),
+		id_hex,
+		bson.M{
+			"$push": bson.M{
+				"choices": choice,
+			},
+		},
+		options.Update(),
+	)
+	if err != nil {
+		return false
+	}
+
+	return true
+}
+
+func (prod Product) AddIngredient(id string, ingredient Ingredient) bool {
+	id_hex, errs := primitive.ObjectIDFromHex(id)
+	if errs != nil {
+		return false
+	}
+
+	// TODO need this as return?
+	_, err := Products.UpdateByID(
+		context.Background(),
+		id_hex,
+		bson.M{
+			"$push": bson.M{
+				"ingredients": ingredient,
+			},
+		},
+		options.Update(),
+	)
+	if err != nil {
+		return false
+	}
+
+	return true
 }

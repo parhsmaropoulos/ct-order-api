@@ -31,7 +31,15 @@ func CreateIngredient(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	ingredient := Ingredient{Name: input.Name, Price: input.Price, Description: input.Description, For_Classes: input.For_Classes}
+	ingredient := Ingredient{
+		Name:        input.Name,
+		Price:       input.Price,
+		Description: input.Description,
+		For_Classes: []string{},
+	}
+	if input.For_Classes != nil {
+		ingredient.For_Classes = input.For_Classes
+	}
 
 	Ingredients.InsertOne(context.Background(), ingredient)
 	ingredient.Price = math.Round((ingredient.Price * 100) / 100)

@@ -27,13 +27,11 @@ func main() {
 	{
 		// CREATE ONE
 		products.POST("/create_product_choice", models.CreateProductChoice)
-		products.POST("/create_product_category", models.CreateProductCategory)
 		products.POST("/create_product_ingredient", models.CreateIngredient)
 		products.POST("/create_product", models.CreateProduct)
 
 		// GET ALL
 		products.GET("/choices", models.GetProductChoices)
-		products.GET("/categories", models.GetProductCategories)
 		products.GET("/products", models.GetProducts)
 		products.GET("/ingredients", models.GetIngredients)
 
@@ -41,16 +39,70 @@ func main() {
 		products.DELETE("/choice", models.DeleteProductChoice)
 		products.DELETE("/ingredient", models.DeleteIngredient)
 		products.DELETE("/product", models.DeleteProduct)
-		products.DELETE("/category", models.DeleteProductCategory)
+	}
+
+	product_categories := router.Group("/product_category")
+	{
+		product_categories.POST("/create_product_category", models.CreateProductCategory)
+		product_categories.DELETE("/delete_product_category", models.DeleteProductCategory)
+		product_categories.GET("/all", models.GetProductCategories)
+		product_categories.GET("/:id", models.GetSingleCategory)
 	}
 
 	orders := router.Group("/orders/")
 	{
-		// CREATE ONE
+		// ORDERS
 		orders.POST("/send_order", models.CreateOrder)
+		orders.GET("/:id", models.GetSingleOrder)
+		// orders.DELETE("/delete_order", models.DeleteOrder)
+
+		// COMMENTS
 		orders.POST("/post_comment", models.CreateComment)
 
+		// RATINGS
+		orders.POST("/post_rate", models.CreateRate)
+
 	}
+
+	// admin := router.Group("/admin/")
+	// {
+	// 	users := admin.Group("/users/")
+	// 	{
+
+	// 	}
+	// 	products := admin.Group("/products/")
+	// 	{
+
+	// 	}
+	// 	product_categories := admin.Group("/product_categories/")
+	// 	{
+
+	// 	}
+	// 	ingredients := admin.Group("/ingredients/")
+	// 	{
+
+	// 	}
+	// 	choices := admin.Group("/choices/")
+	// 	{
+
+	// 	}
+	// 	orders := admin.Group("/orders/")
+	// 	{
+
+	// 	}
+	// 	comments := admin.Group("/comments/")
+	// 	{
+
+	// 	}
+	// 	ratings := admin.Group("/ratings/")
+	// 	{
+
+	// 	}
+	// 	discounts := admin.Group("/discounts/")
+	// 	{
+
+	// 	}
+	// }
 
 	router.Run()
 }

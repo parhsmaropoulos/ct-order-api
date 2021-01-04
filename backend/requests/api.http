@@ -64,7 +64,7 @@ POST http://localhost:8080/products/create_product
 Content-Type: application/json
 
 {
-    "name": "fredo expreso",
+    "name": "fredo Capoc",
     "description": "Kafedes",
     "price": 2.2,
     "category": "Kafedes"
@@ -77,7 +77,7 @@ GET http://localhost:8080/products/choices
 Content-Type: application/json
 
 ### 
-# GET choices 
+# GET categories 
 # GET Request
 GET http://localhost:8080/products/categories
 Content-Type: application/json
@@ -91,11 +91,10 @@ Content-Type: application/json
 
 {
     "Product_Ids": [
-        "5ff1fd0492e2fccc5177c099",
-        "5ff20effee342ca7aaf856d6"
-
+        "5ff34efaf2bb393287fdd4ec",
+        "5ff34f00f2bb393287fdd4ed"
     ],
-    "UserID": "5ff229e46de0f8cbe9ab8a5f",
+    "User_id": "5ff34eebf2bb393287fdd4e9",
     "Payment_Type": "Cash and roll",
     "Tips": 2.5
 }
@@ -109,5 +108,5 @@ Content-Type: application/json
 
 {
     "Text": "Nice oneeee",
-    "UserID": "5ff229e46de0f8cbe9ab8a5f"
+    "UserID": "5ff348f3d7ac691f016b0d9e"
 }

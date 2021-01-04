@@ -18,6 +18,12 @@ var Orders *mongo.Collection
 // Comments is the pointer to the db collection of type comment.
 var Comments *mongo.Collection
 
+// Ratings is the pointer to the db collection of type rating.
+var Ratings *mongo.Collection
+
+// Discounts is the pointer to the db collection of type discount.
+var Discounts *mongo.Collection
+
 // Products is the pointer to the db collection of type product.
 var Products *mongo.Collection
 
@@ -43,6 +49,9 @@ func Init() {
 
 	Orders = Client.Database("CoffeeTwist").Collection("Orders")
 	Comments = Client.Database("CoffeeTwist").Collection("Comments")
+	Ratings = Client.Database("CoffeeTwist").Collection("Ratings")
+
+	Discounts = Client.Database("CoffeeTwist").Collection("Discounts")
 
 	Products = Client.Database("CoffeeTwist").Collection("Products")
 	Choices = Client.Database("CoffeeTwist").Collection("Choices")

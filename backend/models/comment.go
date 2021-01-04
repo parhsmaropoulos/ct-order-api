@@ -4,6 +4,7 @@ package models
 import (
 	"context"
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -12,11 +13,12 @@ import (
 )
 
 type Comment struct {
-	Text     string   `json:"text"`
-	Comments []string `json:"comments"`
-	Approved bool     `json:"approved"`
-	UserID   string   `json:"user_id"`
-	OrderID  string   `json:"order_id"`
+	// Comments []string `json:"comments"`
+	Text     string `json:"text"`
+	Answer   string `json:"answer"`
+	Approved bool   `json:"approved"`
+	User_id  string `json:"user_id"`
+	Order_id string `json:"order_id"`
 }
 
 func CreateComment(c *gin.Context) {
@@ -31,12 +33,23 @@ func CreateComment(c *gin.Context) {
 		return
 	}
 
-	comment := Comment{Text: input.Text, Comments: []string{}, UserID: input.UserID, Approved: false}
+	comment := Comment{
+		Text:     input.Text,
+		Answer:   "",
+		User_id:  input.User_id,
+		Approved: false,
+	}
 
-	// Append Comment to Order ????
+	_, err1 := Comments.InsertOne(context.Background(), comment)
+	if err1 != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Server error2!",
+		})
+		return
+	}
 
 	// Append Comment to User
-	user_id, err := primitive.ObjectIDFromHex(input.UserID)
+	user_id, err := primitive.ObjectIDFromHex(input.User_id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": "Server error1!",
@@ -61,4 +74,88 @@ func CreateComment(c *gin.Context) {
 		"data":    comment,
 	})
 
+}
+
+func GetComments(c *gin.Context) {
+	if c.Request.Method != "GET" {
+		fmt.Println("Only get here man.")
+		return
+	}
+
+	comments := []Comment{}
+
+	cursor, err := Comments.Find(context.Background(), bson.D{})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if err = cursor.All(context.Background(), &comments); err != nil {
+		log.Fatal(err)
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Comments found",
+		"data":    comments,
+	})
+}
+
+func GetSingleComment(c *gin.Context) {
+	if c.Request.Method != "GET" {
+		fmt.Println("Only get here no give!")
+		return
+	}
+
+	var comment Comment
+
+	id, errs := primitive.ObjectIDFromHex(c.Param("id"))
+	if errs != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Server error!",
+		})
+		return
+	}
+
+	err := Comments.FindOne(context.Background(), bson.M{"_id": id}).Decode(&comment)
+
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": "Comment not found!",
+		})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"message": "Comment found",
+		"data":    comment,
+	})
+}
+
+func DeleteComment(c *gin.Context) {
+	if c.Request.Method != "DELETE" {
+		fmt.Println("Only delete here nothing else!")
+		return
+	}
+
+	var comment Comment
+
+	id, errs := primitive.ObjectIDFromHex(c.Param("id"))
+	if errs != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Server error!",
+		})
+		return
+	}
+
+	err := Comments.FindOneAndDelete(context.Background(), bson.M{"_id": id}).Decode(&comment)
+
+	if err != nil {
+		c.JSON(404, gin.H{
+			"message": "Comment not found",
+		})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"message":        "Comment deleted",
+		"delete_product": comment,
+	})
 }

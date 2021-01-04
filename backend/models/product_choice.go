@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type Choice struct {
@@ -36,12 +37,56 @@ func CreateProductChoice(c *gin.Context) {
 		return
 	}
 
-	choice := Choice{Name: input.Name, Description: input.Description, Choices: input.Choices, For_Classes: input.For_Classes}
+	choice := Choice{
+		Name:        input.Name,
+		Description: input.Description,
+		Choices:     input.Choices,
+		For_Classes: []string{},
+	}
+	if input.For_Classes != nil {
+		choice.For_Classes = input.For_Classes
+	}
+
 	for _, ch := range choice.Choices {
 		ch.Price = math.Round((ch.Price * 100) / 100)
 
 	}
 	Choices.InsertOne(context.Background(), choice)
+
+	// Append choice to categories
+	for _, category := range choice.For_Classes {
+
+		_, err := Products_Categories.UpdateOne(
+			context.Background(),
+			bson.M{"name": category},
+			bson.M{
+				"$push": bson.M{
+					"choices": choice,
+				},
+			},
+			options.Update(),
+		)
+		if err != nil {
+			c.JSON(http.StatusNotFound, gin.H{
+				"message": "Product category not found!",
+			})
+		}
+		// Append to all items of this category this choice
+		_, err2 := Products.UpdateMany(
+			context.Background(),
+			bson.M{"category": category},
+			bson.M{
+				"$push": bson.M{
+					"choices": choice,
+				},
+			},
+		)
+		if err2 != nil {
+			c.JSON(http.StatusNotFound, gin.H{
+				"message": "Products  not found!",
+			})
+		}
+	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Choice created successfully",
