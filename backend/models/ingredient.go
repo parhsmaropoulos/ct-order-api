@@ -14,10 +14,12 @@ import (
 
 type Ingredient struct {
 	// Id          string   `json:"id"`
-	Name        string   `json:"name"`
-	Price       float64  `json:"price"`
-	Description string   `json:"description"`
-	For_Classes []string `json:"for_classes"`
+	Name        string  `json:"name"`
+	Price       float64 `json:"price"`
+	Description string  `json:"description"`
+	// For_Classes []string `json:"for_classes"`
+	Category  string `json:"category"`
+	Available bool   `json:"available"`
 }
 
 func CreateIngredient(c *gin.Context) {
@@ -35,11 +37,11 @@ func CreateIngredient(c *gin.Context) {
 		Name:        input.Name,
 		Price:       input.Price,
 		Description: input.Description,
-		For_Classes: []string{},
+		Category:    input.Category,
+		Available:   false,
 	}
-	if input.For_Classes != nil {
-		ingredient.For_Classes = input.For_Classes
-	}
+
+	// Ingredient_Categories.FindOne(context.Background(), bson.M{})
 
 	Ingredients.InsertOne(context.Background(), ingredient)
 	ingredient.Price = math.Round((ingredient.Price * 100) / 100)

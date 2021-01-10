@@ -22,7 +22,7 @@ type Product struct {
 	Price                 float64  `json:"price"`
 	Category              string   `json:"category"`
 	Image                 []byte   `json:"image"`
-	Choices_Ids           []string `json:"choice"`
+	Choices               []Choice `json:"choices"`
 	Ingredients_Ids       []string `json:"Ingrdients"`
 	Extra_Ingredients_Ids []string `json:"Extra_Ingredients"`
 	Available             bool     `json:"available"`
@@ -34,17 +34,18 @@ func CreateProduct(c *gin.Context) {
 		fmt.Println("Only put here man.")
 		return
 	}
-
+	c.Header("Access-Control-Allow-Origin", "*")
 	var input Product
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "message": err})
 		return
 	}
+	fmt.Println(input)
 
-	product := Product{Name: input.Name, Price: input.Price, Description: input.Description, Category: input.Category, Image: []byte{}, Choices_Ids: []string{}, Ingredients_Ids: []string{}, Extra_Ingredients_Ids: []string{}}
-	if input.Choices_Ids != nil {
-		product.Choices_Ids = input.Choices_Ids
-	}
+	product := Product{Name: input.Name, Price: input.Price, Description: input.Description, Category: input.Category, Image: []byte{}, Choices: []Choice{}, Ingredients_Ids: []string{}, Extra_Ingredients_Ids: []string{}}
+	// if input.Choices_Ids != nil {
+	// 	product.Choices_Ids = input.Choices_Ids
+	// }
 	if input.Ingredients_Ids != nil {
 		product.Ingredients_Ids = input.Ingredients_Ids
 	}
@@ -53,6 +54,7 @@ func CreateProduct(c *gin.Context) {
 	}
 
 	product.Price = math.Round((product.Price * 100) / 100)
+	// product = product.AddChoices()
 	_, err := Products.InsertOne(context.Background(), product)
 	if err != nil {
 		log.Fatal(err)
@@ -85,6 +87,7 @@ func GetProducts(c *gin.Context) {
 		fmt.Println("Only get here man.")
 		return
 	}
+	// c.Header("Access-Control-Allow-Origin", "*")
 
 	products := []Product{}
 
@@ -210,4 +213,21 @@ func (prod Product) AddIngredient(id string, ingredient Ingredient) bool {
 	}
 
 	return true
+}
+
+func (prod Product) AddChoices() Product {
+	category_name := prod.Category
+
+	var prod_cat Product_Category
+
+	Products_Categories.FindOne(
+		context.Background(),
+		bson.M{"name": category_name},
+	).Decode(&prod_cat)
+
+	for _, choice := range prod_cat.Choices {
+		prod.Choices = append(prod.Choices, choice)
+	}
+
+	return prod
 }

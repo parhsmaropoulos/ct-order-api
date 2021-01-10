@@ -1,0 +1,21 @@
+.App {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: row;
+  flex-flow: flex-start;
+  justify-content: flex-start;
+  /* align-items: center; */
+  /* background-color: #f2f; */
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.Panel {
+  flex-grow: 1;
+  padding-left: 2%;
+  /* background-color: rgb(118, 43, 43); */
+}

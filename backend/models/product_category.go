@@ -15,6 +15,7 @@ type Product_Category struct {
 	// Id                string       `json:"id"`
 	Name              string       `json:"name"`
 	Description       string       `json:"description"`
+	Image             []byte       `json:"image"`
 	Products          []Product    `json:"products"`
 	Choices           []Choice     `json:"choices"`
 	Ingredients       []Ingredient `json:"ingredients"`
@@ -33,7 +34,22 @@ func CreateProductCategory(c *gin.Context) {
 		return
 	}
 
-	prod_cat := Product_Category{Name: input.Name, Description: input.Description, Choices: []Choice{}, Products: []Product{}, Ingredients: []Ingredient{}, Extra_Ingredients: []Ingredient{}}
+	prod_cat := Product_Category{
+		Name:              input.Name,
+		Description:       input.Description,
+		Choices:           []Choice{},
+		Products:          []Product{},
+		Ingredients:       []Ingredient{},
+		Extra_Ingredients: []Ingredient{},
+		Image:             []byte{}}
+
+	if len(input.Choices) > 0 {
+		// prod_cat.Choices = input.Choices
+		for _, choice := range input.Choices {
+			new_choice := Choice{Name: choice.Name, Description: choice.Description, Options: choice.Options, For_Classes: []string{}}
+			prod_cat.Choices = append(prod_cat.Choices, new_choice)
+		}
+	}
 
 	Products_Categories.InsertOne(context.Background(), prod_cat)
 
@@ -48,6 +64,7 @@ func GetProductCategories(c *gin.Context) {
 		fmt.Println("Only get here man.")
 		return
 	}
+	c.Header("Access-Control-Allow-Origin", "*")
 
 	categories := []Product_Category{}
 

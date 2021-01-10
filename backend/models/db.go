@@ -30,6 +30,9 @@ var Products *mongo.Collection
 // Product_Categories is the pointer to the db collection of type Product_Category.
 var Products_Categories *mongo.Collection
 
+// Ingredient_Categories is the pointer to the db collection of type Product_Category.
+var Ingredient_Categories *mongo.Collection
+
 // Choices is the pointer to the db collection of type choice.
 var Choices *mongo.Collection
 
@@ -57,4 +60,5 @@ func Init() {
 	Choices = Client.Database("CoffeeTwist").Collection("Choices")
 	Ingredients = Client.Database("CoffeeTwist").Collection("Ingredients")
 	Products_Categories = Client.Database("CoffeeTwist").Collection("Product_Category")
+	Ingredient_Categories = Client.Database("CoffeeTwist").Collection("Ingredient_Category")
 }

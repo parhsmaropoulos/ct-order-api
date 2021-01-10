@@ -17,11 +17,10 @@ type Choice struct {
 	// Id          string `json:"id"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
-	Choices     []struct {
-		Name        string  `json:"name"`
-		Description string  `json:"description"`
-		Price       float64 `json:"price"`
-	} `json:"choices"`
+	Options     []struct {
+		Name  string  `json:"name"`
+		Price float64 `json:"price"`
+	} `json:"options"`
 	For_Classes []string `json:"for_classes"`
 }
 
@@ -40,14 +39,14 @@ func CreateProductChoice(c *gin.Context) {
 	choice := Choice{
 		Name:        input.Name,
 		Description: input.Description,
-		Choices:     input.Choices,
+		Options:     input.Options,
 		For_Classes: []string{},
 	}
 	if input.For_Classes != nil {
 		choice.For_Classes = input.For_Classes
 	}
 
-	for _, ch := range choice.Choices {
+	for _, ch := range choice.Options {
 		ch.Price = math.Round((ch.Price * 100) / 100)
 
 	}

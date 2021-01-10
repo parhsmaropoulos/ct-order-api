@@ -3,25 +3,28 @@ package main
 import (
 	models "GoProjects/CoffeeTwist/backend/models"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	models.Init()
 	router := gin.Default()
+	router.Use(cors.Default())
 
-	main := router.Group("/")
-	{
-		main.GET("/ping", func(c *gin.Context) {
-			c.JSON(200, gin.H{
-				"message": "pong",
-			})
-		})
-	}
+	// main := router.Group("/")
+	// {
+	// 	main.GET("/ping", func(c *gin.Context) {
+	// 		c.JSON(200, gin.H{
+	// 			"message": "pong",
+	// 		})
+	// 	})
+	// }
 
 	users := router.Group("/user/")
 	{
 		users.POST("/create_profile", models.CreateProfile)
+		users.POST("/login", models.Login)
 	}
 	products := router.Group("/products/")
 	{
@@ -32,7 +35,7 @@ func main() {
 
 		// GET ALL
 		products.GET("/choices", models.GetProductChoices)
-		products.GET("/products", models.GetProducts)
+		products.GET("/all", models.GetProducts)
 		products.GET("/ingredients", models.GetIngredients)
 
 		// DELETE ONE
@@ -46,7 +49,7 @@ func main() {
 		product_categories.POST("/create_product_category", models.CreateProductCategory)
 		product_categories.DELETE("/delete_product_category", models.DeleteProductCategory)
 		product_categories.GET("/all", models.GetProductCategories)
-		product_categories.GET("/:id", models.GetSingleCategory)
+		product_categories.GET("/single/:id", models.GetSingleCategory)
 	}
 
 	orders := router.Group("/orders/")
@@ -103,6 +106,5 @@ func main() {
 
 	// 	}
 	// }
-
 	router.Run()
 }

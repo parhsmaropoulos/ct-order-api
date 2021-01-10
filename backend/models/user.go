@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -23,7 +22,7 @@ type User struct {
 	// User personal info
 	Name    string `json:"name"`
 	Surname string `json:"surname"`
-	Phone   int64  `json:"phone"`
+	Phone   string `json:"phone"`
 	// User's location info
 	Address  string `json:"address"`
 	Zipcode  string `json:"zipcode"`
@@ -52,10 +51,16 @@ func CreateProfile(c *gin.Context) {
 		return
 	}
 
+	var input User
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
 	// Get value for each field { Base User }
-	username := c.PostForm("username")
-	email := c.PostForm("email")
-	password := c.PostForm("password")
+	// username := c.PostForm("username")
+	// email := c.PostForm("email")
+	password := input.Password
 	// Encrypt password
 	bs, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.MinCost)
 	if err != nil {
@@ -65,38 +70,39 @@ func CreateProfile(c *gin.Context) {
 		return
 	}
 	password = string(bs)
-	// {User details}
-	name := c.PostForm("name")
-	surname := c.PostForm("surname")
-	var phone int64
-	if ph, err := strconv.ParseInt(c.PostForm("phone"), 10, 64); err != nil {
-		// not valid phone
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Internal server error on phone read.",
-			"error":   err,
-		})
-		return
+	// // {User details}
+	// name := c.PostForm("name")
+	// surname := c.PostForm("surname")
+	// phone := c.PostForm("phone")
+	// var phone int64
+	// if ph, err := strconv.ParseInt(c.PostForm("phone"), 10, 64); err != nil {
+	// 	// not valid phone
+	// 	c.JSON(http.StatusInternalServerError, gin.H{
+	// 		"message": "Internal server error on phone read.",
+	// 		"error":   err,
+	// 	})
+	// 	return
 
-	} else {
-		phone = ph
-	}
+	// } else {
+	// 	phone = ph
+	// }
 
 	// { House details }
-	address := c.PostForm("address")
-	zipcode := c.PostForm("zipcode")
-	bellname := c.PostForm("bellname")
-	details := c.PostForm("details")
+	// address := c.PostForm("address")
+	// zipcode := c.PostForm("zipcode")
+	// bellname := c.PostForm("bellname")
+	// details := c.PostForm("details")
 	user := User{
-		Username:     username,
+		Username:     input.Username,
 		Password:     password,
-		Email:        email,
-		Name:         name,
-		Surname:      surname,
-		Phone:        phone,
-		Address:      address,
-		Zipcode:      zipcode,
-		Bellname:     bellname,
-		Details:      details,
+		Email:        input.Email,
+		Name:         input.Name,
+		Surname:      input.Surname,
+		Phone:        input.Phone,
+		Address:      input.Address,
+		Zipcode:      input.Zipcode,
+		Bellname:     input.Bellname,
+		Details:      input.Details,
 		Created_at:   time.Now(),
 		Orders:       []Order{},
 		Comments:     []Comment{},
@@ -196,4 +202,44 @@ func DeleteUser(c *gin.Context) {
 		"message":        "User deleted",
 		"delete_product": user,
 	})
+}
+
+func Login(c *gin.Context) {
+	if c.Request.Method != "POST" {
+		fmt.Println("Only post requests here, nothing else!")
+		return
+	}
+
+	var input struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// First check if email exists
+	var user User
+	err := Users.FindOne(context.Background(),
+		bson.M{"email": input.Email}).Decode(&user)
+	fmt.Println(user)
+	fmt.Println(input)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": "Email is not valid!",
+		})
+		return
+	}
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(input.Password))
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": "Password is wrong!",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Welcome welcome!",
+	})
+	return
 }

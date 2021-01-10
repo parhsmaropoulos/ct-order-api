@@ -2,10 +2,26 @@
 
 # Send Request
 # Create profile
-POST http://localhost:8080/user/create_profile
-Content-Type: application/x-www-form-urlencoded
+# POST http://localhost:8080/user/create_profile
+# Content-Type: application/x-www-form-urlencoded
 
-username=paris123&passowrd=1234&email=p@1.com&phone=6988702424
+# username=paris123&passowrd=1234&email=p@1.com&phone=6988702424
+POST  http://localhost:8080/user/create_profile
+Content-Type: application/json
+
+{
+
+    "username": "xaris",
+    "password": "123",
+    "email": "x@p.com",
+    "name": "xaris",
+    "surname": "potas",
+    "phone": "",
+    "address": "ed1",
+    "zipcode": "123",
+    "bellname": "xaris",
+    "details": "o xaris o man"
+}
 ### 
 
 ################################ PRODUCTS #####################################
@@ -37,12 +53,26 @@ Content-Type: application/json
 ### 
 # Create Product Category
 # Post Request
-POST http://localhost:8080/products/create_product_category
+POST http://localhost:8080/product_category/create_product_category
 Content-Type: application/json
 
 {
     "name": "Kafedes",
-    "description": "Kafedes"
+    "description": "Kafedes",
+    "choices":[
+        {
+            "name":  "zaxar",
+            "description":"poso zaxar",
+            "options": [
+                {
+                "name":"sketos",
+                "price":0
+            }, {
+                "name":"metrios",
+                "price":1
+            }]
+        }
+    ]
 }
 
 ### 
@@ -64,10 +94,10 @@ POST http://localhost:8080/products/create_product
 Content-Type: application/json
 
 {
-    "name": "fredo Capoc",
-    "description": "Kafedes",
+    "name": "Teaaa",
+    "description": "Teatime",
     "price": 2.2,
-    "category": "Kafedes"
+    "category": "Tsagia"
 }
 
 ### 

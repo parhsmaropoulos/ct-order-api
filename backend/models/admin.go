@@ -1,3 +1,5 @@
+package models
+
 // Get orders / client
 // Get ratings / client
 
