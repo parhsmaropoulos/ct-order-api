@@ -3,8 +3,10 @@ package models
 import (
 	"context"
 	"log"
+	"os"
 	"time"
 
+	"github.com/go-redis/redis/v8"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -39,13 +41,29 @@ var Choices *mongo.Collection
 // Ingredients is the pointer to the db collection of type ingredient.
 var Ingredients *mongo.Collection
 
+var redis_client *redis.Client
+
 // Initialize the db connection
 func Init() {
+
 	// Start a mongo db session
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	Client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://localhost:27017"))
 	if err != nil {
 		log.Fatal(err)
+	}
+
+	// Initializing redis
+	dsn := os.Getenv("REDIS_DSN")
+	if len(dsn) == 0 {
+		dsn = "localhost:6379"
+	}
+	redis_client = redis.NewClient(&redis.Options{
+		Addr: dsn, //redis port
+	})
+	_, err = redis_client.Ping(context.Background()).Result()
+	if err != nil {
+		panic(err)
 	}
 
 	Users = Client.Database("CoffeeTwist").Collection("Users")

@@ -13,7 +13,9 @@ import (
 )
 
 type Comment struct {
-	// Comments []string `json:"comments"`
+	ID uint64 `json:"id"`
+	// ID primitive.ObjectID `json:"id"`
+
 	Text     string `json:"text"`
 	Answer   string `json:"answer"`
 	Approved bool   `json:"approved"`

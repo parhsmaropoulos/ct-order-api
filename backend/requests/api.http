@@ -23,6 +23,13 @@ Content-Type: application/json
     "details": "o xaris o man"
 }
 ### 
+# LOGIN request
+POST  http://localhost:8080/user/login
+
+{
+    "email": "xaris@potas.com",
+    "password": "123"
+}
 
 ################################ PRODUCTS #####################################
 # Create Product Choice

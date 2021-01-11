@@ -14,6 +14,7 @@ import (
 )
 
 type Discount struct {
+	ID          uint64    `json:"id"`
 	Percentage  int       `json:"percentage"`
 	Description string    `json:"description"`
 	Stack       bool      `json:"stack"`
@@ -145,7 +146,7 @@ func (disc Discount) ExpireDiscount(id string) bool {
 	}
 
 	// TODO need this as return?
-	_, err := Discounts.UpdateByID(
+	_, err := Discounts.UpdateOne(
 		context.Background(),
 		id_hex,
 		bson.M{

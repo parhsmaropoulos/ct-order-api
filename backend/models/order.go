@@ -15,6 +15,8 @@ import (
 )
 
 type Order struct {
+	ID uint64 `json:"id"`
+
 	Products    []Product `json:"products"`
 	Product_Ids []string  `json:"product_ids"`
 	Accepted    bool      `json:"accepted"`
@@ -238,7 +240,7 @@ func (order Order) AcceptOrder(id string) bool {
 	}
 
 	// TODO need this as return?
-	_, err := Orders.UpdateByID(
+	_, err := Orders.UpdateOne(
 		context.Background(),
 		id_hex,
 		bson.M{
@@ -262,7 +264,7 @@ func (order Order) CommentOrder(id string, comm Comment) bool {
 	}
 
 	// TODO need this as return?
-	_, err := Orders.UpdateByID(
+	_, err := Orders.UpdateOne(
 		context.Background(),
 		id_hex,
 		bson.M{
@@ -286,7 +288,7 @@ func (order Order) RateOrder(id string, rate Rating) bool {
 	}
 
 	// TODO need this as return?
-	_, err := Orders.UpdateByID(
+	_, err := Orders.UpdateOne(
 		context.Background(),
 		id_hex,
 		bson.M{
@@ -310,7 +312,7 @@ func (order Order) CancelOrder(id string) bool {
 	}
 
 	// TODO need this as return?
-	_, err := Orders.UpdateByID(
+	_, err := Orders.UpdateOne(
 		context.Background(),
 		id_hex,
 		bson.M{
@@ -334,7 +336,7 @@ func (order Order) AnswerComment(id string, text string) bool {
 	}
 
 	// TODO need this as return?
-	_, err := Orders.UpdateByID(
+	_, err := Orders.UpdateOne(
 		context.Background(),
 		id_hex,
 		bson.M{

@@ -17,6 +17,9 @@ import (
 
 type Product struct {
 	// Id          string  `json:"id"`
+	// ID primitive.ObjectID `json:"id"`
+	ID uint64 `json:"id"`
+
 	Name                  string   `json:"name"`
 	Description           string   `json:"description"`
 	Price                 float64  `json:"price"`
@@ -174,7 +177,7 @@ func (prod Product) AddChoice(id string, choice Choice) bool {
 	}
 
 	// TODO need this as return?
-	_, err := Products.UpdateByID(
+	_, err := Products.UpdateOne(
 		context.Background(),
 		id_hex,
 		bson.M{
@@ -198,7 +201,7 @@ func (prod Product) AddIngredient(id string, ingredient Ingredient) bool {
 	}
 
 	// TODO need this as return?
-	_, err := Products.UpdateByID(
+	_, err := Products.UpdateOne(
 		context.Background(),
 		id_hex,
 		bson.M{
