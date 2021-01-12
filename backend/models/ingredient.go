@@ -13,8 +13,7 @@ import (
 )
 
 type Ingredient struct {
-	ID uint64 `json:"id"`
-	// ID          primitive.ObjectID `json:"id"`
+	// Id          string   `json:"id"`
 	Name        string  `json:"name"`
 	Price       float64 `json:"price"`
 	Description string  `json:"description"`

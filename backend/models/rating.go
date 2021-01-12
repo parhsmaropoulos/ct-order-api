@@ -12,8 +12,6 @@ import (
 )
 
 type Rating struct {
-	ID uint64 `json:"id"`
-
 	Rate    int    `json:"rate"`
 	User_id string `json:"user_id"`
 }

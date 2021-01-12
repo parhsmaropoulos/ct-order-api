@@ -8,8 +8,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/parhsmaropoulos/coffeetwist/backend/auth"
-
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -17,7 +15,6 @@ import (
 )
 
 type User struct {
-	ID primitive.ObjectID `json:"id"`
 	// Base user account info
 	Username string `json:"username"`
 	Password string `json:"password"`
@@ -241,15 +238,8 @@ func Login(c *gin.Context) {
 		})
 		return
 	}
-
-	token, err := auth.CreateToken(user.ID)
-	if err != nil {
-		c.JSON(http.StatusUnprocessableEntity, err.Error())
-		return
-	}
-	c.JSON(http.StatusOK, token)
-	// c.JSON(http.StatusOK, gin.H{
-	// 	"message": "Welcome welcome!",
-	// })
-	// return
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Welcome welcome!",
+	})
+	return
 }
