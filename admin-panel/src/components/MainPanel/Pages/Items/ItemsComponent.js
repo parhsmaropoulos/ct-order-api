@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import Table from "react-bootstrap/Table";
 import "../../../../css/Panel/ItemsPage.css";
 import axios from "axios";
-import { Form } from "react-bootstrap";
+import { Button, Form } from "react-bootstrap";
 
 class ItemsComponent extends Component {
   state = {
@@ -78,7 +78,7 @@ class ItemsComponent extends Component {
                     </tr>
                   );
                 })
-              : this.props.items.map((item, index) => {
+              : this.props.products.map((item, index) => {
                   if (item.category == this.state.selectedCategory) {
                     return (
                       <tr key={index}>

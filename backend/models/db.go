@@ -3,8 +3,10 @@ package models
 import (
 	"context"
 	"log"
+	"os"
 	"time"
 
+	"github.com/go-redis/redis"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -39,6 +41,12 @@ var Choices *mongo.Collection
 // Ingredients is the pointer to the db collection of type ingredient.
 var Ingredients *mongo.Collection
 
+// // Images is the pointer to the db collection of Image files {GridFS}
+var Images *mongo.Database
+
+// Redis_client is the pointer to the redis db.
+var Redis_client *redis.Client
+
 // Initialize the db connection
 func Init() {
 	// Start a mongo db session
@@ -48,6 +56,20 @@ func Init() {
 		log.Fatal(err)
 	}
 
+	// Initialize redis
+	//Initializing redis
+	dsn := os.Getenv("REDIS_DSN")
+	if len(dsn) == 0 {
+		dsn = "localhost:6379"
+	}
+	Redis_client = redis.NewClient(&redis.Options{
+		Addr: dsn, //redis port
+	})
+	_, err = Redis_client.Ping(ctx).Result()
+	if err != nil {
+		panic(err)
+	}
+
 	Users = Client.Database("CoffeeTwist").Collection("Users")
 
 	Orders = Client.Database("CoffeeTwist").Collection("Orders")
@@ -55,6 +77,8 @@ func Init() {
 	Ratings = Client.Database("CoffeeTwist").Collection("Ratings")
 
 	Discounts = Client.Database("CoffeeTwist").Collection("Discounts")
+
+	Images = Client.Database("CoffeeTwist")
 
 	Products = Client.Database("CoffeeTwist").Collection("Products")
 	Choices = Client.Database("CoffeeTwist").Collection("Choices")

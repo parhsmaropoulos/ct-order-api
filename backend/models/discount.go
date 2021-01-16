@@ -14,12 +14,13 @@ import (
 )
 
 type Discount struct {
-	Percentage  int       `json:"percentage"`
-	Description string    `json:"description"`
-	Stack       bool      `json:"stack"`
-	Valid       bool      `json:"valid"`
-	Started     time.Time `json:"started"`
-	Ends        time.Time `json:"ended"`
+	ID          primitive.ObjectID `bson:"_id" json:"id"`
+	Percentage  int                `json:"percentage"`
+	Description string             `json:"description"`
+	Stack       bool               `json:"stack"`
+	Valid       bool               `json:"valid"`
+	Started     time.Time          `json:"started"`
+	Ends        time.Time          `json:"ended"`
 }
 
 func CreateDiscount(c *gin.Context) {
@@ -35,6 +36,7 @@ func CreateDiscount(c *gin.Context) {
 	}
 
 	discount := Discount{
+		ID:          primitive.NewObjectID(),
 		Percentage:  input.Percentage,
 		Description: input.Description,
 		Stack:       input.Stack,

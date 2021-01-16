@@ -15,6 +15,7 @@ import (
 )
 
 type User struct {
+	ID primitive.ObjectID `bson:"_id" json:"id"`
 	// Base user account info
 	Username string `json:"username"`
 	Password string `json:"password"`
@@ -93,6 +94,7 @@ func CreateProfile(c *gin.Context) {
 	// bellname := c.PostForm("bellname")
 	// details := c.PostForm("details")
 	user := User{
+		ID:           primitive.NewObjectID(),
 		Username:     input.Username,
 		Password:     password,
 		Email:        input.Email,
@@ -160,6 +162,7 @@ func GetSingleUser(c *gin.Context) {
 
 	err := Users.FindOne(context.Background(), bson.M{"_id": id}).Decode(&user)
 
+	user.Password = ""
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
 			"message": "User not found!",
@@ -223,8 +226,6 @@ func Login(c *gin.Context) {
 	var user User
 	err := Users.FindOne(context.Background(),
 		bson.M{"email": input.Email}).Decode(&user)
-	fmt.Println(user)
-	fmt.Println(input)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
 			"message": "Email is not valid!",
@@ -238,8 +239,34 @@ func Login(c *gin.Context) {
 		})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Welcome welcome!",
-	})
-	return
+
+	// Token
+	ts, err := CreateToken(user.ID, user)
+	if err != nil {
+		c.JSON(http.StatusUnprocessableEntity, err.Error())
+		return
+	}
+	saveErr := CreateAuth(user.ID, ts)
+	if saveErr != nil {
+		c.JSON(http.StatusUnprocessableEntity, saveErr.Error())
+	}
+	tokens := map[string]string{
+		"access_token":  ts.AccessToken,
+		"refresh_token": ts.RefreshToken,
+	}
+	c.JSON(http.StatusOK, tokens)
+}
+
+func Logout(c *gin.Context) {
+	au, err := ExtractTokenMetadata(c.Request)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, "unauthorized")
+		return
+	}
+	deleted, delErr := DeleteAuth(au.AccessUuid)
+	if delErr != nil || deleted == 0 { //if any goes wrong
+		c.JSON(http.StatusUnauthorized, "unauthorized")
+		return
+	}
+	c.JSON(http.StatusOK, "Successfully logged out")
 }

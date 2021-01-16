@@ -12,6 +12,7 @@ import (
 )
 
 type Product_Category struct {
+	ID primitive.ObjectID `bson:"_id" json:"id"`
 	// Id                string       `json:"id"`
 	Name              string       `json:"name"`
 	Description       string       `json:"description"`
@@ -35,6 +36,7 @@ func CreateProductCategory(c *gin.Context) {
 	}
 
 	prod_cat := Product_Category{
+		ID:                primitive.NewObjectID(),
 		Name:              input.Name,
 		Description:       input.Description,
 		Choices:           []Choice{},

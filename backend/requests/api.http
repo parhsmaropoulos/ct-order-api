@@ -24,6 +24,17 @@ Content-Type: application/json
 }
 ### 
 
+# LOGIN REQUEST
+POST  http://localhost:8080/user/login
+Content-Type: application/json
+
+{
+    "email": "xaris@potas.com",
+    "password": "123"
+}
+
+### 
+
 ################################ PRODUCTS #####################################
 # Create Product Choice
 # Post Request
@@ -92,6 +103,7 @@ Content-Type: application/json
 # Post Request
 POST http://localhost:8080/products/create_product
 Content-Type: application/json
+Authorization:  Bearer  eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NfdXVpZCI6ImZiMmQ2ZTU2LWNiYzAtNDFlYi04Mjc5LTU4MDc1NjhmZmRjNSIsImF1dGhvcml6ZWQiOnRydWUsImV4cCI6MTYxMDQ4MTEwOCwidXNlcl9pZCI6IjVmZmI2YWQ2N2RmMDRhNzlhNTY2MDRiMyJ9.t2Tw8Rudf7CgCN16BGk5qE5qTpE9ZtYMppXDON5gQMo
 
 {
     "name": "Teaaa",

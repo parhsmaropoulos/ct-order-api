@@ -14,9 +14,10 @@ import (
 
 type Ingredient struct {
 	// Id          string   `json:"id"`
-	Name        string  `json:"name"`
-	Price       float64 `json:"price"`
-	Description string  `json:"description"`
+	ID          primitive.ObjectID `bson:"_id" json:"id"`
+	Name        string             `json:"name"`
+	Price       float64            `json:"price"`
+	Description string             `json:"description"`
 	// For_Classes []string `json:"for_classes"`
 	Category  string `json:"category"`
 	Available bool   `json:"available"`
@@ -34,6 +35,7 @@ func CreateIngredient(c *gin.Context) {
 		return
 	}
 	ingredient := Ingredient{
+		ID:          primitive.NewObjectID(),
 		Name:        input.Name,
 		Price:       input.Price,
 		Description: input.Description,

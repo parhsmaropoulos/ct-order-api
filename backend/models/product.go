@@ -3,7 +3,9 @@ package models
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"math"
 	"net/http"
@@ -12,21 +14,22 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/gridfs"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type Product struct {
-	// Id          string  `json:"id"`
-	Name                  string   `json:"name"`
-	Description           string   `json:"description"`
-	Price                 float64  `json:"price"`
-	Category              string   `json:"category"`
-	Image                 []byte   `json:"image"`
-	Choices               []Choice `json:"choices"`
-	Ingredients_Ids       []string `json:"Ingrdients"`
-	Extra_Ingredients_Ids []string `json:"Extra_Ingredients"`
-	Available             bool     `json:"available"`
-	Quantity              int8     `json:"quantity"`
+	ID                    primitive.ObjectID `bson:"_id" json:"id"`
+	Name                  string             `json:"name"`
+	Description           string             `json:"description"`
+	Price                 float64            `json:"price"`
+	Category              string             `json:"category"`
+	Image                 string             `json:"image"`
+	Choices               []Choice           `json:"choices"`
+	Ingredients_Ids       []string           `json:"Ingrdients"`
+	Extra_Ingredients_Ids []string           `json:"Extra_Ingredients"`
+	Available             bool               `json:"available"`
+	Quantity              int8               `json:"quantity"`
 }
 
 func CreateProduct(c *gin.Context) {
@@ -36,16 +39,85 @@ func CreateProduct(c *gin.Context) {
 	}
 	c.Header("Access-Control-Allow-Origin", "*")
 	var input Product
-	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "message": err})
+	// var input struct {
+	// 	file    string
+	// 	product Product
+	// }
+	// if err := c.ShouldBindJSON(&input); err != nil {
+	// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "message": err})
+	// 	return
+	// }
+
+	// AUTH CHECK
+	tokenAuth, err := ExtractTokenMetadata(c.Request)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, "unauthorized")
 		return
 	}
-	fmt.Println(input)
+	_, err = FetchAuth(tokenAuth)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, "unauthorized")
+		return
+	}
 
-	product := Product{Name: input.Name, Price: input.Price, Description: input.Description, Category: input.Category, Image: []byte{}, Choices: []Choice{}, Ingredients_Ids: []string{}, Extra_Ingredients_Ids: []string{}}
-	// if input.Choices_Ids != nil {
-	// 	product.Choices_Ids = input.Choices_Ids
-	// }
+	// Parse input
+	c.Request.ParseMultipartForm(10 << 20)
+	// Retrieve file
+
+	file, handler, err := c.Request.FormFile("file")
+	// c.SaveUploadedFile(file, "saved/"+file.Filename)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Write temporary file
+	tempFile, err := ioutil.TempFile("images", "upload-*.png")
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer tempFile.Close()
+
+	fileBytes, err := ioutil.ReadAll(file)
+	if err != nil {
+		fmt.Println(err)
+	}
+	tempFile.Write(fileBytes)
+
+	// Save to db
+	// Initialize bucket
+	bucket, err := gridfs.NewBucket(Images)
+	if err != nil {
+		log.Fatal(err)
+	}
+	uploadStream, err := bucket.OpenUploadStream(
+		handler.Filename,
+	)
+	defer uploadStream.Close()
+
+	_, err = uploadStream.Write(fileBytes)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Get the product values
+	data := c.Request.FormValue("data")
+	err = json.Unmarshal([]byte(data), &input)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	product := Product{
+		ID:                    primitive.NewObjectID(),
+		Name:                  input.Name,
+		Price:                 input.Price,
+		Description:           input.Description,
+		Category:              input.Category,
+		Image:                 handler.Filename,
+		Choices:               []Choice{},
+		Ingredients_Ids:       []string{},
+		Extra_Ingredients_Ids: []string{},
+	}
 	if input.Ingredients_Ids != nil {
 		product.Ingredients_Ids = input.Ingredients_Ids
 	}
@@ -55,7 +127,7 @@ func CreateProduct(c *gin.Context) {
 
 	product.Price = math.Round((product.Price * 100) / 100)
 	// product = product.AddChoices()
-	_, err := Products.InsertOne(context.Background(), product)
+	_, err = Products.InsertOne(context.Background(), product)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -75,11 +147,42 @@ func CreateProduct(c *gin.Context) {
 		}
 		log.Fatal(errs)
 	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Product  created successfully so did the category updated",
 		"data":    product,
 		"new_cat": cat,
 	})
+}
+
+func UpdateProduct(c *gin.Context) {
+	if c.Request.Method != "POST" {
+		fmt.Println("Only put here man.")
+		return
+	}
+	c.Header("Access-Control-Allow-Origin", "*")
+	var input Product
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "message": err})
+		return
+	}
+
+	// AUTH CHECK
+	tokenAuth, err := ExtractTokenMetadata(c.Request)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, "unauthorized")
+		return
+	}
+	_, err = FetchAuth(tokenAuth)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, "unauthorized")
+		return
+	}
+	// CHOICES TO UPDATE
+	// General (price, name, desc, etc...)
+	// GeneralUpdate()
+	// Image
+	// ImageUpdate()
 }
 
 func GetProducts(c *gin.Context) {
@@ -231,3 +334,20 @@ func (prod Product) AddChoices() Product {
 
 	return prod
 }
+
+// func (prod Product) GetFile() Product {
+// 	category_name := prod.Category
+
+// 	var prod_cat Product_Category
+
+// 	Products_Categories.FindOne(
+// 		context.Background(),
+// 		bson.M{"name": category_name},
+// 	).Decode(&prod_cat)
+
+// 	for _, choice := range prod_cat.Choices {
+// 		prod.Choices = append(prod.Choices, choice)
+// 	}
+
+// 	return prod
+// }

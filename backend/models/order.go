@@ -15,10 +15,11 @@ import (
 )
 
 type Order struct {
-	Products    []Product `json:"products"`
-	Product_Ids []string  `json:"product_ids"`
-	Accepted    bool      `json:"accepted"`
-	User_id     string    `json:"user_id"`
+	ID          primitive.ObjectID `bson:"_id" json:"id"`
+	Products    []Product          `json:"products"`
+	Product_Ids []string           `json:"product_ids"`
+	Accepted    bool               `json:"accepted"`
+	User_id     string             `json:"user_id"`
 
 	Pre_Discount_Price   float64    `json:"pre_discount_price"`
 	After_Discount_Price float64    `json:"after_discount_price"`
@@ -49,6 +50,7 @@ func CreateOrder(c *gin.Context) {
 	}
 
 	order := Order{
+		ID:            primitive.NewObjectID(),
 		Products:      []Product{},
 		Accepted:      false,
 		Payment_Type:  input.Payment_Type,
@@ -69,7 +71,7 @@ func CreateOrder(c *gin.Context) {
 	// Append Products
 	for _, prod_id := range input.Product_Ids {
 		var curr_prod Product
-
+		fmt.Println(prod_id)
 		id, errs := primitive.ObjectIDFromHex(prod_id)
 		if errs != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
@@ -118,7 +120,12 @@ func CreateOrder(c *gin.Context) {
 		})
 		return
 	}
-	//TODO  Append Order to User
+	// GET user from token?? TODO
+	Users.FindOne(context.Background(), bson.M{"_id": user_id}).Decode(&user)
+	// Remove orders, password
+	user.Password = ""
+	user.Orders = []Order{}
+	// Append Order to User
 	_, err := Users.UpdateOne(
 		context.Background(),
 		bson.M{"_id": user_id},

@@ -1,7 +1,10 @@
 import axios from "axios";
 import React, { Component } from "react";
 import { Button, Col, Form } from "react-bootstrap";
+import { connect } from "react-redux";
 import { headers } from "../../../../utils/axiosHeaders";
+import { login } from "../../../../actions/user";
+import PropTypes from "prop-types";
 
 class LoginForm extends Component {
   constructor(props) {
@@ -12,18 +15,23 @@ class LoginForm extends Component {
     };
     this.onSubmit = this.onSubmit.bind(this);
   }
+  static propTypes = {
+    login: PropTypes.func.isRequired,
+    isAuthenticated: PropTypes.bool,
+  };
+
   onSubmit(e) {
     e.preventDefault();
-    const credits = {
-      email: this.state.email,
-      password: this.state.password,
-    };
-    console.log(credits);
-
-    axios
-      .post("http://localhost:8080/user/login", credits, headers)
-      .then((res) => console.log(res))
-      .catch((err) => console.log(err));
+    // const credits = {
+    //   email: this.state.email,
+    //   password: this.state.password,
+    // };
+    // console.log(credits);
+    this.props.login(this.state.email, this.state.password);
+    // axios
+    //   .post("http://localhost:8080/user/login", credits, headers)
+    //   .then((res) => console.log(res))
+    //   .catch((err) => console.log(err));
   }
 
   onChange = (e) => {
@@ -61,4 +69,8 @@ class LoginForm extends Component {
   }
 }
 
-export default LoginForm;
+const mapStateToProps = (state) => ({
+  isAuthenticated: state.isAuthenticated,
+});
+
+export default connect(mapStateToProps, { login })(LoginForm);

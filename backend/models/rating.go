@@ -12,6 +12,8 @@ import (
 )
 
 type Rating struct {
+	ID primitive.ObjectID `bson:"_id" json:"id"`
+
 	Rate    int    `json:"rate"`
 	User_id string `json:"user_id"`
 }
@@ -29,6 +31,7 @@ func CreateRate(c *gin.Context) {
 	}
 
 	rating := Rating{
+		ID:      primitive.NewObjectID(),
 		Rate:    input.Rate,
 		User_id: input.User_id,
 	}

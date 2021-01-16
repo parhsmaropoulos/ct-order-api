@@ -14,11 +14,12 @@ import (
 
 type Comment struct {
 	// Comments []string `json:"comments"`
-	Text     string `json:"text"`
-	Answer   string `json:"answer"`
-	Approved bool   `json:"approved"`
-	User_id  string `json:"user_id"`
-	Order_id string `json:"order_id"`
+	ID       primitive.ObjectID `bson:"_id" json:"id"`
+	Text     string             `json:"text"`
+	Answer   string             `json:"answer"`
+	Approved bool               `json:"approved"`
+	User_id  string             `json:"user_id"`
+	Order_id string             `json:"order_id"`
 }
 
 func CreateComment(c *gin.Context) {
@@ -34,6 +35,7 @@ func CreateComment(c *gin.Context) {
 	}
 
 	comment := Comment{
+		ID:       primitive.NewObjectID(),
 		Text:     input.Text,
 		Answer:   "",
 		User_id:  input.User_id,

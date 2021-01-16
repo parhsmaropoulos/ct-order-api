@@ -14,6 +14,7 @@ import (
 )
 
 type Choice struct {
+	ID primitive.ObjectID `bson:"_id" json:"id"`
 	// Id          string `json:"id"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
@@ -37,6 +38,7 @@ func CreateProductChoice(c *gin.Context) {
 	}
 
 	choice := Choice{
+		ID:          primitive.NewObjectID(),
 		Name:        input.Name,
 		Description: input.Description,
 		Options:     input.Options,
