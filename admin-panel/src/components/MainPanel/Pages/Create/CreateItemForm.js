@@ -1,7 +1,10 @@
 import axios from "axios";
 import React, { Component } from "react";
 import { Form, Button } from "react-bootstrap";
+import { connect } from "react-redux";
 import { headers } from "../../../../utils/axiosHeaders";
+import PropTypes from "prop-types";
+import { create_product } from "../../../../actions/items";
 
 class CreateItemForm extends Component {
   constructor(props) {
@@ -11,11 +14,16 @@ class CreateItemForm extends Component {
       price: 0,
       category: "",
       description: "",
-      image: [],
+      image: null,
     };
     this.onChange = this.onChange.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
   }
+
+  static propTypes = {
+    isAuthenticated: PropTypes.bool.isRequired,
+    create_product: PropTypes.func.isRequired,
+  };
 
   onSubmit(event) {
     event.preventDefault();
@@ -25,23 +33,19 @@ class CreateItemForm extends Component {
       price: parseFloat(this.state.price),
       category: this.state.category,
     };
+    const image = this.state.image;
     console.log(item);
-    axios
-      .post("http://localhost:8080/products/create_product", item, headers)
-      .then((response) => console.log(response))
-      .catch((error) => console.log(error))
-      .then(
-        this.setState({
-          name: "",
-          price: 0,
-          category: "",
-          description: "",
-        })
-      );
+    this.props.create_product(item, image);
   }
 
   onChange = (e) => {
     this.setState({ [e.target.name]: e.target.value });
+  };
+  onFileChange = (e) => {
+    console.log(e.target.files[0]);
+    this.setState({
+      image: e.target.files[0],
+    });
   };
   render() {
     return (
@@ -54,7 +58,6 @@ class CreateItemForm extends Component {
             name="name"
             onChange={this.onChange}
           />
-          <Form.Text>Item Name</Form.Text>
         </Form.Group>
         <Form.Group controlId="description">
           <Form.Label>Item description</Form.Label>
@@ -64,7 +67,6 @@ class CreateItemForm extends Component {
             name="description"
             onChange={this.onChange}
           />
-          <Form.Text>Item description</Form.Text>
         </Form.Group>
         <Form.Group controlId="price">
           <Form.Label>Item price</Form.Label>
@@ -76,17 +78,26 @@ class CreateItemForm extends Component {
             name="price"
             onChange={this.onChange}
           />
-          <Form.Text>Item price</Form.Text>
         </Form.Group>
         <Form.Group controlId="category">
           <Form.Label>Category</Form.Label>
           <Form.Control as="select" name="category" onChange={this.onChange}>
-            {this.props.categories.map((category, index) => {
-              return <option key={index}>{category.name}</option>;
-            })}
-            <option key="2">None</option>
+            {this.props.categories.length > 0 ? (
+              this.props.categories.map((category, index) => {
+                return <option key={index}>{category.name}</option>;
+              })
+            ) : (
+              <option key="0">No categories yet</option>
+            )}
           </Form.Control>
-          <Form.Text>Category</Form.Text>
+        </Form.Group>
+        <Form.Group controlId="name">
+          <Form.File
+            id="custom-file"
+            label="Custom file input"
+            custom
+            onChange={this.onFileChange}
+          />
         </Form.Group>
         <Button variant="primary" type="submit">
           Submit
@@ -96,4 +107,7 @@ class CreateItemForm extends Component {
   }
 }
 
-export default CreateItemForm;
+const mapStateToProps = (state) => ({
+  isAuthenticated: state.userReducer.isAuthenticated,
+});
+export default connect(mapStateToProps, { create_product })(CreateItemForm);

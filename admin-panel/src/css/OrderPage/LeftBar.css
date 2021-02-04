@@ -1,0 +1,44 @@
+.leftSideBar {
+  background-color: rgb(191, 191, 196);
+  margin: auto;
+  width: 30%;
+  height: 100vh;
+  position: fixed;
+  /* margin-top: %; */
+}
+
+.Categorylist .row {
+  background-color: #dcdcdc;
+  width: 100%;
+  height: auto;
+  border: 1px solid black;
+  list-style-type: none;
+  margin: 0%;
+  margin-right: 3%;
+  display: flex;
+  flex-direction: row;
+  color: black;
+  justify-content: center;
+  align-items: center;
+  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
+    "Lucida Sans", Arial, sans-serif;
+}
+
+.Categorylist .row:hover {
+  cursor: pointer;
+  background-color: goldenrod;
+}
+
+.Categorylist .row #active {
+  background-color: goldenrod;
+}
+
+.Categorylist .row #button {
+  border: none;
+  background-color: transparent;
+}
+
+.Categorylist .row #button:active {
+  border: none;
+  background-color: transparent;
+}

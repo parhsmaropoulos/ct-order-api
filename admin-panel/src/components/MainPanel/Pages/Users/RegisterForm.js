@@ -1,7 +1,8 @@
-import axios from "axios";
 import React, { Component } from "react";
 import { Button, Col, Form } from "react-bootstrap";
-import { headers } from "../../../../utils/axiosHeaders";
+import PropTypes from "prop-types";
+import { register } from "../../../../actions/user";
+import { connect } from "react-redux";
 
 class RegisterForm extends Component {
   constructor(props) {
@@ -20,6 +21,11 @@ class RegisterForm extends Component {
     };
     this.onSubmit = this.onSubmit.bind(this);
   }
+
+  static propTypes = {
+    register: PropTypes.func.isRequired,
+    isAuthenticated: PropTypes.bool,
+  };
   onSubmit(e) {
     e.preventDefault();
     const user = {
@@ -34,11 +40,10 @@ class RegisterForm extends Component {
       bellname: this.state.bellname,
       details: this.state.details,
     };
-    console.log(user);
-
-    axios
-      .post("http://localhost:8080/user/create_profile", user, headers)
-      .then((res) => console.log(res));
+    this.props.register(user);
+    // axios
+    //   .post("http://localhost:8080/user/create_profile", user, headers)
+    //   .then((res) => console.log(res));
   }
 
   onChange = (e) => {
@@ -50,17 +55,19 @@ class RegisterForm extends Component {
         <h3>User Details</h3>
         <Form.Row>
           <Form.Group as={Col} controlId="formName">
-            <Form.Label>Name</Form.Label>
+            <Form.Label>Name *</Form.Label>
             <Form.Control
               type="text"
+              required
               placeholder="Enter Name"
               name="name"
               onChange={this.onChange}
             />
           </Form.Group>
           <Form.Group as={Col} controlId="formSurname">
-            <Form.Label>Surname</Form.Label>
+            <Form.Label>Surname *</Form.Label>
             <Form.Control
+              required
               type="text"
               placeholder="Enter Surame"
               name="surname"
@@ -70,8 +77,9 @@ class RegisterForm extends Component {
         </Form.Row>
         <Form.Row>
           <Form.Group as={Col} controlId="formEmail">
-            <Form.Label>Email</Form.Label>
+            <Form.Label>Email *</Form.Label>
             <Form.Control
+              required
               type="mail"
               placeholder="Enter Email"
               name="email"
@@ -79,7 +87,7 @@ class RegisterForm extends Component {
             />
           </Form.Group>
           <Form.Group as={Col} controlId="formUsername">
-            <Form.Label>Username</Form.Label>
+            <Form.Label>Username </Form.Label>
             <Form.Control
               type="text"
               placeholder="Enter Username"
@@ -88,8 +96,9 @@ class RegisterForm extends Component {
             />
           </Form.Group>
           <Form.Group as={Col} controlId="formPassword">
-            <Form.Label>Password</Form.Label>
+            <Form.Label>Password *</Form.Label>
             <Form.Control
+              required
               type="password"
               placeholder="Enter Password"
               name="password"
@@ -159,4 +168,8 @@ class RegisterForm extends Component {
   }
 }
 
-export default RegisterForm;
+const mapStateToProps = (state) => ({
+  isAuthenticated: state.isAuthenticated,
+});
+
+export default connect(mapStateToProps, { register })(RegisterForm);

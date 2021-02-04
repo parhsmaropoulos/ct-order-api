@@ -14,10 +14,10 @@ import (
 type Product_Category struct {
 	ID primitive.ObjectID `bson:"_id" json:"id"`
 	// Id                string       `json:"id"`
-	Name              string       `json:"name"`
-	Description       string       `json:"description"`
-	Image             []byte       `json:"image"`
-	Products          []Product    `json:"products"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Image       []byte `json:"image"`
+	// Products          []Product    `json:"products"`
 	Choices           []Choice     `json:"choices"`
 	Ingredients       []Ingredient `json:"ingredients"`
 	Extra_Ingredients []Ingredient `json:"extra_ingredients"`
@@ -36,11 +36,11 @@ func CreateProductCategory(c *gin.Context) {
 	}
 
 	prod_cat := Product_Category{
-		ID:                primitive.NewObjectID(),
-		Name:              input.Name,
-		Description:       input.Description,
-		Choices:           []Choice{},
-		Products:          []Product{},
+		ID:          primitive.NewObjectID(),
+		Name:        input.Name,
+		Description: input.Description,
+		Choices:     []Choice{},
+		// Products:          []Product{},
 		Ingredients:       []Ingredient{},
 		Extra_Ingredients: []Ingredient{},
 		Image:             []byte{}}

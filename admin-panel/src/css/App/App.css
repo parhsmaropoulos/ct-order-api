@@ -1,8 +1,9 @@
 .App {
-  width: 100vw;
+  /* width: 100vw; */
+  width: 100%;
   height: 100vh;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   flex-flow: flex-start;
   justify-content: flex-start;
   /* align-items: center; */
@@ -15,7 +16,13 @@ body {
 }
 
 .Panel {
-  flex-grow: 1;
-  padding-left: 2%;
-  /* background-color: rgb(118, 43, 43); */
+  flex: 1 0 auto;
+  min-height: 100%;
+  width: 100%;
+}
+
+.footer {
+  flex-shrink: 0;
+  bottom: 0;
+  position: absolute;
 }

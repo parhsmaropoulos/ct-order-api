@@ -1,7 +1,8 @@
-import axios from "axios";
 import React, { Component } from "react";
 import { Form, Button } from "react-bootstrap";
-import { headers } from "../../../../utils/axiosHeaders";
+import { connect } from "react-redux";
+import PropTypes from "prop-types";
+import { create_ingredient } from "../../../../actions/items";
 
 class CreateIngredientForm extends Component {
   constructor(props) {
@@ -14,7 +15,10 @@ class CreateIngredientForm extends Component {
     this.onSubmit = this.onSubmit.bind(this);
   }
 
-  componentDidMount() {}
+  static propTypes = {
+    isAuthenticated: PropTypes.bool.isRequired,
+    create_ingredient: PropTypes.func.isRequired,
+  };
 
   onSubmit(event) {
     event.preventDefault();
@@ -23,13 +27,7 @@ class CreateIngredientForm extends Component {
       price: parseFloat(this.state.price),
       description: this.state.description,
     };
-    axios
-      .post(
-        "http://localhost:8080/products/create_product_ingredient",
-        ingredient,
-        headers
-      )
-      .then((res) => console.log(res));
+    this.props.create_ingredient(ingredient);
   }
 
   onChange = (e) => {
@@ -39,7 +37,7 @@ class CreateIngredientForm extends Component {
     return (
       <Form onSubmit={this.onSubmit}>
         <Form.Group controlId="name">
-          <Form.Label>Ingredient Name</Form.Label>
+          <Form.Label>Ingredient Name *</Form.Label>
           <Form.Control
             type="text"
             placeholder="Enter name"
@@ -57,7 +55,7 @@ class CreateIngredientForm extends Component {
           />
         </Form.Group>
         <Form.Group controlId="price">
-          <Form.Label>Ingredient price</Form.Label>
+          <Form.Label>Ingredient price *</Form.Label>
           <Form.Control
             type="number"
             step="0.01"
@@ -75,4 +73,10 @@ class CreateIngredientForm extends Component {
   }
 }
 
-export default CreateIngredientForm;
+const mapStateToProps = (state) => ({
+  isAuthenticated: state.userReducer.isAuthenticated,
+});
+
+export default connect(mapStateToProps, { create_ingredient })(
+  CreateIngredientForm
+);

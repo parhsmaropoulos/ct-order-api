@@ -11,6 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -58,9 +59,16 @@ func CreateProfile(c *gin.Context) {
 		return
 	}
 
-	// Get value for each field { Base User }
-	// username := c.PostForm("username")
-	// email := c.PostForm("email")
+	// Check if email exist
+	var usr User
+	err_usr := Users.FindOne(context.Background(), bson.M{"email": input.Email}).Decode(&usr)
+	if err_usr != mongo.ErrNoDocuments {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Email already exists",
+		})
+		return
+	}
+
 	password := input.Password
 	// Encrypt password
 	bs, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.MinCost)
@@ -71,28 +79,6 @@ func CreateProfile(c *gin.Context) {
 		return
 	}
 	password = string(bs)
-	// // {User details}
-	// name := c.PostForm("name")
-	// surname := c.PostForm("surname")
-	// phone := c.PostForm("phone")
-	// var phone int64
-	// if ph, err := strconv.ParseInt(c.PostForm("phone"), 10, 64); err != nil {
-	// 	// not valid phone
-	// 	c.JSON(http.StatusInternalServerError, gin.H{
-	// 		"message": "Internal server error on phone read.",
-	// 		"error":   err,
-	// 	})
-	// 	return
-
-	// } else {
-	// 	phone = ph
-	// }
-
-	// { House details }
-	// address := c.PostForm("address")
-	// zipcode := c.PostForm("zipcode")
-	// bellname := c.PostForm("bellname")
-	// details := c.PostForm("details")
 	user := User{
 		ID:           primitive.NewObjectID(),
 		Username:     input.Username,
@@ -239,6 +225,7 @@ func Login(c *gin.Context) {
 		})
 		return
 	}
+	user.Password = ""
 
 	// Token
 	ts, err := CreateToken(user.ID, user)

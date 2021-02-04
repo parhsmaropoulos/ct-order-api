@@ -1,6 +1,8 @@
 import {
   LOGIN_SUCCESS,
   LOGOUT_SUCCESS,
+  REGISTER_FAIL,
+  REGISTER_SUCCESS,
   USER_LOADED,
   USER_LOADING,
 } from "../actions/actions";
@@ -38,7 +40,27 @@ const userReducer = (state = defaultState, action) => {
         isLoading: false,
         user: action.user,
       };
+    case REGISTER_SUCCESS:
+      localStorage.setItem("token", action.payload.token);
+      // localStorage.setItem("isAuthenticated", true);
+      // localStorage.setItem("isLoading",false);
+      return {
+        ...state,
+        ...action.payload,
+        isAuthenticated: true,
+        isLoading: false,
+        user: action.user,
+      };
     case LOGOUT_SUCCESS:
+      localStorage.removeItem("token");
+      return {
+        ...state,
+        token: null,
+        user: null,
+        isAuthenticated: false,
+        isLoading: false,
+      };
+    case REGISTER_FAIL:
       localStorage.removeItem("token");
       return {
         ...state,

@@ -1,8 +1,6 @@
-import axios from "axios";
 import React, { Component } from "react";
 import { Button, Col, Form } from "react-bootstrap";
 import { connect } from "react-redux";
-import { headers } from "../../../../utils/axiosHeaders";
 import { login } from "../../../../actions/user";
 import PropTypes from "prop-types";
 
@@ -45,8 +43,9 @@ class LoginForm extends Component {
           <Form.Group as={Col} controlId="formEmail">
             <Form.Label>Email</Form.Label>
             <Form.Control
-              type="text"
+              type="email"
               placeholder="Enter Email"
+              required
               name="email"
               onChange={this.onChange}
             />
@@ -55,6 +54,7 @@ class LoginForm extends Component {
             <Form.Label>Password</Form.Label>
             <Form.Control
               type="password"
+              required
               placeholder="Enter Password"
               name="password"
               onChange={this.onChange}

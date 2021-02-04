@@ -1,0 +1,14 @@
+.orderMenuContainer {
+  background-color: rgb(111, 34, 56);
+  display: flex;
+  /* width: 100vh; */
+  /* flex-direction: row;
+  flex-wrap: wrap; */
+  flex-flow: row wrap;
+  text-align: center;
+  flex-flow: flex-start;
+  justify-content: flex-start;
+  /* height: 1000px; */
+  /* justify-content: center;
+  align-content: flex-start; */
+}

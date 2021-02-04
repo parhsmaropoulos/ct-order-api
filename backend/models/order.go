@@ -27,6 +27,7 @@ type Order struct {
 	Discounts            []Discount `json:"discounts"`
 	Discounts_ids        []string   `json:"discounts_ids"`
 	Tips                 float64    `json:"tips"`
+	Comments             string     `json:"comments"`
 
 	Comment Comment `json:"comment"`
 	Rating  Rating  `json:"rating"`
@@ -58,8 +59,9 @@ func CreateOrder(c *gin.Context) {
 		Discounts:     []Discount{},
 		Tips:          input.Tips,
 		Created_at:    time.Now(),
-		Comment:       Comment{},
-		Rating:        Rating{},
+		Comments:      input.Comments,
+		Comment:       Comment{ID: primitive.NewObjectID()},
+		Rating:        Rating{ID: primitive.NewObjectID()},
 		User_id:       input.User_id,
 		Canceled:      false,
 		Completed:     false,

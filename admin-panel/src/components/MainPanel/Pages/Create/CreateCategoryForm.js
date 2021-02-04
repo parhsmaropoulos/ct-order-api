@@ -5,6 +5,9 @@ import { headers } from "../../../../utils/axiosHeaders";
 import { PlusCircle } from "react-bootstrap-icons";
 import ChoiceList from "./Choices";
 import CreateChoiceForm from "./CreateChoiceForm";
+import { connect } from "react-redux";
+import { create_category } from "../../../../actions/items";
+import PropTypes from "prop-types";
 
 class CreateCategoryForm extends Component {
   constructor(props) {
@@ -25,6 +28,11 @@ class CreateCategoryForm extends Component {
     // this.addChoice = this.addChoice.bind(this);
   }
 
+  static propTypes = {
+    isAuthenticated: PropTypes.bool.isRequired,
+    create_category: PropTypes.func.isRequired,
+  };
+
   onSubmit(event) {
     event.preventDefault();
     const category = {
@@ -33,32 +41,38 @@ class CreateCategoryForm extends Component {
       choices: this.state.choices,
     };
     console.log(category);
-    axios
-      .post(
-        "http://localhost:8080/product_category/create_product_category",
-        category,
-        headers
-      )
-      .then((response) => console.log(response))
-      .catch((error) => console.log(error))
-      .then(
-        this.setState({
-          name: "",
-          description: "",
-          choices: [
-            {
-              name: "",
-              description: "",
-              options: [
-                {
-                  name: "",
-                  price: 0,
-                },
-              ],
-            },
-          ],
-        })
-      );
+    this.props.create_category(category);
+    this.setState({
+      name: "",
+      description: "",
+      choices: [],
+    });
+    // axios
+    //   .post(
+    //     "http://localhost:8080/product_category/create_product_category",
+    //     category,
+    //     headers
+    //   )
+    //   .then((response) => console.log(response))
+    //   .catch((error) => console.log(error))
+    //   .then(
+    //     this.setState({
+    //       name: "",
+    //       description: "",
+    //       choices: [
+    //         {
+    //           name: "",
+    //           description: "",
+    //           options: [
+    //             {
+    //               name: "",
+    //               price: 0,
+    //             },
+    //           ],
+    //         },
+    //       ],
+    //     })
+    //   );
   }
 
   addChoice = () => {
@@ -106,11 +120,12 @@ class CreateCategoryForm extends Component {
     return (
       <Form onSubmit={this.onSubmit}>
         <Form.Group controlId="name">
-          <Form.Label>Category Name</Form.Label>
+          <Form.Label>Category Name *</Form.Label>
           <Form.Control
             type="text"
             placeholder="Enter name"
             name="name"
+            required
             onChange={this.onChange}
           />
         </Form.Group>
@@ -134,13 +149,14 @@ class CreateCategoryForm extends Component {
         {/* CREATE CHOICE */}
         <Form>
           <Form.Group>
-            <Form.Label>Choice Name</Form.Label>
+            <Form.Label>Choice Name *</Form.Label>
             <Form.Control
               name="choiceName"
               type="text"
               id="choicename"
               onChange={this.onChange}
               placeholder="Enter name"
+              required
             ></Form.Control>
           </Form.Group>
           <Form.Group>
@@ -151,6 +167,7 @@ class CreateCategoryForm extends Component {
               type="text"
               id="choicedescription"
               placeholder="Enter description"
+              required
             ></Form.Control>
           </Form.Group>
           <Form.Label>Choice Options</Form.Label>
@@ -182,7 +199,7 @@ class CreateCategoryForm extends Component {
         {/* MODAL FOR OPTIONS */}
         <Modal show={this.state.show} onHide={this.handleClose}>
           <Modal.Header closeButton>
-            <Modal.Title>Option Values</Modal.Title>
+            <Modal.Title>Option Values *</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Form.Row>
@@ -190,6 +207,7 @@ class CreateCategoryForm extends Component {
                 <Form.Label>Value</Form.Label>
                 <Form.Control
                   id="optionName"
+                  required
                   name="optionName"
                   type="text"
                   placeholer="enter name"
@@ -197,9 +215,10 @@ class CreateCategoryForm extends Component {
                 ></Form.Control>
               </Form.Group>
               <Form.Group as={Col} md={6}>
-                <Form.Label>Price</Form.Label>
+                <Form.Label>Price *</Form.Label>
                 <Form.Control
                   id="optionPrice"
+                  required
                   name="optionPrice"
                   type="number"
                   step="0.01"
@@ -231,4 +250,11 @@ class CreateCategoryForm extends Component {
   }
 }
 
-export default CreateCategoryForm;
+const mapStateToProps = (state) => ({
+  isAuthenticated: state.userReducer.isAuthenticated,
+  // categories: state.productReducer.categories,
+});
+
+export default connect(mapStateToProps, { create_category })(
+  CreateCategoryForm
+);

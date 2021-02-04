@@ -13,23 +13,23 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/gridfs"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type Product struct {
-	ID                    primitive.ObjectID `bson:"_id" json:"id"`
-	Name                  string             `json:"name"`
-	Description           string             `json:"description"`
-	Price                 float64            `json:"price"`
-	Category              string             `json:"category"`
-	Image                 string             `json:"image"`
-	Choices               []Choice           `json:"choices"`
-	Ingredients_Ids       []string           `json:"Ingrdients"`
-	Extra_Ingredients_Ids []string           `json:"Extra_Ingredients"`
-	Available             bool               `json:"available"`
-	Quantity              int8               `json:"quantity"`
+	ID          primitive.ObjectID `bson:"_id" json:"id"`
+	Name        string             `json:"name"`
+	Description string             `json:"description"`
+	Price       float64            `json:"price"`
+	Category    string             `json:"category"`
+	Image       string             `json:"image"`
+	// Choices               []Choice           `json:"choices"`
+	// Ingredients_Ids       []string           `json:"Ingrdients"`
+	// Extra_Ingredients_Ids []string           `json:"Extra_Ingredients"`
+	Available bool `json:"available"`
+	Visible   bool `json:"visible"`
+	Quantity  int8 `json:"quantity"`
 }
 
 func CreateProduct(c *gin.Context) {
@@ -49,16 +49,16 @@ func CreateProduct(c *gin.Context) {
 	// }
 
 	// AUTH CHECK
-	tokenAuth, err := ExtractTokenMetadata(c.Request)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, "unauthorized")
-		return
-	}
-	_, err = FetchAuth(tokenAuth)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, "unauthorized")
-		return
-	}
+	// tokenAuth, err := ExtractTokenMetadata(c.Request)
+	// if err != nil {
+	// 	c.JSON(http.StatusUnauthorized, "unauthorized")
+	// 	return
+	// }
+	// _, err = FetchAuth(tokenAuth)
+	// if err != nil {
+	// 	c.JSON(http.StatusUnauthorized, "unauthorized")
+	// 	return
+	// }
 
 	// Parse input
 	c.Request.ParseMultipartForm(10 << 20)
@@ -108,22 +108,22 @@ func CreateProduct(c *gin.Context) {
 	}
 
 	product := Product{
-		ID:                    primitive.NewObjectID(),
-		Name:                  input.Name,
-		Price:                 input.Price,
-		Description:           input.Description,
-		Category:              input.Category,
-		Image:                 handler.Filename,
-		Choices:               []Choice{},
-		Ingredients_Ids:       []string{},
-		Extra_Ingredients_Ids: []string{},
+		ID:          primitive.NewObjectID(),
+		Name:        input.Name,
+		Price:       input.Price,
+		Description: input.Description,
+		Category:    input.Category,
+		Image:       handler.Filename,
+		// Choices:               []Choice{},
+		// Ingredients_Ids:       []string{},
+		// Extra_Ingredients_Ids: []string{},
 	}
-	if input.Ingredients_Ids != nil {
-		product.Ingredients_Ids = input.Ingredients_Ids
-	}
-	if input.Extra_Ingredients_Ids != nil {
-		product.Extra_Ingredients_Ids = input.Extra_Ingredients_Ids
-	}
+	// if input.Ingredients_Ids != nil {
+	// 	product.Ingredients_Ids = input.Ingredients_Ids
+	// }
+	// if input.Extra_Ingredients_Ids != nil {
+	// 	product.Extra_Ingredients_Ids = input.Extra_Ingredients_Ids
+	// }
 
 	product.Price = math.Round((product.Price * 100) / 100)
 	// product = product.AddChoices()
@@ -133,56 +133,73 @@ func CreateProduct(c *gin.Context) {
 	}
 	// Append product to proper category.
 	// old_category := Products_Categories.FindOneAndUpdate(
-	cat, errs := Products_Categories.UpdateOne(
-		context.Background(),
-		bson.M{"name": input.Category},
-		bson.M{"$push": bson.M{"products": product}},
-		options.Update(),
-	)
+	// cat, errs := Products_Categories.UpdateOne(
+	// 	context.Background(),
+	// 	bson.M{"name": input.Category},
+	// 	bson.M{"$push": bson.M{"products": product}},
+	// 	options.Update(),
+	// )
 
-	if errs != nil {
-		// ErrNoDocuments means that the filter did not match any documents in the collection
-		if errs == mongo.ErrNoDocuments {
-			return
-		}
-		log.Fatal(errs)
-	}
+	// if errs != nil {
+	// 	// ErrNoDocuments means that the filter did not match any documents in the collection
+	// 	if errs == mongo.ErrNoDocuments {
+	// 		return
+	// 	}
+	// 	log.Fatal(errs)
+	// }
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Product  created successfully so did the category updated",
 		"data":    product,
-		"new_cat": cat,
 	})
 }
 
 func UpdateProduct(c *gin.Context) {
-	if c.Request.Method != "POST" {
+	if c.Request.Method != "PUT" {
 		fmt.Println("Only put here man.")
 		return
 	}
-	c.Header("Access-Control-Allow-Origin", "*")
-	var input Product
+	var input struct {
+		ID      string  `json:"id"`
+		Product Product `json:"product"`
+		Reason  string  `json:"reason"`
+	}
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "message": err})
 		return
 	}
 
+	product := input.Product
+	fmt.Println(input.Reason)
 	// AUTH CHECK
-	tokenAuth, err := ExtractTokenMetadata(c.Request)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, "unauthorized")
+	// tokenAuth, err := ExtractTokenMetadata(c.Request)
+	// if err != nil {
+	// 	c.JSON(http.StatusUnauthorized, "unauthorized")
+	// 	return
+	// }
+	// _, err = FetchAuth(tokenAuth)
+	// if err != nil {
+	// 	c.JSON(http.StatusUnauthorized, "unauthorized")
+	// 	return
+	// }
+	var err error
+	switch input.Reason {
+	case "change_availability":
+		err = product.ChangeAvailability(input.ID, !(product.Available))
+	case "update_product":
+		err = product.UpdateProductValue(input.ID)
+	default:
 		return
 	}
-	_, err = FetchAuth(tokenAuth)
+
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, "unauthorized")
-		return
+		log.Fatal(err)
 	}
-	// CHOICES TO UPDATE
-	// General (price, name, desc, etc...)
-	// GeneralUpdate()
-	// Image
-	// ImageUpdate()
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Product  updated successfully",
+		"data":    product,
+	})
 }
 
 func GetProducts(c *gin.Context) {
@@ -318,36 +335,51 @@ func (prod Product) AddIngredient(id string, ingredient Ingredient) bool {
 	return true
 }
 
-func (prod Product) AddChoices() Product {
-	category_name := prod.Category
+func (prod Product) ChangeAvailability(id string, av bool) error {
+	id_hex, errs := primitive.ObjectIDFromHex(id)
+	if errs != nil {
+		return errs
+	}
+	fmt.Println("here")
+	fmt.Println(av)
 
-	var prod_cat Product_Category
-
-	Products_Categories.FindOne(
+	_, err := Products.UpdateOne(
 		context.Background(),
-		bson.M{"name": category_name},
-	).Decode(&prod_cat)
-
-	for _, choice := range prod_cat.Choices {
-		prod.Choices = append(prod.Choices, choice)
+		bson.M{"_id": id_hex},
+		bson.M{
+			"$set": bson.M{
+				"available": av,
+			},
+		},
+		options.Update(),
+	)
+	if err != nil {
+		return err
 	}
 
-	return prod
+	return nil
 }
 
-// func (prod Product) GetFile() Product {
-// 	category_name := prod.Category
+func (prod Product) UpdateProductValue(id string) error {
+	id_hex, errs := primitive.ObjectIDFromHex(id)
+	if errs != nil {
+		return errs
+	}
 
-// 	var prod_cat Product_Category
+	_, err := Products.UpdateOne(
+		context.Background(),
+		bson.M{"_id": id_hex},
+		bson.M{"$set": bson.M{
+			"name":        prod.Name,
+			"description": prod.Description,
+			"price":       prod.Price,
+			"category":    prod.Category,
+		}},
+		options.Update(),
+	)
+	if err != nil {
+		return err
+	}
 
-// 	Products_Categories.FindOne(
-// 		context.Background(),
-// 		bson.M{"name": category_name},
-// 	).Decode(&prod_cat)
-
-// 	for _, choice := range prod_cat.Choices {
-// 		prod.Choices = append(prod.Choices, choice)
-// 	}
-
-// 	return prod
-// }
+	return nil
+}
