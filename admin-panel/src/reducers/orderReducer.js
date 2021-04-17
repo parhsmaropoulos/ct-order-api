@@ -3,11 +3,13 @@ import {
   ORDER_DECLINED,
   ORDER_ACCEPTED,
   ADD_ITEM,
+  UPDATE_ORDER,
+  UPDATE_CART,
+  EMPTY_CART,
 } from "../actions/actions";
 
 const defaultState = {
   order: {},
-  // product_ids: [],
   sent: false,
   pending: false,
   accepted: false,
@@ -41,6 +43,25 @@ const orderReducer = (state = defaultState, action) => {
         ...state,
         products: [...state.products, action.product],
         totalPrice: state.totalPrice + action.product.price,
+      };
+    case UPDATE_CART:
+      return {
+        ...state,
+        products: action.new_order,
+        totalPrice: action.total_price,
+      };
+    case UPDATE_ORDER:
+      return {
+        ...state,
+      };
+    case EMPTY_CART:
+      return {
+        order: {},
+        sent: false,
+        pending: false,
+        accepted: false,
+        products: [],
+        totalPrice: 0,
       };
     default:
       return state;

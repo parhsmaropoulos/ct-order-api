@@ -1,12 +1,11 @@
 import React, { Component } from "react";
-import propTypes from "prop-types";
 import { connect } from "react-redux";
 import "../../../../../css/OrderPage/TopBar.css";
 import { Button, Form, FormControl, Navbar } from "react-bootstrap";
 class TopBar extends Component {
   render() {
     return (
-      <div class="topBar">
+      <div className="topBar">
         <Navbar bg="dark" variant="dark" sticky="top">
           <Navbar.Brand href="/">Home/Logo</Navbar.Brand>
           <Form inline>

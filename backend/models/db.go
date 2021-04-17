@@ -44,6 +44,9 @@ var Ingredients *mongo.Collection
 // // Images is the pointer to the db collection of Image files {GridFS}
 var Images *mongo.Database
 
+// Subscribes is the pointer to the subscribes db.
+var Subscribes *mongo.Collection
+
 // Redis_client is the pointer to the redis db.
 var Redis_client *redis.Client
 
@@ -71,6 +74,7 @@ func Init() {
 	}
 
 	Users = Client.Database("CoffeeTwist").Collection("Users")
+	Subscribes = Client.Database("CoffeeTwist").Collection("Subscribes")
 
 	Orders = Client.Database("CoffeeTwist").Collection("Orders")
 	Comments = Client.Database("CoffeeTwist").Collection("Comments")

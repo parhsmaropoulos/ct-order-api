@@ -11,7 +11,7 @@ class RightBar extends Component {
     console.log(this.props);
   }
   render() {
-    return <div class="rightBar">Right Bar</div>;
+    return <div className="rightBar">Right Bar</div>;
   }
 }
 

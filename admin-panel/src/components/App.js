@@ -1,11 +1,15 @@
 import React, { Component } from "react";
-import SideNavBar from "./SideNavBar/SideNavBar";
 // CSS
 import "../css/App/App.css";
 import "../css/Panel/Sidebar.css";
 
 // Routing
-import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
+import {
+  Route,
+  BrowserRouter as Router,
+  Switch,
+  Redirect,
+} from "react-router-dom";
 
 // Pages
 import UsersPage from "./MainPanel/Pages/Users/UsersPage";
@@ -14,29 +18,36 @@ import CreatePage from "./MainPanel/Pages/Create/CreatePage";
 import OrdersPage from "./MainPanel/Pages/Orders/OrdersPage";
 import ItemsPage from "./MainPanel/Pages/Items/ItemsPage";
 import HomePage from "./MainPanel/Pages/Home/HomePage";
-import RegisterPage from "./MainPanel/Pages/Users/RegisterPage";
-import LoginPage from "./MainPanel/Pages/Users/LoginPage";
 import AllUsersPage from "./MainPanel/Pages/Users/AllUsersPage";
+import OrderMainPage from "./MainPanel/Pages/Orders/OrderMainPage";
+import MainPage from "./MainPanel/Pages/Users/ProfilePages/MainPage";
+import SingleItemPage from "./MainPanel/Pages/Items/SingleItemPage";
+import PreCompleteOrderPage from "./MainPanel/Pages/Orders/PreCompleteOrderPage";
 
 // Layout
 import Header from "./Layout/Header";
+import Footer from "./Layout/Footer";
+import LogRegModal from "./Layout/LogRegModal";
 
 // Socket.io
 // import { connectSocket, socket } from "../socket";
 
 // redux
-// import store from "../store";
 
 // Error/Alerts
 import { Provider as AlertProvider } from "react-alert";
 import AlertTemplate from "react-alert-template-basic";
-import { Alerts } from "./MainPanel/Pages/Alert/Alerts";
-import SingleItemPage from "./MainPanel/Pages/Items/SingleItemPage";
-import { Button, Container, Form } from "react-bootstrap";
-import OrderMenuPage from "./MainPanel/Pages/Orders/OrderMenuPage";
-import Footer from "./Layout/Footer";
-import LogRegModal from "./Layout/LogRegModal";
-import OrderMainPage from "./MainPanel/Pages/Orders/OrderMainPage";
+
+import { Container } from "react-bootstrap";
+import UserOrders from "./MainPanel/Pages/Users/ProfilePages/UserOrders";
+import UserAddress from "./MainPanel/Pages/Users/ProfilePages/UserAddress";
+import UserRatings from "./MainPanel/Pages/Users/ProfilePages/UserRatings";
+import AdminMainPage from "./MainPanel/Pages/AdminPanel/AdminMainPage";
+import SingleIngredientPage from "./MainPanel/Pages/Items/SingleIngredientPage";
+import PrivateRoute from "./MainPanel/Pages/Home/PrivateRoute";
+import SuccessSnackbar from "./Layout/SnackBars/SuccessSnackbar";
+import InfoSnackbar from "./Layout/SnackBars/InfoSnackbar";
+import ErrorSnackbar from "./Layout/SnackBars/ErrorSnackbar";
 
 const alertOptions = {
   timeout: 3000,
@@ -63,23 +74,7 @@ class App extends Component {
     });
   };
 
-  componentDidMount() {
-    // connectSocket((message) => {
-    //   console.log(message);
-    // });
-    // console.log(this.sideNavBar.current);
-    // this.setState({ sideNavBarWidht: this.sideNavBar.current.offsetWidth });
-  }
-
-  // sendMessage(e) {
-  //   e.preventDefault();
-  //   console.log("here");
-  //   const msg = this.state.message;
-  //   socket.emit("chat", msg);
-  //   connectSocket((msg) => {
-  //     socket.emit("chat", msg);
-  //   });
-  // }
+  componentDidMount() {}
   onChange = (e) => {
     this.setState({ [e.target.name]: e.target.value });
   };
@@ -87,27 +82,59 @@ class App extends Component {
   render() {
     return (
       <div className="App">
+        <SuccessSnackbar />
+        <InfoSnackbar />
+        <ErrorSnackbar />
         <AlertProvider template={AlertTemplate} {...alertOptions}>
           <Router>
             <Header onClose={this.showModal} />
             <LogRegModal onClose={this.showModal} show={this.state.showModal} />
-
-            {/* <SideNavBar ref={this.sideNavBar} /> */}
-            <Switch>
-              <Container fluid id="Panel">
-                <Alerts />
+            {/* <AlertsOverlay /> */}
+            <Container fluid id="Panel">
+              <Switch>
+                {/* PUBLIC ROUTES */}
                 <Route path="/home" component={HomePage} />
+                <Route exact path="/">
+                  <Redirect to="/home" />
+                </Route>
+                <Route path="/admin" component={AdminMainPage} />
                 <Route path="/orders" component={OrdersPage} />
                 <Route path="/users" component={UsersPage} />
                 <Route path="/items" component={ItemsPage} />
                 <Route path="/single_item" component={SingleItemPage} />
-                <Route path="/stats" component={StatsPage} />
-                <Route path="/create_item" component={CreatePage} />
-                <Route path="/all_users" component={AllUsersPage} />
+                <Route
+                  path="/single_ingredient"
+                  component={SingleIngredientPage}
+                />
+                <Route exact path="/order" component={OrderMainPage} />
+
+                {/* PRIVATE ROUTES */}
+                <PrivateRoute path="/stats" component={StatsPage} />
+                <PrivateRoute path="/create_item" component={CreatePage} />
+                <PrivateRoute path="/all_users" component={AllUsersPage} />
+                <PrivateRoute
+                  path="/pre_complete"
+                  component={PreCompleteOrderPage}
+                />
                 {/* <Route path="/order_menu" component={OrderMenuPage} /> */}
-                <Route path="/order" component={OrderMainPage} />
-              </Container>
-            </Switch>
+                <PrivateRoute exact path="/account" component={MainPage} />
+                <PrivateRoute
+                  exact
+                  path="/account/orders"
+                  component={UserOrders}
+                />
+                <PrivateRoute
+                  exact
+                  path="/account/addresses"
+                  component={UserAddress}
+                />
+                <PrivateRoute
+                  exact
+                  path="/account/ratings"
+                  component={UserRatings}
+                />
+              </Switch>
+            </Container>
             <Footer className="footer" />
           </Router>
         </AlertProvider>

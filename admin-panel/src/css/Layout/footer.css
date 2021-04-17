@@ -2,6 +2,7 @@
   padding-left: 0;
   padding-right: 0;
   flex-shrink: 0;
+  min-height: 15vh;
   /* height: relat; */
   width: 100%;
   margin-top: 50px;
@@ -9,10 +10,16 @@
   /* position: relative; */
 }
 
+.socialIcon {
+  height: 25;
+  width: 25;
+}
+
 .footerLogo {
   background-color: aqua;
   justify-content: center;
   text-align: center;
+  max-height: 80px;
 }
 
 .logoCol {
@@ -56,6 +63,14 @@
 
 .newsLetter {
   flex: 1;
-  flex-direction: row;
-  flex-wrap: nowrap;
+  flex-direction: column;
+}
+
+.newsLetterTitle {
+  text-align: center;
+}
+
+.newsLetterInput {
+  text-align: center;
+  justify-content: center;
 }

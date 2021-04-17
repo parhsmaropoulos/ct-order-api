@@ -1,26 +1,28 @@
 package models
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
+	"image"
+	"image/png"
+	"io/ioutil"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/nfnt/resize"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type Product_Category struct {
-	ID primitive.ObjectID `bson:"_id" json:"id"`
-	// Id                string       `json:"id"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Image       []byte `json:"image"`
-	// Products          []Product    `json:"products"`
-	Choices           []Choice     `json:"choices"`
-	Ingredients       []Ingredient `json:"ingredients"`
-	Extra_Ingredients []Ingredient `json:"extra_ingredients"`
+	ID          primitive.ObjectID `bson:"_id" json:"id"`
+	Name        string             `json:"name"`
+	Description string             `json:"description"`
+	Image       string             `json:"image"`
 }
 
 func CreateProductCategory(c *gin.Context) {
@@ -30,28 +32,58 @@ func CreateProductCategory(c *gin.Context) {
 	}
 
 	var input Product_Category
-	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+	var imageName string = ""
+
+	c.Request.ParseMultipartForm(10 << 20)
+
+	if len(c.Request.MultipartForm.File) != 0 {
+
+		// Retrieve file
+
+		file, handler, err := c.Request.FormFile("file")
+		// c.SaveUploadedFile(file, "saved/"+file.Filename)
+		fmt.Println("Got Here")
+		if err != nil {
+			log.Fatal(err)
+		}
+		filename := fmt.Sprintf("%s-*.png", strings.Split(handler.Filename, ".")[0])
+		// Write temporary file
+		tempFile, err := ioutil.TempFile("assets/images", filename)
+		if err != nil {
+			fmt.Println(err)
+		}
+		defer tempFile.Close()
+		imageName = strings.Split(tempFile.Name(), "\\")[2]
+		fileBytes, err := ioutil.ReadAll(file)
+		if err != nil {
+			fmt.Println(err)
+		}
+		img, _, _ := image.Decode(bytes.NewReader(fileBytes))
+		// img, err_img := jpeg.Decode(file)
+		// if err_img != nil {
+		// 	log.Fatal(err_img)
+		// }
+		// jpeg.Encode(tempFile, resized, nil)
+
+		resized := resize.Thumbnail(100, 100, img, resize.NearestNeighbor)
+		errs := png.Encode(tempFile, resized)
+		if errs != nil {
+			log.Fatal(errs)
+		}
+	}
+
+	data := c.Request.FormValue("data")
+	err := json.Unmarshal([]byte(data), &input)
+
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	prod_cat := Product_Category{
 		ID:          primitive.NewObjectID(),
 		Name:        input.Name,
 		Description: input.Description,
-		Choices:     []Choice{},
-		// Products:          []Product{},
-		Ingredients:       []Ingredient{},
-		Extra_Ingredients: []Ingredient{},
-		Image:             []byte{}}
-
-	if len(input.Choices) > 0 {
-		// prod_cat.Choices = input.Choices
-		for _, choice := range input.Choices {
-			new_choice := Choice{Name: choice.Name, Description: choice.Description, Options: choice.Options, For_Classes: []string{}}
-			prod_cat.Choices = append(prod_cat.Choices, new_choice)
-		}
-	}
+		Image:       imageName}
 
 	Products_Categories.InsertOne(context.Background(), prod_cat)
 

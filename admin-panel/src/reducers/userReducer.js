@@ -1,17 +1,24 @@
 import {
+  GET_USER,
   LOGIN_SUCCESS,
   LOGOUT_SUCCESS,
   REGISTER_FAIL,
   REGISTER_SUCCESS,
+  UPDATE_USER,
   USER_LOADED,
   USER_LOADING,
+  LOGIN_FAIL,
+  SUBSCRIBE_USER,
+  UNSUBSCRIBE_USER,
 } from "../actions/actions";
 
 const defaultState = {
   token: localStorage.getItem("token"),
   isAuthenticated: false,
   isLoading: false,
+  hasLoaded: false,
   user: null,
+  error: "",
   users: [],
 };
 
@@ -21,6 +28,28 @@ const userReducer = (state = defaultState, action) => {
       return {
         ...state,
         isLoading: true,
+        error: "",
+      };
+    case SUBSCRIBE_USER:
+      return {
+        ...state,
+      };
+    case UNSUBSCRIBE_USER:
+      return {
+        ...state,
+      };
+    case UPDATE_USER:
+      return {
+        ...state,
+        hasLoaded: false,
+        error: "",
+      };
+    case GET_USER:
+      return {
+        ...state,
+        user: action.payload.user,
+        hasLoaded: true,
+        error: "",
       };
     case USER_LOADED:
       localStorage.setItem("isLoading", false);
@@ -32,13 +61,21 @@ const userReducer = (state = defaultState, action) => {
       };
     case LOGIN_SUCCESS:
       localStorage.setItem("token", action.token);
-      console.log(action);
+      // console.log(action);
       return {
         ...state,
         ...action.payload,
         isAuthenticated: true,
         isLoading: false,
         user: action.user,
+        error: "",
+      };
+    case LOGIN_FAIL:
+      // console.log(action);
+      return {
+        ...state,
+        isLoading: false,
+        error: action.error,
       };
     case REGISTER_SUCCESS:
       localStorage.setItem("token", action.payload.token);
@@ -57,6 +94,8 @@ const userReducer = (state = defaultState, action) => {
         ...state,
         token: null,
         user: null,
+        error: "",
+        hasLoaded: false,
         isAuthenticated: false,
         isLoading: false,
       };
@@ -66,9 +105,12 @@ const userReducer = (state = defaultState, action) => {
         ...state,
         token: null,
         user: null,
+        error: "",
+        hasLoaded: false,
         isAuthenticated: false,
         isLoading: false,
       };
+
     default:
       return state;
   }

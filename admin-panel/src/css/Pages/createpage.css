@@ -1,0 +1,12 @@
+.modal-div {
+  border: 1px solid white;
+  margin-top: 20%;
+  height: 40%;
+  width: 20%;
+  min-width: 200px;
+  background-color: white;
+}
+
+.modal-container {
+  justify-content: center;
+}

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import Table from "react-bootstrap/Table";
 import "../../../../css/Panel/ItemsPage.css";
-import { Button, Form } from "react-bootstrap";
+import { Form } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
@@ -23,9 +23,12 @@ class ItemsComponent extends Component {
   static propTypes = {
     send_order: PropTypes.func.isRequired,
     update_item: PropTypes.func.isRequired,
+    products: PropTypes.array.isRequired,
+    categories: PropTypes.array.isRequired,
+    ingredients: PropTypes.array.isRequired,
     // user_id: PropTypes.string.isRequired,
-    order_accepted: PropTypes.bool.isRequired,
-    order_declined: PropTypes.bool.isRequired,
+    // order_accepted: PropTypes.bool.isRequired,
+    // order_declined: PropTypes.bool.isRequired,
   };
 
   componentDidMount() {
@@ -43,24 +46,23 @@ class ItemsComponent extends Component {
           <ul className="Categorylist">
             {this.props.categories.map((category, key) => {
               return (
-                <li key={key} className="row">
+                <li
+                  key={key}
+                  className="row"
+                  onClick={() => this.changeCategory(category.name)}
+                >
                   {" "}
-                  <div
-                    id="button"
-                    name="selectedCategory"
-                    onClick={() => this.changeCategory(category.name)}
-                  >
+                  <div id="button" name="selectedCategory">
                     {category.name}
                   </div>
                 </li>
               );
             })}
-            <li className="row">
-              <div
-                id="button"
-                name="selectedCategory"
-                onClick={() => this.changeCategory("ingredients")}
-              >
+            <li
+              className="row"
+              onClick={() => this.changeCategory("ingredients")}
+            >
+              <div id="button" name="selectedCategory">
                 Ingredients
               </div>
             </li>
@@ -84,25 +86,27 @@ class ItemsComponent extends Component {
                       <td>{ingredient.name}</td>
                       <td>{ingredient.price}</td>
                       <td>{ingredient.description}</td>
+                      {/* <td>{ingredient.category}</td> */}
                       <td>
-                        <Form>
-                          {ingredient.available ? (
-                            <Form.Check
-                              type="switch"
-                              defaultChecked={true}
-                              id="custom-switch"
-                            />
-                          ) : (
-                            <Form.Check
-                              type="switch"
-                              defaultChecked={false}
-                              id="custom-switch"
-                            />
-                          )}
-                        </Form>
+                        <Form.Check
+                          type="switch"
+                          defaultChecked={ingredient.available}
+                          onChange={() => this.changeAvailability(ingredient)}
+                          id={ingredient.id}
+                          label="Available"
+                        />
                       </td>
                       <td>
-                        <PencilFill />
+                        <Link
+                          to={{
+                            pathname: "/single_ingredient",
+                            state: {
+                              ingredient: ingredient,
+                            },
+                          }}
+                        >
+                          <PencilFill />
+                        </Link>
                       </td>
                     </tr>
                   );
@@ -137,6 +141,8 @@ class ItemsComponent extends Component {
                         </td>
                       </tr>
                     );
+                  } else {
+                    return <tr key={index}></tr>;
                   }
                 })}
           </tbody>
@@ -149,6 +155,9 @@ class ItemsComponent extends Component {
 const mapStateToProps = (state) => ({
   isAuthenticated: state.userReducer.isAuthenticated,
   // user_id: state.userReducer.user.id,
+  categories: state.productReducer.categories,
+  products: state.productReducer.products,
+  ingredients: state.productReducer.ingredients,
   order_accepted: state.orderReducer.accepted,
   order_sent: state.orderReducer.sent,
 });

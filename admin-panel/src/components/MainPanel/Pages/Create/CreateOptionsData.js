@@ -8,7 +8,7 @@ export const CreateOptionsData = [
   {
     name: "Create Ingredient",
   },
-  // {
-  //   name: "Create Choice",
-  // },
+  {
+    name: "Create Choice",
+  },
 ];

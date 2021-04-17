@@ -16,7 +16,7 @@ class OrderMenuPage extends Component {
     return (
       <div>
         {/* <div>Main page</div>{" "} */}
-        <div class="orderMenuContainer">
+        <div className="orderMenuContainer">
           {" "}
           <TopBar />
           <LeftSideBar categories={this.props.categories} />

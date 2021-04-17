@@ -28,9 +28,9 @@ class MainContent extends Component {
   };
   render() {
     return (
-      <div class="mainContent">
-        <div class="itemList">
-          <ul class="list-unstyled">
+      <div className="mainContent">
+        <div className="itemList">
+          <ul className="list-unstyled">
             {this.props.products.map((product, index) => {
               return (
                 <Media as="li" key={index}>

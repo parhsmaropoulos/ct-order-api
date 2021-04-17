@@ -4,20 +4,35 @@ import (
 	models "GoProjects/CoffeeTwist/backend/models"
 	"fmt"
 
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	socketio "github.com/googollee/go-socket.io"
 )
+
+func CORS() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE")
+
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+
+		c.Next()
+	}
+}
 
 func main() {
 	// Initialize Mongo DB session / collections
 	models.Init()
 	// Initialize gin router
 	router := gin.Default()
-	// Cors Policy accepts *
-	router.Use(cors.Default())
+	router.Use(CORS())
+
 	// Static folder for images/video etc
-	router.Static("/assets", "saved")
+	router.Static("/assets", "./assets")
 	// Initialize socket server
 	ioserver := socketio.NewServer(nil)
 
@@ -65,8 +80,13 @@ func main() {
 	users := router.Group("/user/")
 	{
 		users.POST("/register", models.CreateProfile)
+		users.PUT("/update", models.UpdateUser)
+		users.POST("/subscribe", models.SubscribeUser)
+		users.PUT("/unsubscribe/:id", models.UnSubscribeUser)
 		users.POST("/login", models.Login)
-		router.POST("/logout", models.TokenAuthMiddleware(), models.Logout)
+		users.POST("/logout", models.Logout)
+		users.GET("/:id", models.GetSingleUser)
+		// users.POST("/logout", models.TokenAuthMiddleware(), models.Logout)
 	}
 	token := router.Group("/token/")
 	{
@@ -91,6 +111,8 @@ func main() {
 
 		// UPDATE ONE
 		products.PUT("/update", models.UpdateProduct)
+		products.PUT("/update_ingredient", models.UpdateIngredient)
+		products.PUT("/update_choice", models.UpdateProductChoice)
 	}
 	product_categories := router.Group("/product_category")
 	{
@@ -103,6 +125,7 @@ func main() {
 	{
 		// ORDERS
 		orders.POST("/send_order", models.CreateOrder)
+		orders.PUT("/update_order", models.UpdateOrder)
 		orders.GET("/:id", models.GetSingleOrder)
 		// orders.DELETE("/delete_order", models.DeleteOrder)
 

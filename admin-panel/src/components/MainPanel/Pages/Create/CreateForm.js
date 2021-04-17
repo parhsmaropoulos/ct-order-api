@@ -1,11 +1,10 @@
 import React, { Component } from "react";
-import axios from "axios";
-import { Button } from "react-bootstrap";
-import Form from "react-bootstrap/Form";
 import CreateItemForm from "./CreateItemForm";
 import CreateCategoryForm from "./CreateCategoryForm";
 import CreateChoiceForm from "./CreateChoiceForm";
 import CreateIngredientForm from "./CreateIngredientForm";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
 
 class CreateForm extends Component {
   state = {
@@ -16,16 +15,14 @@ class CreateForm extends Component {
     category: "",
   };
 
-  componentDidMount() {
-    axios.get("http://localhost:8080/product_category/all").then((res) => {
-      this.setState({ categories: res.data.data });
-    });
-  }
+  static propTypes = {
+    categories: PropTypes.array.isRequired,
+  };
 
   renderSwitch(param) {
     switch (param) {
       case "Create Item":
-        return <CreateItemForm categories={this.state.categories} />;
+        return <CreateItemForm categories={this.props.categories} />;
       case "Create Category":
         return <CreateCategoryForm />;
       case "Create Choice":
@@ -34,7 +31,6 @@ class CreateForm extends Component {
         return <CreateIngredientForm />;
       default:
         return <div>Please select an option</div>;
-        break;
     }
   }
 
@@ -45,4 +41,7 @@ class CreateForm extends Component {
   }
 }
 
-export default CreateForm;
+const mapStateToProps = (state) => ({
+  categories: state.productReducer.categories,
+});
+export default connect(mapStateToProps, {})(CreateForm);

@@ -2,18 +2,22 @@
 package models
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
+	"image"
+	"image/png"
 	"io/ioutil"
 	"log"
 	"math"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/nfnt/resize"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo/gridfs"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -24,12 +28,13 @@ type Product struct {
 	Price       float64            `json:"price"`
 	Category    string             `json:"category"`
 	Image       string             `json:"image"`
-	// Choices               []Choice           `json:"choices"`
+	Ingredients []string           `json:"ingredients"`
+	Choices     []Choice           `json:"choices"`
 	// Ingredients_Ids       []string           `json:"Ingrdients"`
 	// Extra_Ingredients_Ids []string           `json:"Extra_Ingredients"`
 	Available bool `json:"available"`
 	Visible   bool `json:"visible"`
-	Quantity  int8 `json:"quantity"`
+	// Quantity  int8 `json:"quantity"`
 }
 
 func CreateProduct(c *gin.Context) {
@@ -37,17 +42,8 @@ func CreateProduct(c *gin.Context) {
 		fmt.Println("Only put here man.")
 		return
 	}
-	c.Header("Access-Control-Allow-Origin", "*")
 	var input Product
-	// var input struct {
-	// 	file    string
-	// 	product Product
-	// }
-	// if err := c.ShouldBindJSON(&input); err != nil {
-	// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "message": err})
-	// 	return
-	// }
-
+	var imageName string = ""
 	// AUTH CHECK
 	// tokenAuth, err := ExtractTokenMetadata(c.Request)
 	// if err != nil {
@@ -59,49 +55,48 @@ func CreateProduct(c *gin.Context) {
 	// 	c.JSON(http.StatusUnauthorized, "unauthorized")
 	// 	return
 	// }
-
 	// Parse input
 	c.Request.ParseMultipartForm(10 << 20)
-	// Retrieve file
+	// Check if there is a file
+	if len(c.Request.MultipartForm.File) != 0 {
 
-	file, handler, err := c.Request.FormFile("file")
-	// c.SaveUploadedFile(file, "saved/"+file.Filename)
-	if err != nil {
-		log.Fatal(err)
-	}
+		// Retrieve file
 
-	// Write temporary file
-	tempFile, err := ioutil.TempFile("images", "upload-*.png")
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer tempFile.Close()
+		file, handler, err := c.Request.FormFile("file")
+		// c.SaveUploadedFile(file, "saved/"+file.Filename)
+		fmt.Println("Got Here")
+		if err != nil {
+			log.Fatal(err)
+		}
+		filename := fmt.Sprintf("%s-*.png", strings.Split(handler.Filename, ".")[0])
+		// Write temporary file
+		tempFile, err := ioutil.TempFile("assets/images", filename)
+		if err != nil {
+			fmt.Println(err)
+		}
+		defer tempFile.Close()
+		imageName = strings.Split(tempFile.Name(), "\\")[2]
+		fileBytes, err := ioutil.ReadAll(file)
+		if err != nil {
+			fmt.Println(err)
+		}
+		img, _, _ := image.Decode(bytes.NewReader(fileBytes))
+		// img, err_img := jpeg.Decode(file)
+		// if err_img != nil {
+		// 	log.Fatal(err_img)
+		// }
+		// jpeg.Encode(tempFile, resized, nil)
 
-	fileBytes, err := ioutil.ReadAll(file)
-	if err != nil {
-		fmt.Println(err)
-	}
-	tempFile.Write(fileBytes)
-
-	// Save to db
-	// Initialize bucket
-	bucket, err := gridfs.NewBucket(Images)
-	if err != nil {
-		log.Fatal(err)
-	}
-	uploadStream, err := bucket.OpenUploadStream(
-		handler.Filename,
-	)
-	defer uploadStream.Close()
-
-	_, err = uploadStream.Write(fileBytes)
-	if err != nil {
-		log.Fatal(err)
+		resized := resize.Thumbnail(100, 100, img, resize.NearestNeighbor)
+		errs := png.Encode(tempFile, resized)
+		if errs != nil {
+			log.Fatal(errs)
+		}
 	}
 
 	// Get the product values
 	data := c.Request.FormValue("data")
-	err = json.Unmarshal([]byte(data), &input)
+	err := json.Unmarshal([]byte(data), &input)
 
 	if err != nil {
 		log.Fatal(err)
@@ -113,40 +108,19 @@ func CreateProduct(c *gin.Context) {
 		Price:       input.Price,
 		Description: input.Description,
 		Category:    input.Category,
-		Image:       handler.Filename,
-		// Choices:               []Choice{},
-		// Ingredients_Ids:       []string{},
-		// Extra_Ingredients_Ids: []string{},
+		Image:       imageName,
+		Choices:     input.Choices,
 	}
-	// if input.Ingredients_Ids != nil {
-	// 	product.Ingredients_Ids = input.Ingredients_Ids
-	// }
-	// if input.Extra_Ingredients_Ids != nil {
-	// 	product.Extra_Ingredients_Ids = input.Extra_Ingredients_Ids
-	// }
+
+	if len(input.Ingredients) > 0 {
+		product.Ingredients = input.Ingredients
+	}
 
 	product.Price = math.Round((product.Price * 100) / 100)
-	// product = product.AddChoices()
 	_, err = Products.InsertOne(context.Background(), product)
 	if err != nil {
 		log.Fatal(err)
 	}
-	// Append product to proper category.
-	// old_category := Products_Categories.FindOneAndUpdate(
-	// cat, errs := Products_Categories.UpdateOne(
-	// 	context.Background(),
-	// 	bson.M{"name": input.Category},
-	// 	bson.M{"$push": bson.M{"products": product}},
-	// 	options.Update(),
-	// )
-
-	// if errs != nil {
-	// 	// ErrNoDocuments means that the filter did not match any documents in the collection
-	// 	if errs == mongo.ErrNoDocuments {
-	// 		return
-	// 	}
-	// 	log.Fatal(errs)
-	// }
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Product  created successfully so did the category updated",
@@ -170,7 +144,7 @@ func UpdateProduct(c *gin.Context) {
 	}
 
 	product := input.Product
-	fmt.Println(input.Reason)
+	// fmt.Println(input.Reason)
 	// AUTH CHECK
 	// tokenAuth, err := ExtractTokenMetadata(c.Request)
 	// if err != nil {
@@ -209,6 +183,7 @@ func GetProducts(c *gin.Context) {
 	}
 	// c.Header("Access-Control-Allow-Origin", "*")
 
+	// var gridfs *mgo.GridFS
 	products := []Product{}
 
 	cursor, err := Products.Find(context.Background(), bson.D{})
@@ -219,6 +194,14 @@ func GetProducts(c *gin.Context) {
 	if err = cursor.All(context.Background(), &products); err != nil {
 		log.Fatal(err)
 	}
+	// for _,prod := range products {
+	// 	filename := prod.Image
+	// 	f, err := gridfs.Open(filename)
+	// }
+
+	res, _ := http.Get("http://localhost:8080/products/choices")
+	fmt.Println(res)
+
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Products found",
 		"data":    products,
@@ -340,8 +323,8 @@ func (prod Product) ChangeAvailability(id string, av bool) error {
 	if errs != nil {
 		return errs
 	}
-	fmt.Println("here")
-	fmt.Println(av)
+	// fmt.Println("here")
+	// fmt.Println(av)
 
 	_, err := Products.UpdateOne(
 		context.Background(),

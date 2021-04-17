@@ -13,7 +13,10 @@ import { Facebook, Google } from "react-bootstrap-icons";
 import { connect } from "react-redux";
 import "../../css/Layout/logregmodal.css";
 import { login, register } from "../../actions/user";
+import { returnErrors } from "../../actions/messages";
 import PropTypes from "prop-types";
+import ClipLoader from "react-spinners/ClipLoader";
+import { TextField } from "@material-ui/core";
 
 class LogRegModal extends Component {
   constructor(props) {
@@ -24,6 +27,7 @@ class LogRegModal extends Component {
       password: "",
       password2: "",
       ready: false,
+      showError: true,
     };
     this.onSubmit = this.onSubmit.bind(this);
     this.onSubmitRegister = this.onSubmitRegister.bind(this);
@@ -33,11 +37,15 @@ class LogRegModal extends Component {
 
   static propTypes = {
     login: PropTypes.func.isRequired,
+    register: PropTypes.func.isRequired,
     isAuthenticated: PropTypes.bool,
   };
 
   componentDidMount() {
-    // this.setState({ selectedTab: this.props.selectedTab });
+    this.setState({
+      email: "",
+      password: "",
+    });
   }
 
   onSubmit(e) {
@@ -47,15 +55,11 @@ class LogRegModal extends Component {
 
   onSubmitRegister(e) {
     e.preventDefault();
-    if (this.state.password === this.state.password2) {
-      const user = {
-        email: this.state.email,
-        password: this.state.password,
-      };
-      this.props.register(user);
-    } else {
-      return;
-    }
+    const user = {
+      email: this.state.email,
+      password: this.state.password,
+    };
+    this.props.register(user);
   }
 
   onChangeTab = (key) => {
@@ -63,7 +67,6 @@ class LogRegModal extends Component {
   };
 
   onClose = (e) => {
-    console.log("e");
     this.props.onClose && this.props.onClose(e);
   };
 
@@ -82,7 +85,11 @@ class LogRegModal extends Component {
     }
   };
   render() {
+    let errorModal;
     if (!this.props.show) {
+      return null;
+    }
+    if (this.props.userReducer.isAuthenticated) {
       return null;
     }
     return (
@@ -141,8 +148,8 @@ class LogRegModal extends Component {
                   <p>Κείμενο για είσοδο/ εγγραφή ή λινκ</p>
                 </div>
                 <hr />
-                <Form onSubmit={this.onSubmit}>
-                  <Form.Group>
+                <form onSubmit={this.onSubmit}>
+                  {/* <Form.Group>
                     <Form.Label>Email</Form.Label>
                     <Form.Control
                       type="email"
@@ -159,13 +166,33 @@ class LogRegModal extends Component {
                       onChange={this.onChange}
                       placeholder="Password"
                     />
-                  </Form.Group>
+                  </Form.Group> */}
+                  <TextField
+                    name="email"
+                    id="email"
+                    label="Email"
+                    type="email"
+                    placeholder="input@example.com"
+                    onChange={this.onChange}
+                    variant="outlined"
+                    style={{ width: "100%", margin: "0.5%" }}
+                  />
+                  <TextField
+                    name="password"
+                    id="password"
+                    label="Password"
+                    type="password"
+                    placeholder="Password"
+                    onChange={this.onChange}
+                    style={{ width: "100%", margin: "0.5%" }}
+                    variant="outlined"
+                  />
                   <div className="loginButtons">
                     <Button type="submit" variant="outline-primary">
                       Σύνδεση
                     </Button>
                   </div>
-                </Form>
+                </form>
               </Tab>
               <Tab eventKey="register" title="Register">
                 <div className="loginButtons">
@@ -182,42 +209,37 @@ class LogRegModal extends Component {
                   <p>Κείμενο για είσοδο/ εγγραφή ή λινκ</p>
                 </div>
                 <hr />
-                <Form onSubmit={this.onSubmitRegister}>
-                  <Form.Group>
-                    <Form.Label>Email</Form.Label>
-                    <Form.Control
-                      type="email"
-                      name="email"
-                      placeholder="input@example.com"
-                      onChange={this.onChange}
-                    />
-                  </Form.Group>
-                  <Form.Group>
-                    <Form.Label>Password</Form.Label>
-                    <Form.Control
-                      type="password"
-                      name="password"
-                      onChange={this.onChange}
-                      placeholder="Password"
-                    />
-                  </Form.Group>
-                  <Form.Group>
-                    <Form.Label>Repeat Password</Form.Label>
-                    <Form.Control
-                      type="password"
-                      name="password2"
-                      onChange={this.checkPasswords}
-                      //   onBlur={this.checkPasswords}
-                      placeholder="Password"
-                    />
-                    <Form.Text
-                      id="passwordMatchText"
-                      style={{ visibility: "hidden" }}
-                      muted
-                    >
-                      Passwords does not match
-                    </Form.Text>
-                  </Form.Group>
+                <form onSubmit={this.onSubmitRegister}>
+                  <TextField
+                    name="email"
+                    id="email"
+                    label="Email"
+                    type="email"
+                    placeholder="input@example.com"
+                    onChange={this.onChange}
+                    variant="outlined"
+                    style={{ width: "100%", margin: "0.5%" }}
+                  />
+                  <TextField
+                    name="password"
+                    id="password"
+                    label="Password"
+                    type="password"
+                    placeholder="Password"
+                    onChange={this.onChange}
+                    style={{ width: "100%", margin: "0.5%" }}
+                    variant="outlined"
+                  />
+                  <TextField
+                    name="password2"
+                    id="password2"
+                    label="Password2"
+                    type="password"
+                    placeholder=" Repeat Password"
+                    onChange={this.onChange}
+                    style={{ width: "100%", margin: "0.5%" }}
+                    variant="outlined"
+                  />
                   <div className="loginButtons">
                     <Button
                       type="submit"
@@ -228,7 +250,7 @@ class LogRegModal extends Component {
                       Εγγραφή
                     </Button>
                   </div>
-                </Form>
+                </form>
               </Tab>
             </Tabs>
           </Container>
@@ -236,12 +258,21 @@ class LogRegModal extends Component {
         <Modal.Footer id="modalFooter">
           <p>Συμφωνία με όρους/πολιτική/προυποθέσεις</p>
         </Modal.Footer>
+        <ClipLoader
+          color={"#ffffff"}
+          loading={this.props.userReducer.isLoading}
+        />
+        {errorModal}
       </Modal>
     );
   }
 }
 const mapStateToProps = (state) => ({
-  isAuthenticated: state.isAuthenticated,
+  userReducer: state.userReducer,
+  isAuthenticated: state.userReducer.isAuthenticated,
+  errorReducer: state.errorReducer,
 });
 
-export default connect(mapStateToProps, { login, register })(LogRegModal);
+export default connect(mapStateToProps, { login, register, returnErrors })(
+  LogRegModal
+);

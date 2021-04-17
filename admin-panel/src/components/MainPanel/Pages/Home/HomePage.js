@@ -1,17 +1,44 @@
 import React, { Component } from "react";
-import { Carousel, Container } from "react-bootstrap";
+import { Button, Container } from "react-bootstrap";
 import { connect } from "react-redux";
+import { get_items, get_categories } from "../../../../actions/items";
+import PropTypes from "prop-types";
 
 // Images
-import crepe from "../../../../assets/Images/crepe.jpg";
-import pan from "../../../../assets/Images/pancakes.jpg";
-import club from "../../../../assets/Images/club.jpg";
+import { Link } from "react-router-dom";
 
 class HomePage extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      address: "",
+      showAddressModal: false,
+    };
+  }
+
+  componentDidMount() {
+    if (this.props.productReducer.isReady === false) {
+      this.props.get_items();
+      this.props.get_categories();
+    }
+  }
+  static propTypes = {
+    get_items: PropTypes.func.isRequired,
+    get_categories: PropTypes.func.isRequired,
+    productReducer: PropTypes.object.isRequired,
+  };
+
   render() {
     return (
-      <Container className="homePageContainer">
-        <Carousel>
+      <Container className="homePageContainer" style={{ minHeight: "70vh" }}>
+        <div>
+          <Button>
+            <Link to="/order">Order Now</Link>
+          </Button>
+          <Link to="/create_item">Create</Link>
+          <Link to="/items">Items</Link>
+        </div>
+        {/* <Carousel>
           <Carousel.Item>
             <img
               className="d-block w-100"
@@ -53,9 +80,16 @@ class HomePage extends Component {
             </Carousel.Caption>
           </Carousel.Item>
         </Carousel>
+        <div></div> */}
       </Container>
     );
   }
 }
 
-export default connect()(HomePage);
+const mapStateToProps = (state) => ({
+  productReducer: state.productReducer,
+});
+
+export default connect(mapStateToProps, { get_items, get_categories })(
+  HomePage
+);

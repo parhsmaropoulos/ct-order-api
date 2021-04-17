@@ -1,25 +1,34 @@
+import { Checkbox, List, ListItem, ListItemText } from "@material-ui/core";
 import React, { Component } from "react";
 import { Button, Form, Modal, Col } from "react-bootstrap";
+import { connect } from "react-redux";
+import { create_choice } from "../../../../actions/items";
+import PropTypes from "prop-types";
 
 class CreateChoiceForm extends Component {
-  state = {
-    name: "",
-    desctription: "",
-    options: [],
-    optionName: "",
-    optionPrice: 0,
-    show: false,
-  };
-
-  componentDidMount() {
-    if (this.props.choice !== null) {
-      this.setState({
-        name: this.props.choice.name,
-        desctription: this.props.choice.desctription,
-        options: this.props.choice.options,
-      });
-    }
+  constructor(props) {
+    super(props);
+    this.state = {
+      name: "",
+      desctription: "",
+      options: [],
+      optionName: "",
+      optionPrice: 0,
+      show: false,
+      multiple: false,
+      required: false,
+    };
+    this.removeOption = this.removeOption.bind(this);
+    this.onChange = this.onChange.bind(this);
+    this.handleShow = this.handleShow.bind(this);
+    this.handleClose = this.handleClose.bind(this);
+    this.handleSaveOption = this.handleSaveOption.bind(this);
+    this.onSumbit = this.onSubmit.bind(this);
   }
+
+  static propTypes = {
+    create_choice: PropTypes.func.isRequired,
+  };
 
   removeOption = (index) => {
     this.setState({
@@ -38,10 +47,11 @@ class CreateChoiceForm extends Component {
   handleClose = () => {
     this.setState({ show: false });
   };
+
   handleSaveOption = () => {
     const option = {
       name: this.state.optionName,
-      price: this.state.optionPrice,
+      price: parseFloat(this.state.optionPrice),
     };
     this.setState((prevState) => ({
       options: [...prevState.options, option],
@@ -49,17 +59,33 @@ class CreateChoiceForm extends Component {
     this.setState({ show: false });
   };
 
+  onSubmit(event) {
+    event.preventDefault();
+
+    const choice = {
+      name: this.state.name,
+      description: this.state.description,
+      required: this.state.required,
+      multiple: this.state.multiple,
+      options: this.state.options,
+    };
+    console.log(choice);
+    this.props.create_choice(choice);
+  }
+
   render() {
     return (
       <div className="CreateChoiceForm">
-        <Form>
+        <Form onSubmit={this.onSumbit}>
           <Form.Group controlId="choiceName">
             <Form.Label>Choice Name</Form.Label>
             <Form.Control
               name="name"
               type="text"
               placeholder="Enter name"
-            ></Form.Control>
+              required
+              onChange={this.onChange}
+            />
           </Form.Group>
           <Form.Group controlId="choiceDesc">
             <Form.Label>Choice Description</Form.Label>
@@ -67,32 +93,53 @@ class CreateChoiceForm extends Component {
               name="description"
               type="text"
               placeholder="Enter description"
-            ></Form.Control>
+              required
+              onChange={this.onChange}
+            />
+          </Form.Group>
+          <Form.Group controlId="choiceMultiple">
+            <Form.Label>Multiple</Form.Label>
+            <Checkbox
+              checked={this.state.multiple}
+              onChange={(e) =>
+                this.setState({ multiple: !this.state.multiple })
+              }
+              color="primary"
+            />
+          </Form.Group>
+          <Form.Group controlId="choiceRequired">
+            <Form.Label>Required</Form.Label>
+            <Checkbox
+              checked={this.state.required}
+              onChange={(e) =>
+                this.setState({ required: !this.state.required })
+              }
+              color="primary"
+            />
           </Form.Group>
           <Form.Label>Choice Options</Form.Label>
           <Form.Group controlId="choiceOptions">
-            {this.state.options.map((opt, key) => {
-              {
-                console.log(opt);
+            <List dense>
+              {this.state.options.map((opt, key) => {
                 return (
-                  <Form.Group>
-                    <Form.Label key={key}>
-                      {opt.name} : {opt.price}
-                    </Form.Label>
-                    <Button onClick={() => this.removeOption(key)}>X</Button>
-                  </Form.Group>
+                  <ListItem key={key}>
+                    <ListItemText primary={`${opt.name} : ${opt.price}`} />
+                  </ListItem>
+                  // <Form.Group key={key}>
+                  //   <Form.Label>
+                  //     {opt.name} : {opt.price}
+                  //   </Form.Label>
+                  //   <Button onClick={() => this.removeOption(key)}>X</Button>
+                  // </Form.Group>
                 );
-              }
-            })}
+              })}
+            </List>
           </Form.Group>
           <Form.Row>
             <Button variant="primary" onClick={this.handleShow}>
               Add option
             </Button>
-            <Button
-              variant="primary"
-              onClick={() => this.props.add(this.state)}
-            >
+            <Button variant="primary" type="submit">
               Save choice
             </Button>
           </Form.Row>
@@ -141,4 +188,4 @@ class CreateChoiceForm extends Component {
   }
 }
 
-export default CreateChoiceForm;
+export default connect(null, { create_choice })(CreateChoiceForm);

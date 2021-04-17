@@ -1,15 +1,13 @@
 import React, { Component } from "react";
-import { Col, Container, Row, Image, Form, Button } from "react-bootstrap";
+import { Col, Container, Row, Image } from "react-bootstrap";
 import { connect } from "react-redux";
 import "../../css/Layout/footer.css";
-import logo from "../../assets/Images/logo2.jpg";
-import {
-  ArrowRightCircle,
-  Facebook,
-  Instagram,
-  Twitter,
-} from "react-bootstrap-icons";
+import logo from "../../assets/Images/transparent-logo.png";
+import { ArrowRightCircle } from "react-bootstrap-icons";
+import { SocialIcon } from "react-social-icons";
 import PropTypes from "prop-types";
+import { FormHelperText, TextField } from "@material-ui/core";
+import { subscribe } from "../../actions/user";
 
 class Footer extends Component {
   constructor(props) {
@@ -21,6 +19,7 @@ class Footer extends Component {
 
   static propTypes = {
     isAuthenticated: PropTypes.bool,
+    subscribe: PropTypes.func.isRequired,
   };
 
   onChange = (e) => {
@@ -28,7 +27,24 @@ class Footer extends Component {
   };
 
   onSubscribe = () => {
-    console.log("Email subscribed:" + this.state.newsletterEmail);
+    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    if (re.test(this.state.newsletterEmail)) {
+      document.getElementById("inputNewsLetterHelperText").style.display =
+        "none";
+      document.getElementById("inputNewsLetterHelperText").style.color =
+        "green";
+      document.getElementById("inputNewsLetterHelperText").innerHTML =
+        "Success";
+      const data = {
+        email: this.state.newsletterEmail,
+      };
+      this.props.subscribe(data);
+      // console.log("Email subscribed:" + this.state.newsletterEmail);
+      this.setState({ newsletterEmail: "" });
+    } else {
+      document.getElementById("inputNewsLetterHelperText").style.display =
+        "block";
+    }
   };
 
   render() {
@@ -36,41 +52,42 @@ class Footer extends Component {
       <Container fluid={true} className="footerContainer">
         <Row id="footerRow">
           <Col className="logoCol">
-            <Image src={logo} width={200} height={70} className="headerLogo" />
+            <Image src={logo} className="headerLogo" />
             <Row>
               <Col>
-                <Facebook />
+                <SocialIcon
+                  style={{ height: 40, width: 40 }}
+                  url="https://www.facebook.com/coffeetwistt"
+                />
               </Col>
               <Col>
-                <Instagram />
-              </Col>
-              <Col>
-                <Twitter />
+                <SocialIcon
+                  style={{ height: 40, width: 40 }}
+                  url="https://instagram.com/coffee_twist_"
+                />
               </Col>
             </Row>
           </Col>
           <Col>
             <div className="newsLetter">
-              <Form>
-                <Form.Group>
-                  <Form.Label>
-                    Εγγραφή Newsletter{" "}
-                    <ArrowRightCircle onClick={this.onSubscribe} />
-                  </Form.Label>
-                  <Form.Control
-                    type="email"
-                    name="newsletterEmail"
-                    placeholder="Πληκρτρολογήστε το email σας εδώ."
-                    onChange={this.onChange}
-                  />
-                  <Form.Text
-                    id="newsletterWrongEmail"
-                    style={{ visibility: "hidden", color: "red" }}
-                  >
-                    Το email δεν είναι έγκυρο.
-                  </Form.Text>
-                </Form.Group>
-              </Form>
+              <div className="newsLetterTitle">Εγγραφή Newsletter </div>
+              <div className="newsLetterInput">
+                <TextField
+                  type="email"
+                  name="newsletterEmail"
+                  id="inputNewsLetter"
+                  placeholder="Πληκτρολογήστε το email σας εδώ."
+                  onChange={this.onChange}
+                  helperText=""
+                />{" "}
+                <FormHelperText
+                  style={{ display: "none", textAlign: "center", color: "red" }}
+                  id="inputNewsLetterHelperText"
+                >
+                  Wrong email
+                </FormHelperText>
+                <ArrowRightCircle onClick={this.onSubscribe} />
+              </div>
             </div>
           </Col>
           <Col className="menu1Col">
@@ -85,8 +102,8 @@ class Footer extends Component {
             <ul>
               <li>Πολιτική Προστασίας</li>
               <li>Πολιτική cookies</li>
-              <li>Πολιτική Αξιολόγισης</li>
-              <li>Πολιτική Απορίτου</li>
+              <li>Πολιτική Αξιολόγησης</li>
+              <li>Πολιτική Απορρήτου</li>
             </ul>
           </Col>
         </Row>
@@ -105,4 +122,4 @@ class Footer extends Component {
 
 const mapStateToProps = (state) => ({});
 
-export default connect()(Footer);
+export default connect(mapStateToProps, { subscribe })(Footer);

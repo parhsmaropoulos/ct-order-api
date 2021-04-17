@@ -99,7 +99,7 @@ func GetImage(c *gin.Context) {
 		log.Fatal(err)
 	}
 	// you can print out the results
-	fmt.Println(results)
+	// fmt.Println(results)
 
 	bucket, _ := gridfs.NewBucket(
 		Images,

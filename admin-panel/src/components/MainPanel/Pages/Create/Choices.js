@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Col, Form, FormGroup } from "react-bootstrap";
+import { Button, Form } from "react-bootstrap";
 const ChoiceList = (props) => {
   return props.choiceList.map((choice, key) => {
     console.log(choice);

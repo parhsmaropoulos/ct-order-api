@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import "../../../../../css/OrderPage/LeftBar.css";
 
@@ -13,7 +12,7 @@ class LeftSideBar extends Component {
   };
   render() {
     return (
-      <div class="leftSideBar">
+      <div className="leftSideBar">
         <ul className="Categorylist">
           {this.props.categories.map((category, key) => {
             return (

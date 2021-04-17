@@ -1,4 +1,3 @@
-import axios from "axios";
 import React, { Component } from "react";
 
 class AllUsersPage extends Component {
@@ -9,7 +8,7 @@ class AllUsersPage extends Component {
     };
   }
   componentDidMount() {
-    axios.get("http://localhost:8080/users");
+    // axios.get("http://localhost:8080/users");
   }
   render() {
     return (

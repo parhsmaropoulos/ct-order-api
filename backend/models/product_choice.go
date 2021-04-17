@@ -14,15 +14,15 @@ import (
 )
 
 type Choice struct {
-	ID primitive.ObjectID `bson:"_id" json:"id"`
-	// Id          string `json:"id"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
+	ID          primitive.ObjectID `bson:"_id" json:"id"`
+	Required    bool               `json:"required"`
+	Multiple    bool               `json:"multiple"`
+	Name        string             `json:"name"`
+	Description string             `json:"description"`
 	Options     []struct {
 		Name  string  `json:"name"`
 		Price float64 `json:"price"`
 	} `json:"options"`
-	For_Classes []string `json:"for_classes"`
 }
 
 func CreateProductChoice(c *gin.Context) {
@@ -33,6 +33,7 @@ func CreateProductChoice(c *gin.Context) {
 
 	var input Choice
 	if err := c.ShouldBindJSON(&input); err != nil {
+		fmt.Println(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -42,52 +43,15 @@ func CreateProductChoice(c *gin.Context) {
 		Name:        input.Name,
 		Description: input.Description,
 		Options:     input.Options,
-		For_Classes: []string{},
-	}
-	if input.For_Classes != nil {
-		choice.For_Classes = input.For_Classes
+		Required:    input.Required,
+		Multiple:    input.Multiple,
 	}
 
 	for _, ch := range choice.Options {
-		ch.Price = math.Round((ch.Price * 100) / 100)
+		ch.Price = math.Round((ch.Price * 100) / 10)
 
 	}
 	Choices.InsertOne(context.Background(), choice)
-
-	// Append choice to categories
-	for _, category := range choice.For_Classes {
-
-		_, err := Products_Categories.UpdateOne(
-			context.Background(),
-			bson.M{"name": category},
-			bson.M{
-				"$push": bson.M{
-					"choices": choice,
-				},
-			},
-			options.Update(),
-		)
-		if err != nil {
-			c.JSON(http.StatusNotFound, gin.H{
-				"message": "Product category not found!",
-			})
-		}
-		// Append to all items of this category this choice
-		_, err2 := Products.UpdateMany(
-			context.Background(),
-			bson.M{"category": category},
-			bson.M{
-				"$push": bson.M{
-					"choices": choice,
-				},
-			},
-		)
-		if err2 != nil {
-			c.JSON(http.StatusNotFound, gin.H{
-				"message": "Products  not found!",
-			})
-		}
-	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Choice created successfully",
@@ -176,5 +140,57 @@ func DeleteProductChoice(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"message":       "Choice deleted",
 		"delete_choice": choice,
+	})
+}
+
+func UpdateProductChoice(c *gin.Context) {
+	if c.Request.Method != "PUT" {
+		fmt.Println("Only put here man.")
+		return
+	}
+	var input struct {
+		ID     string `json:"id"`
+		Choice Choice `json:"choice"`
+	}
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "message": err})
+		return
+	}
+
+	choice := input.Choice
+	// AUTH CHECK
+	// tokenAuth, err := ExtractTokenMetadata(c.Request)
+	// if err != nil {
+	// 	c.JSON(http.StatusUnauthorized, "unauthorized")
+	// 	return
+	// }
+	// _, err = FetchAuth(tokenAuth)
+	// if err != nil {
+	// 	c.JSON(http.StatusUnauthorized, "unauthorized")
+	// 	return
+	// }
+	id_hex, errs := primitive.ObjectIDFromHex(input.ID)
+	if errs != nil {
+		log.Fatal(errs)
+	}
+	_, err := Choices.UpdateOne(
+		context.Background(),
+		bson.M{"_id": id_hex},
+		bson.M{"$set": bson.M{
+			"required":    choice.Required,
+			"multiple":    choice.Multiple,
+			"name":        choice.Name,
+			"description": choice.Description,
+			"options":     choice.Options,
+		}},
+		options.Update(),
+	)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Choice  updated successfully",
+		"data":    choice,
 	})
 }

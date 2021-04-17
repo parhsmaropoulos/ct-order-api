@@ -1,31 +1,22 @@
-import axios from "axios";
 import React, { Component } from "react";
-import { Form, Button, Col, Modal } from "react-bootstrap";
-import { headers } from "../../../../utils/axiosHeaders";
-import { PlusCircle } from "react-bootstrap-icons";
-import ChoiceList from "./Choices";
-import CreateChoiceForm from "./CreateChoiceForm";
+import { Form, Button, Container, Row, Col, Image } from "react-bootstrap";
 import { connect } from "react-redux";
 import { create_category } from "../../../../actions/items";
 import PropTypes from "prop-types";
+import Resizer from "react-image-file-resizer";
 
 class CreateCategoryForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
       name: "",
+      filename: "Choose category image *",
       description: "",
       show: false,
-      choices: [],
-      choiceName: "",
-      choiceDescription: "",
-      options: [],
-      optionName: "",
-      optionPrice: "",
+      image: null,
     };
     this.onChange = this.onChange.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
-    // this.addChoice = this.addChoice.bind(this);
   }
 
   static propTypes = {
@@ -33,87 +24,54 @@ class CreateCategoryForm extends Component {
     create_category: PropTypes.func.isRequired,
   };
 
+  onFileChange = (e) => {
+    // console.log(e.target.files);
+    try {
+      Resizer.imageFileResizer(
+        e.target.files[0],
+        300,
+        300,
+        "JPEG",
+        100,
+        0,
+        (uri) => {
+          this.setState({
+            source: uri,
+          });
+        },
+        "base64",
+        200,
+        200
+      );
+    } catch (err) {
+      console.log(err);
+    }
+
+    this.setState({
+      image: e.target.files[0],
+      filename: e.target.files[0].name,
+    });
+  };
   onSubmit(event) {
     event.preventDefault();
     const category = {
       name: this.state.name,
       description: this.state.description,
-      choices: this.state.choices,
     };
-    console.log(category);
-    this.props.create_category(category);
+    const image = this.state.image;
+    // console.log(category);
+    this.props.create_category(category, image);
     this.setState({
       name: "",
+      filename: "Choose category image *",
       description: "",
-      choices: [],
+      show: false,
+      image: null,
     });
-    // axios
-    //   .post(
-    //     "http://localhost:8080/product_category/create_product_category",
-    //     category,
-    //     headers
-    //   )
-    //   .then((response) => console.log(response))
-    //   .catch((error) => console.log(error))
-    //   .then(
-    //     this.setState({
-    //       name: "",
-    //       description: "",
-    //       choices: [
-    //         {
-    //           name: "",
-    //           description: "",
-    //           options: [
-    //             {
-    //               name: "",
-    //               price: 0,
-    //             },
-    //           ],
-    //         },
-    //       ],
-    //     })
-    //   );
   }
-
-  addChoice = () => {
-    const choice = {
-      name: this.state.choiceName,
-      description: this.state.choiceDescription,
-      options: this.state.options,
-    };
-    this.setState((prevState) => ({
-      choices: [...prevState.choices, choice],
-    }));
-    document.getElementById("choicedescription").value = "";
-    document.getElementById("choicename").value = "";
-    this.setState({ options: [] });
-  };
-  removeChoice = (index) => {
-    this.setState({
-      choices: this.state.choices.filter((s, sindex) => index !== sindex),
-    });
-  };
 
   onChange = (e) => {
     this.setState({ [e.target.name]: e.target.value });
-  };
-
-  handleShow = () => {
-    console.log("open");
-    this.setState({ show: true });
-  };
-  handleClose = () => {
-    this.setState({ show: false });
-  };
-  handleSaveOption = () => {
-    const option = {
-      name: this.state.optionName,
-      price: parseFloat(this.state.optionPrice),
-    };
-    this.setState((prevState) => ({
-      options: [...prevState.options, option],
-    }));
-    this.setState({ show: false });
   };
 
   render() {
@@ -138,111 +96,22 @@ class CreateCategoryForm extends Component {
             onChange={this.onChange}
           />
         </Form.Group>
-        <br />
-        <br />
-        <h3>Category Choices</h3>
-        <ChoiceList
-          choiceList={this.state.choices}
-          delete={this.removeChoice.bind(this)}
-        />
-
-        {/* CREATE CHOICE */}
-        <Form>
-          <Form.Group>
-            <Form.Label>Choice Name *</Form.Label>
-            <Form.Control
-              name="choiceName"
-              type="text"
-              id="choicename"
-              onChange={this.onChange}
-              placeholder="Enter name"
-              required
-            ></Form.Control>
-          </Form.Group>
-          <Form.Group>
-            <Form.Label>Choice Description</Form.Label>
-            <Form.Control
-              name="choiceDescription"
-              onChange={this.onChange}
-              type="text"
-              id="choicedescription"
-              placeholder="Enter description"
-              required
-            ></Form.Control>
-          </Form.Group>
-          <Form.Label>Choice Options</Form.Label>
-          <Form.Group controlId="choiceOptions">
-            {this.state.options.map((opt, key) => {
-              {
-                console.log(opt);
-                return (
-                  <Form.Group>
-                    <Form.Label key={key}>
-                      {opt.name} : {opt.price}
-                    </Form.Label>
-                    <Button onClick={() => this.removeOption(key)}>X</Button>
-                  </Form.Group>
-                );
-              }
-            })}
-          </Form.Group>
-          <Form.Row>
-            <Button variant="primary" onClick={this.handleShow}>
-              Add option
-            </Button>
-            <Button variant="primary" onClick={this.addChoice}>
-              Save choice
-            </Button>
-          </Form.Row>
-        </Form>
-
-        {/* MODAL FOR OPTIONS */}
-        <Modal show={this.state.show} onHide={this.handleClose}>
-          <Modal.Header closeButton>
-            <Modal.Title>Option Values *</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <Form.Row>
-              <Form.Group as={Col} md={6}>
-                <Form.Label>Value</Form.Label>
-                <Form.Control
-                  id="optionName"
-                  required
-                  name="optionName"
-                  type="text"
-                  placeholer="enter name"
-                  onChange={this.onChange}
-                ></Form.Control>
-              </Form.Group>
-              <Form.Group as={Col} md={6}>
-                <Form.Label>Price *</Form.Label>
-                <Form.Control
-                  id="optionPrice"
-                  required
-                  name="optionPrice"
-                  type="number"
-                  step="0.01"
-                  placeholer="enter price"
-                  onChange={this.onChange}
-                ></Form.Control>
-              </Form.Group>
-            </Form.Row>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={this.handleClose}>
-              Close
-            </Button>
-            <Button variant="primary" onClick={this.handleSaveOption}>
-              Save Option
-            </Button>
-          </Modal.Footer>
-        </Modal>
-
-        <Button
-          type="submit"
-          style={{ marginTop: 15 }}
-          // onClick={this.createCategory}
-        >
+        <Form.Group controlId="image">
+          <Form.File
+            id="custom-file"
+            label={this.state.filename}
+            custom
+            onChange={this.onFileChange}
+          />
+        </Form.Group>
+        <Container>
+          <Row>
+            <Col xs={6} md={4}>
+              <Image id="preview-image" src={this.state.source} rounded />
+            </Col>
+          </Row>
+        </Container>
+        <Button type="submit" style={{ marginTop: 15 }}>
           Create Category
         </Button>
       </Form>

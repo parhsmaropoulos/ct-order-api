@@ -14,8 +14,8 @@ import (
 type Rating struct {
 	ID primitive.ObjectID `bson:"_id" json:"id"`
 
-	Rate    int    `json:"rate"`
-	User_id string `json:"user_id"`
+	Rate    float32 `json:"rate"`
+	User_id string  `json:"user_id"`
 }
 
 func CreateRate(c *gin.Context) {

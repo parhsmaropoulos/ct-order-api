@@ -12,8 +12,21 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"golang.org/x/crypto/bcrypt"
 )
+
+//  Add addresses to User
+type Address struct {
+	ID            primitive.ObjectID `bson:"_id" json:"id"`
+	CityName      string             `json:"city_name"`
+	AreaName      string             `json:"area_name"`
+	AddressName   string             `json:"address_name"`
+	AddressNumber string             `json:"address_number"`
+	Zipcode       string             `json:"zipcode"`
+	Latitude      float64            `json:"latitude"`
+	Longitude     float64            `json:"longitude"`
+}
 
 type User struct {
 	ID primitive.ObjectID `bson:"_id" json:"id"`
@@ -26,11 +39,7 @@ type User struct {
 	Surname string `json:"surname"`
 	Phone   string `json:"phone"`
 	// User's location info
-	Address  string `json:"address"`
-	Zipcode  string `json:"zipcode"`
-	Bellname string `json:"bellname"`
-	Details  string `json:"details"`
-
+	Addresses []Address `json:"addresses"`
 	// User's info for the shop
 
 	Comments     []Comment `json:"comments"`
@@ -87,10 +96,7 @@ func CreateProfile(c *gin.Context) {
 		Name:         input.Name,
 		Surname:      input.Surname,
 		Phone:        input.Phone,
-		Address:      input.Address,
-		Zipcode:      input.Zipcode,
-		Bellname:     input.Bellname,
-		Details:      input.Details,
+		Addresses:    []Address{},
 		Created_at:   time.Now(),
 		Orders:       []Order{},
 		Comments:     []Comment{},
@@ -130,6 +136,50 @@ func GetUsers(c *gin.Context) {
 	})
 }
 
+func SubscribeUser(c *gin.Context) {
+	if c.Request.Method != "POST" {
+		fmt.Println("Only post here man.")
+		return
+	}
+
+	var input struct {
+		Email string `json:"email"`
+	}
+	if err := c.ShouldBindJSON(&input); err != nil {
+		fmt.Println(err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	Subscribes.InsertOne(context.Background(), input)
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Subscribed successfully",
+		"data":    input,
+	})
+}
+
+func UnSubscribeUser(c *gin.Context) {
+	if c.Request.Method != "DELETE" {
+		fmt.Println("Only delete here man.")
+		return
+	}
+
+	id, errs := primitive.ObjectIDFromHex(c.Param("id"))
+	if errs != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Server error!",
+		})
+		return
+	}
+
+	Subscribes.DeleteOne(context.Background(), bson.M{"_id": id})
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "UnSubscribed successfully",
+	})
+}
+
 func GetSingleUser(c *gin.Context) {
 	if c.Request.Method != "GET" {
 		fmt.Println("Only get here no give!")
@@ -158,7 +208,7 @@ func GetSingleUser(c *gin.Context) {
 
 	c.JSON(200, gin.H{
 		"message": "User found",
-		"data":    user,
+		"user":    user,
 	})
 }
 
@@ -207,7 +257,6 @@ func Login(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
 	// First check if email exists
 	var user User
 	err := Users.FindOne(context.Background(),
@@ -251,9 +300,215 @@ func Logout(c *gin.Context) {
 		return
 	}
 	deleted, delErr := DeleteAuth(au.AccessUuid)
-	if delErr != nil || deleted == 0 { //if any goes wrong
+	if delErr != nil || deleted == 0 { //if anything goes wrong
 		c.JSON(http.StatusUnauthorized, "unauthorized")
 		return
 	}
 	c.JSON(http.StatusOK, "Successfully logged out")
+}
+
+func UpdateUser(c *gin.Context) {
+	if c.Request.Method != "PUT" {
+		fmt.Println("Only put here man.")
+		return
+	}
+	var input struct {
+		ID        string  `json:"id"`
+		User      User    `json:"user"`
+		Password  string  `json:"password"`
+		Address   Address `json:"address"`
+		AddressId string  `json:"address_id"`
+		Reason    string  `json:"reason"`
+	}
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "message": err})
+		return
+	}
+	// newID := primitive.NewObjectID()
+
+	// input.Address.ID = newID
+
+	user := input.User
+	// fmt.Println(input.Reason)
+	// AUTH CHECK
+	// tokenAuth, err := ExtractTokenMetadata(c.Request)
+	// if err != nil {
+	// 	c.JSON(http.StatusUnauthorized, "unauthorized")
+	// 	return
+	// }
+	// _, err = FetchAuth(tokenAuth)
+	// if err != nil {
+	// 	c.JSON(http.StatusUnauthorized, "unauthorized")
+	// 	return
+	// }
+	var err error
+	switch input.Reason {
+	case "change_password":
+		err = user.ChangePassword(input.ID, user.Password)
+	case "update_user":
+		err = user.UpdateUserValue(input.ID)
+	case "add_address":
+		err = user.AddAddress(input.ID, input.Address)
+	case "remove_address":
+		err = user.DeleteAddress(input.ID, input.AddressId)
+	case "update_address":
+		err = user.UpdateAddress(input.ID, input.AddressId, input.Address)
+	default:
+		return
+	}
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	user.Password = ""
+	c.JSON(http.StatusOK, gin.H{
+		"message": "User  updated successfully",
+		"data":    user,
+	})
+}
+
+func (usr User) ChangePassword(id string, pass string) error {
+	id_hex, errs := primitive.ObjectIDFromHex(id)
+	if errs != nil {
+		return errs
+	}
+	// fmt.Println("here")
+	// fmt.Println(pass)
+
+	password := ""
+	// Encrypt password
+	bs, errs := bcrypt.GenerateFromPassword([]byte(pass), bcrypt.MinCost)
+	if errs != nil {
+		return errs
+	}
+	password = string(bs)
+
+	_, err := Users.UpdateOne(
+		context.Background(),
+		bson.M{"_id": id_hex},
+		bson.M{
+			"$set": bson.M{
+				"password": password,
+			},
+		},
+		options.Update(),
+	)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (usr User) UpdateUserValue(id string) error {
+	id_hex, errs := primitive.ObjectIDFromHex(id)
+	if errs != nil {
+		return errs
+	}
+
+	_, err := Users.UpdateOne(
+		context.Background(),
+		bson.M{"_id": id_hex},
+		bson.M{"$set": bson.M{
+			"name":    usr.Name,
+			"surname": usr.Surname,
+			"email":   usr.Email,
+			"phone":   usr.Phone,
+		}},
+		options.Update(),
+	)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (usr User) AddAddress(id string, addr Address) error {
+	id_hex, errs := primitive.ObjectIDFromHex(id)
+	if errs != nil {
+		return errs
+	}
+	newID := primitive.NewObjectID()
+
+	addr.ID = newID
+
+	_, err := Users.UpdateOne(
+		context.Background(),
+		bson.M{"_id": id_hex},
+		bson.M{"$push": bson.M{
+			"addresses": addr,
+		}},
+		options.Update(),
+	)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (usr User) DeleteAddress(id string, addr_id string) error {
+	id_hex, errs := primitive.ObjectIDFromHex(id)
+	if errs != nil {
+		return errs
+	}
+	add_id_hex, errs := primitive.ObjectIDFromHex(addr_id)
+	if errs != nil {
+		return errs
+	}
+	_, err := Users.UpdateOne(
+		context.Background(),
+		bson.M{"_id": id_hex},
+		bson.M{"$pull": bson.M{
+			"addresses": bson.M{
+				"_id": add_id_hex,
+			},
+		}},
+		options.Update(),
+	)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (usr User) UpdateAddress(id string, addr_id string, addr Address) error {
+	id_hex, errs := primitive.ObjectIDFromHex(id)
+	if errs != nil {
+		return errs
+	}
+	addr_id_hex, errs := primitive.ObjectIDFromHex(addr_id)
+	if errs != nil {
+		return errs
+	}
+
+	_, err := Users.UpdateOne(
+		context.Background(),
+		bson.M{"_id": id_hex, "addresses._id": addr_id_hex},
+		bson.M{
+			"$set": bson.M{
+				"addresses.$[ele]": bson.M{
+					"_id":           addr_id_hex,
+					"cityname":      addr.CityName,
+					"areaname":      addr.AreaName,
+					"addressname":   addr.AddressName,
+					"addressnumber": addr.AddressNumber,
+					"zipcode":       addr.Zipcode,
+				},
+			},
+		},
+		options.Update().SetArrayFilters(options.ArrayFilters{
+			Filters: []interface{}{bson.M{
+				"ele._id": addr_id_hex,
+			}},
+		}),
+	)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

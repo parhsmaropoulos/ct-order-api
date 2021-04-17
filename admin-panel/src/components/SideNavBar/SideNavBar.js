@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from "react";
+import React, { Component } from "react";
 // import { Nav, Navbar } from "react-bootstrap";
 import { SideNavBarData } from "./SideNavBarData";
 import { Link } from "react-router-dom";
@@ -14,7 +14,7 @@ class SideNavBar extends Component {
       <div className="Sidebar">
         <div className="Sidebarlogo">
           <div className="row">
-            <img width={64} height={64} className="mr-3" />
+            <img width={64} height={64} className="mr-3" alt="sidebar-logo" />
             <div>
               <div id="title">{options.ShopTitle}</div>
               <div id="subtitle">{options.ShopSubTitle}</div>

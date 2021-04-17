@@ -83,6 +83,7 @@ func ExtractToken(r *http.Request) string {
 	bearToken := r.Header.Get("Authorization")
 	//normally Authorization the_token_xxx
 	strArr := strings.Split(bearToken, " ")
+	fmt.Print(len(strArr))
 	if len(strArr) == 2 {
 		return strArr[1]
 	}
@@ -127,13 +128,20 @@ func ExtractTokenMetadata(r *http.Request) (*AccessDetails, error) {
 		return nil, err
 	}
 	claims, ok := token.Claims.(jwt.MapClaims)
+	// fmt.Println("CLAIMS AND OK")
+	// fmt.Println(claims, ok)
 	if ok && token.Valid {
+
 		accessUuid, ok := claims["access_uuid"].(string)
+		// fmt.Println("ACCESS AND OK")
+		// fmt.Println(accessUuid, ok)
 		if !ok {
 			return nil, err
 		}
 		// userId, err := strconv.ParseUint(fmt.Sprintf("%.f", claims["user_id"]), 10, 64)
-		userId, err := primitive.ObjectIDFromHex(fmt.Sprintf("%s", claims["user_id"]))
+		userId, err := primitive.ObjectIDFromHex(fmt.Sprintf("%s", claims["user"].(map[string]interface{})["id"]))
+		// fmt.Println("USERID AND ERR")
+		// fmt.Println(userId, err)
 		if err != nil {
 			return nil, err
 		}
