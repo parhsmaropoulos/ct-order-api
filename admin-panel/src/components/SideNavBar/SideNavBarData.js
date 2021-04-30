@@ -1,5 +1,4 @@
-import React, { Component, PropTypes } from "react";
-import { Nav } from "react-bootstrap";
+import React from "react";
 import {
   PlusCircleFill,
   BarChartFill,

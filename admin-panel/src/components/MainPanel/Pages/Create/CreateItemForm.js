@@ -9,7 +9,7 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import Checkbox from "@material-ui/core/Checkbox";
-import { Collapse, FormControlLabel } from "@material-ui/core";
+import { Collapse, FormControlLabel, ListSubheader } from "@material-ui/core";
 import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
 
@@ -24,15 +24,17 @@ class CreateItemForm extends Component {
       filename: "Choose product image *",
       source: "",
       image: null,
-      checkedIngredients: [""],
+      extra_ingredients: [""],
       checkedChoices: [-1],
       hasIngredients: false,
       showChoices: false,
+      isCustom: false,
       choices: [],
     };
     this.onChange = this.onChange.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
     this.onChangeCheck = this.onChangeCheck.bind(this);
+    this.onCustomChange = this.onCustomChange.bind(this);
     this.showChoices = this.showChoices.bind(this);
   }
 
@@ -55,12 +57,16 @@ class CreateItemForm extends Component {
       description: this.state.description,
       price: parseFloat(this.state.price),
       category: this.state.category,
-      ingredients: this.state.checkedIngredients.slice(1),
+      ingredients: this.state.extra_ingredients.slice(1),
       choices: this.state.choices,
+      custom: this.state.isCustom,
     };
-    for (var i in this.state.checkedChoices.slice(1)) {
-      item.choices.push(this.props.choices[i]);
+    for (var i in this.state.checkedChoices) {
+      if (this.state.checkedChoices[i] !== -1) {
+        item.choices.push(this.props.choices[this.state.checkedChoices[i]]);
+      }
     }
+    console.log(item.choices);
     const image = this.state.image;
     // console.log(item);
     this.props.create_product(item, image);
@@ -72,17 +78,18 @@ class CreateItemForm extends Component {
       filename: "Choose product image *",
       source: "",
       image: null,
-      checkedIngredients: [""],
+      extra_ingredients: [""],
       checkedChoices: [-1],
       hasIngredients: false,
       showChoices: false,
+      isCustom: false,
       choices: [],
     });
   }
 
   handleToggle = (value) => {
-    const currentIndex = this.state.checkedIngredients.indexOf(value);
-    const newChecked = [...this.state.checkedIngredients];
+    const currentIndex = this.state.extra_ingredients.indexOf(value);
+    const newChecked = [...this.state.extra_ingredients];
 
     if (currentIndex === -1) {
       newChecked.push(value);
@@ -91,7 +98,7 @@ class CreateItemForm extends Component {
     }
 
     this.setState({
-      checkedIngredients: newChecked,
+      extra_ingredients: newChecked,
     });
   };
 
@@ -108,6 +115,7 @@ class CreateItemForm extends Component {
     this.setState({
       checkedChoices: newChecked,
     });
+    console.log(newChecked);
   };
 
   onChangeCheck() {
@@ -117,6 +125,10 @@ class CreateItemForm extends Component {
     } else {
       document.getElementById("ingredient-list").style.display = "block";
     }
+  }
+
+  onCustomChange() {
+    this.setState({ isCustom: !this.state.isCustom });
   }
 
   onChange = (e) => {
@@ -151,7 +163,11 @@ class CreateItemForm extends Component {
       filename: e.target.files[0].name,
     });
   };
+
+  componentDidMount() {}
+
   render() {
+    // console.log(this.props.ingredients);
     // console.log(this.state);
     return (
       <Form onSubmit={this.onSubmit}>
@@ -246,6 +262,19 @@ class CreateItemForm extends Component {
             onChange={this.onFileChange}
           />
         </Form.Group>
+        <Form.Group controlId="customProduct">
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={this.state.isCustom}
+                onChange={this.onCustomChange}
+                name="isCustom"
+                color="primary"
+              />
+            }
+            label="Is product custom?"
+          />
+        </Form.Group>
         <Form.Group controlId="ingredients">
           <FormControlLabel
             control={
@@ -262,32 +291,45 @@ class CreateItemForm extends Component {
             style={{ display: "none" }}
             className="create-item-ingredient-list"
             id="ingredient-list"
+            subhead={<li />}
           >
-            {this.props.ingredients.map((ingredient, index) => {
-              const labelId = `ingredient-item-${ingredient.name}`;
+            {this.props.ingredients.map((ingredientCategory, index) => {
               return (
-                <ListItem
-                  key={index}
-                  role={undefined}
-                  dense
-                  button
-                  onClick={() => this.handleToggle(ingredient.name)}
-                >
-                  <ListItemIcon>
-                    <Checkbox
-                      edge="start"
-                      checked={
-                        this.state.checkedIngredients.indexOf(
-                          ingredient.name
-                        ) !== -1
-                      }
-                      tabIndex={-1}
-                      disableRipple
-                      inputProps={{ "aria-labelledby": labelId }}
-                    />
-                    <ListItemText id={labelId} primary={`${ingredient.name}`} />
-                  </ListItemIcon>
-                </ListItem>
+                <li key={index}>
+                  <ul>
+                    <ListSubheader>{`${ingredientCategory[0].category}`}</ListSubheader>
+                    {ingredientCategory.map((ingredient, index) => {
+                      const labelId = `ingredient-item-${ingredient.name}`;
+                      return (
+                        <ListItem
+                          key={index}
+                          role={undefined}
+                          dense
+                          button
+                          onClick={() => this.handleToggle(ingredient.name)}
+                        >
+                          <ListItemIcon>
+                            <Checkbox
+                              edge="start"
+                              checked={
+                                this.state.extra_ingredients.indexOf(
+                                  ingredient.name
+                                ) !== -1
+                              }
+                              tabIndex={-1}
+                              disableRipple
+                              inputProps={{ "aria-labelledby": labelId }}
+                            />
+                            <ListItemText
+                              id={labelId}
+                              primary={`${ingredient.name}`}
+                            />
+                          </ListItemIcon>
+                        </ListItem>
+                      );
+                    })}
+                  </ul>
+                </li>
               );
             })}
           </List>

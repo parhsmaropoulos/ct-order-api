@@ -1,8 +1,17 @@
 import React, { Component } from "react";
 import { Button, Col, Container, Form, Modal, Row } from "react-bootstrap";
 import "../../../../css/Pages/orderpage.css";
+import "../../../../css/Layout/general.css";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
+import {
+  Checkbox,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Typography,
+} from "@material-ui/core";
 
 class OrderItemModal extends Component {
   constructor(props) {
@@ -14,6 +23,7 @@ class OrderItemModal extends Component {
       comment: "",
       extraPrice: 0,
       item: {},
+      extra_ingredients: [""],
     };
     this.onSubmit = this.onSubmit.bind(this);
     this.onClose = this.onClose.bind(this);
@@ -22,6 +32,7 @@ class OrderItemModal extends Component {
 
   static propTypes = {
     isAuthenticated: PropTypes.bool,
+    ingredients: PropTypes.array.isRequired,
   };
 
   componentDidMount() {
@@ -31,6 +42,7 @@ class OrderItemModal extends Component {
         options: this.props.updateItem.options,
         quantity: this.props.updateItem.quantity,
         comment: this.props.updateItem.comment,
+        extra_ingredients: this.props.updateItem.extra_ingredients,
         extraPrice:
           this.props.updateItem.totalPrice / this.props.updateItem.quantity -
           this.props.updateItem.item.price,
@@ -41,6 +53,26 @@ class OrderItemModal extends Component {
   componentWillUnmount() {
     // console.log("im leaving");
   }
+
+  handleToggle = (ingredient) => {
+    const currentIndex = this.state.extra_ingredients.indexOf(ingredient.name);
+    const newChecked = [...this.state.extra_ingredients];
+    let newPrice = this.state.extraPrice;
+
+    console.log(ingredient.name);
+    if (currentIndex === -1) {
+      newChecked.push(ingredient.name);
+      newPrice += ingredient.price;
+    } else {
+      newChecked.splice(currentIndex, 1);
+      newPrice -= ingredient.price;
+    }
+
+    this.setState({
+      extra_ingredients: newChecked,
+      extraPrice: newPrice,
+    });
+  };
 
   onSubmit(e) {
     e.preventDefault();
@@ -61,7 +93,11 @@ class OrderItemModal extends Component {
       comment: this.state.comment,
       extraPrice: this.state.extraPrice,
       optionAnswers: optionAnswers,
+      extra_ingredients: this.state.extra_ingredients.slice(1),
     };
+    if (this.props.update) {
+      item.extra_ingredients = this.state.extra_ingredients;
+    }
     console.log(item);
     if (this.props.update) {
       this.props.onUpdate &&
@@ -75,6 +111,7 @@ class OrderItemModal extends Component {
       quantity: 1,
       comment: "",
       extraPrice: 0,
+      extraIngredients: [""],
     });
   }
 
@@ -144,6 +181,7 @@ class OrderItemModal extends Component {
 
   render() {
     let text = "";
+    console.log(this.props);
     if (!this.props.show) {
       return null;
     } else {
@@ -163,9 +201,10 @@ class OrderItemModal extends Component {
         onHide={(e) => {
           this.onClose(e);
         }}
-        id="orderItemModal"
+        // id="orderItemModal"
+        id="alertModal"
       >
-        <Modal.Header className="modalHeader">
+        <Modal.Header className="alertModalHeader">
           <Container fluid>
             <Row>
               <Col className="modalHeaderTitle">
@@ -193,84 +232,172 @@ class OrderItemModal extends Component {
           </Container>
         </Modal.Header>
         <Modal.Body className="modalBody">
-          <Container fluid>
+          {/* <Container fluid> */}
+          <div className="alertModalMessageDiv">
             <Form>
-              {this.props.item.choices.map((choice, indx) => {
-                return (
-                  <div key={indx}>
-                    <p className="modalChoiceName">
-                      {choice.name}
-                      {choice.required ? <span>*</span> : <span></span>}
-                    </p>
-                    <div className="orderItemModalChoiceDiv" key={indx}>
-                      {choice.options.map((option, index) => {
-                        // if (this.props.update) {
-                        let show = false;
-                        for (var i in this.props.updateItem.options) {
-                          let update_option = this.props.updateItem.options[i];
-                          if (
-                            update_option.name === choice.name &&
-                            update_option.choice === option.name
-                          ) {
-                            show = true;
+              <Form.Group>
+                {this.props.item.choices.map((choice, indx) => {
+                  return (
+                    <div key={indx}>
+                      <p className="modalChoiceName">
+                        {choice.name}
+                        {choice.required ? <span>*</span> : <span></span>}
+                      </p>
+                      <div className="orderItemModalChoiceDiv" key={indx}>
+                        {choice.options.map((option, index) => {
+                          // if (this.props.update) {
+                          let show = false;
+                          for (var i in this.props.updateItem.options) {
+                            let update_option = this.props.updateItem.options[
+                              i
+                            ];
+                            if (
+                              update_option.name === choice.name &&
+                              update_option.choice === option.name
+                            ) {
+                              show = true;
+                            }
                           }
-                        }
-                        if (this.props.update && show) {
-                          return (
-                            <div className="form-check" key={index}>
-                              <input
-                                className="form-check-input"
-                                type="radio"
-                                name={`${choice.name}`}
-                                value={`${option.name}`}
-                                id={`${option.name}${index}`}
-                                onClick={() =>
-                                  this.onChangeChoice(choice.name, option)
-                                }
-                                defaultChecked
-                              />
-                              <label
-                                className="form-check-label"
-                                htmlFor={`${option.name}${index}`}
-                              >
-                                {option.name}
-                              </label>
-                              <span className="form-check-price">
-                                {option.price} €
-                              </span>
-                            </div>
-                          );
-                          // }
-                        } else {
-                          return (
-                            <div className="form-check" key={index}>
-                              <input
-                                className="form-check-input"
-                                type="radio"
-                                name={`${choice.name}`}
-                                value={`${option.name}`}
-                                id={`${option.name}${index}`}
-                                onClick={() =>
-                                  this.onChangeChoice(choice.name, option)
-                                }
-                              />
-                              <label
-                                className="form-check-label"
-                                htmlFor={`${option.name}${index}`}
-                              >
-                                {option.name}
-                              </label>
-                              <span className="form-check-price">
-                                {option.price} €
-                              </span>
-                            </div>
-                          );
-                        }
-                      })}
+                          if (this.props.update && show) {
+                            return (
+                              <div className="form-check" key={index}>
+                                <input
+                                  className="form-check-input"
+                                  type="radio"
+                                  name={`${choice.name}`}
+                                  value={`${option.name}`}
+                                  id={`${option.name}${index}`}
+                                  onClick={() =>
+                                    this.onChangeChoice(choice.name, option)
+                                  }
+                                  defaultChecked
+                                />
+                                <label
+                                  className="form-check-label"
+                                  htmlFor={`${option.name}${index}`}
+                                >
+                                  {option.name}
+                                </label>
+                                <span className="form-check-price">
+                                  {option.price} €
+                                </span>
+                              </div>
+                            );
+                            // }
+                          } else {
+                            return (
+                              <div className="form-check" key={index}>
+                                <input
+                                  className="form-check-input"
+                                  type="radio"
+                                  name={`${choice.name}`}
+                                  value={`${option.name}`}
+                                  id={`${option.name}${index}`}
+                                  onClick={() =>
+                                    this.onChangeChoice(choice.name, option)
+                                  }
+                                />
+                                <label
+                                  className="form-check-label"
+                                  htmlFor={`${option.name}${index}`}
+                                >
+                                  {option.name}
+                                </label>
+                                <span className="form-check-price">
+                                  {option.price} €
+                                </span>
+                              </div>
+                            );
+                          }
+                        })}
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </Form.Group>
+              {this.props.item.custom === true ? (
+                <Form.Group controlId="ingrdients">
+                  <List
+                    className="create-item-ingredient-list"
+                    id="ingredient-list"
+                  >
+                    {this.props.ingredients.map((ingredientCategory, index) => {
+                      return (
+                        <div key={index}>
+                          <p className="modalChoiceName">
+                            {`${ingredientCategory[0].category}`}
+                          </p>
+                          <div
+                            className="orderItemModalIngredientsDiv"
+                            key={index}
+                          >
+                            {ingredientCategory.map((ingredient, index) => {
+                              const labelId = `ingredient-item-${ingredient.name}`;
+                              return (
+                                <ListItem
+                                  key={index}
+                                  role={undefined}
+                                  dense
+                                  className="item-modal-ingredient-li"
+                                  // style={{ maxWidth: "50%", minWidth: "50%" }}
+                                  button
+                                  onClick={() => this.handleToggle(ingredient)}
+                                >
+                                  <ListItemIcon style={{ width: "100%" }}>
+                                    <Checkbox
+                                      edge="start"
+                                      checked={
+                                        this.state.extra_ingredients.indexOf(
+                                          ingredient.name
+                                        ) !== -1
+                                      }
+                                      tabIndex={-1}
+                                      disableRipple
+                                      inputProps={{
+                                        "aria-labelledby": labelId,
+                                      }}
+                                    />
+                                    <ListItemText
+                                      id={labelId}
+                                      primary={
+                                        <Typography
+                                          type="body2"
+                                          style={{
+                                            color: "black",
+                                            textAlgin: "center",
+                                          }}
+                                        >
+                                          {ingredient.name}
+                                        </Typography>
+                                      }
+                                    />
+                                    <ListItemText
+                                      id={labelId}
+                                      primary={
+                                        <Typography
+                                          type="subtitle1"
+                                          style={{
+                                            color: "black",
+                                            textAlign: "right",
+                                          }}
+                                        >
+                                          {ingredient.price} €
+                                        </Typography>
+                                      }
+                                    />
+                                  </ListItemIcon>
+                                </ListItem>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </List>
+                </Form.Group>
+              ) : (
+                <span></span>
+              )}
               <Form.Group>
                 <Form.Label className="modalChoiceName">Comments</Form.Label>
                 <Form.Control
@@ -283,7 +410,8 @@ class OrderItemModal extends Component {
                 />
               </Form.Group>
             </Form>
-          </Container>
+          </div>
+          {/* </Container> */}
         </Modal.Body>
         <Modal.Footer id="modalFooter">
           <Row className="modalFooterRow">
@@ -319,7 +447,8 @@ class OrderItemModal extends Component {
   }
 }
 const mapStateToProps = (state) => ({
-  isAuthenticated: state.isAuthenticated,
+  isAuthenticated: state.userReducer.isAuthenticated,
+  ingredients: state.productReducer.ingredients,
 });
 
 export default connect(mapStateToProps, {})(OrderItemModal);

@@ -75,6 +75,7 @@ class OrderMainPage extends Component {
       comment: item.comment,
       totalPrice: item.item.price * quantity + item.extraPrice * quantity,
       optionAnswers: item.optionAnswers,
+      extra_ingredients: item.extra_ingredients,
       quantity: quantity,
     };
     let cart_ = this.state.cart;
@@ -97,6 +98,7 @@ class OrderMainPage extends Component {
       extraPrice: item.extraPrice,
       totalPrice: item.item.price * quantity + item.extraPrice * quantity,
       optionAnswers: item.optionAnswers,
+      extra_ingredients: item.extra_ingredients,
       quantity: quantity,
     };
     this.setState({
@@ -272,7 +274,7 @@ class OrderMainPage extends Component {
       );
     }
     if (this.state.continueOrder) {
-      return <Redirect to="/pre_complete" />;
+      return <Redirect to="/order/pre_complete" />;
     }
     if (!this.props.isReady) {
       return <Redirect to="/home" />;
@@ -458,6 +460,25 @@ class OrderMainPage extends Component {
                                           {order_item.comment}
                                         </div>
                                       )}
+                                      <ul className="ingredientCartList">
+                                        {order_item.extra_ingredients.length >
+                                        0 ? (
+                                          order_item.extra_ingredients.map(
+                                            (ingredient, index) => {
+                                              return (
+                                                <li
+                                                  key={index}
+                                                  style={{ textAlign: "left" }}
+                                                >
+                                                  + {ingredient}
+                                                </li>
+                                              );
+                                            }
+                                          )
+                                        ) : (
+                                          <span></span>
+                                        )}
+                                      </ul>
                                     </Row>
                                   </Card.Body>
                                   <Card.Footer

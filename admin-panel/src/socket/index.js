@@ -22,3 +22,64 @@
 // }
 
 // export { connectSocket, socket };
+
+const url = "ws://localhost:8080/socket/ws";
+const socket = new WebSocket(url);
+
+let connect = (cb) => {
+  console.log("connecting");
+
+  socket.onopen = () => {
+    console.log("Successfully Connected");
+  };
+
+  socket.onmessage = (msg) => {
+    console.log(msg);
+    console.log(cb);
+    cb(msg);
+  };
+
+  socket.onclose = (event) => {
+    console.log("Socket Closed Connection: ", event);
+  };
+
+  socket.onerror = (error) => {
+    console.log("Socket Error: ", error);
+  };
+};
+
+let sendMsg = (msg) => {
+  console.log("sending msg: ", msg);
+  socket.send(msg);
+};
+// ws.onmessage = function (msg) {
+//   console.log(msg);
+//   //   insertMessage(JSON.parse(msg.data));
+// };
+
+// function sendMessage(message) {
+//   ws.send(JSON.stringify(message));
+// }
+
+export { connect, sendMsg };
+/**
+ * Insert a message into the UI
+ * @param {Message that will be displayed in the UI} messageObj
+ */
+// function insertMessage(messageObj) {
+//   // Create a div object which will hold the message
+//   const message = document.createElement("div");
+
+//   // Set the attribute of the message div
+//   message.setAttribute("class", "chat-message");
+//   console.log(
+//     "name: " + messageObj.username + " content: " + messageObj.content
+//   );
+//   message.textContent = `${messageObj.username}: ${messageObj.content}`;
+
+//   // Append the message to our chat div
+//   messages.appendChild(message);
+
+//   // Insert the message as the first message of our chat
+//   messages.insertBefore(message, messages.firstChild);
+// }

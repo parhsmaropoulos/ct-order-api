@@ -1,14 +1,5 @@
 import React, { Component } from "react";
-import {
-  Button,
-  Col,
-  Container,
-  Form,
-  Modal,
-  Row,
-  Tab,
-  Tabs,
-} from "react-bootstrap";
+import { Button, Col, Container, Modal, Row, Tab, Tabs } from "react-bootstrap";
 import { Facebook, Google } from "react-bootstrap-icons";
 import { connect } from "react-redux";
 import "../../css/Layout/logregmodal.css";

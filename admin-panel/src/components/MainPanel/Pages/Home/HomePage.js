@@ -1,7 +1,11 @@
 import React, { Component } from "react";
 import { Button, Container } from "react-bootstrap";
 import { connect } from "react-redux";
-import { get_items, get_categories } from "../../../../actions/items";
+import {
+  get_items,
+  get_categories,
+  get_ingredients,
+} from "../../../../actions/items";
 import PropTypes from "prop-types";
 
 // Images
@@ -20,11 +24,13 @@ class HomePage extends Component {
     if (this.props.productReducer.isReady === false) {
       this.props.get_items();
       this.props.get_categories();
+      this.props.get_ingredients();
     }
   }
   static propTypes = {
     get_items: PropTypes.func.isRequired,
     get_categories: PropTypes.func.isRequired,
+    get_ingredients: PropTypes.func.isRequired,
     productReducer: PropTypes.object.isRequired,
   };
 
@@ -90,6 +96,8 @@ const mapStateToProps = (state) => ({
   productReducer: state.productReducer,
 });
 
-export default connect(mapStateToProps, { get_items, get_categories })(
-  HomePage
-);
+export default connect(mapStateToProps, {
+  get_items,
+  get_categories,
+  get_ingredients,
+})(HomePage);

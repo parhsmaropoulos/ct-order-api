@@ -24,11 +24,12 @@ type UserDetails struct {
 }
 
 type OrderProduct struct {
-	Comment        string   `json:"comment"`
-	Extra_Price    float32  `json:"extraPrice"`
-	Item           Product  `json:"item"`
-	Option_Answers []string `json:"optionAnswers"`
-	Options        []struct {
+	Comment           string   `json:"comment"`
+	Extra_Price       float32  `json:"extraPrice"`
+	Extra_Ingredients []string `json:"extra_ingredients"`
+	Item              Product  `json:"item"`
+	Option_Answers    []string `json:"optionAnswers"`
+	Options           []struct {
 		Name   string
 		Choice string
 		Price  float32
@@ -196,6 +197,7 @@ func CreateOrder(c *gin.Context) {
 		log.Fatal(err)
 	}
 
+	c.HTML(http.StatusOK, "index.html", order)
 	c.JSON(http.StatusOK, gin.H{
 		"message":      "Order is sent!",
 		"order":        order,

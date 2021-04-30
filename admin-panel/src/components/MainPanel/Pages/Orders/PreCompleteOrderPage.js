@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import { Form } from "react-bootstrap";
 import "../../../../css/Pages/orderpage.css";
 import { Redirect } from "react-router";
 import { send_order } from "../../../../actions/orders";
@@ -12,17 +11,24 @@ import {
   FormControl,
   List,
   TextField,
+  CircularProgress,
+  FormControlLabel,
+  Checkbox,
 } from "@material-ui/core";
 import AddressModal from "../../../Layout/AddressModal";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import EditAddressModal from "../../../Layout/EditAddressModal";
+import { showErrorSnackbar } from "../../../../actions/snackbar";
 
 class PreCompleteOrderPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
       payment_type: "Cash",
+      payWithCard: false,
+      payWithCash: true,
+      payWithPaypal: false,
       deliveryOption: "Delivery",
       userDetails: {
         bellName: "",
@@ -38,10 +44,45 @@ class PreCompleteOrderPage extends Component {
     this.onSelectChange = this.onSelectChange.bind(this);
     this.onChange = this.onChange.bind(this);
     this.sendOrder = this.sendOrder.bind(this);
+    this.handlePaymentChange = this.handlePaymentChange.bind(this);
   }
+  handlePaymentChange = (type) => {
+    switch (type) {
+      case "cash":
+        document.getElementById("tip-div").style.display = "block";
+        this.setState({
+          payWithCard: false,
+          payWithCash: true,
+          payWithPaypal: false,
+          payment_type: "cash",
+        });
+        break;
+      case "card":
+        document.getElementById("tip-div").style.display = "none";
+        this.setState({
+          payWithCard: true,
+          payWithCash: false,
+          payWithPaypal: false,
+          payment_type: "card",
+        });
+        break;
+      case "paypal":
+        document.getElementById("tip-div").style.display = "none";
+        this.setState({
+          payWithCard: false,
+          payWithCash: false,
+          payWithPaypal: true,
+          payment_type: "paypal",
+        });
+        break;
+      default:
+        break;
+    }
+  };
 
   static propTypes = {
     send_order: PropTypes.func.isRequired,
+    showErrorSnackbar: PropTypes.func.isRequired,
   };
 
   selectAddressModal = (showadd, showedit, address) => {
@@ -77,7 +118,7 @@ class PreCompleteOrderPage extends Component {
       data.bell_name === "" ||
       data.phone === ""
     ) {
-      console.error("empty fields");
+      this.props.showErrorSnackbar("Please fill all the fields");
     } else {
       this.props.send_order(data);
     }
@@ -156,6 +197,14 @@ class PreCompleteOrderPage extends Component {
         />
       );
     }
+    if (this.props.orderReducer.pending) {
+      return (
+        // <Redirect to="/waiting" />
+        <div className="loading-div">
+          <CircularProgress disableShrink />;
+        </div>
+      );
+    }
     if (this.props.userReducer.isAuthenticated === false) {
       return <Redirect to="/home" />;
     } else {
@@ -176,6 +225,7 @@ class PreCompleteOrderPage extends Component {
                       name="deliveryOption"
                       onChange={this.onSelectChange}
                       required
+                      defaultChecked="Delivery"
                     >
                       <MenuItem value="Delivery">Delivery</MenuItem>
                       <MenuItem value="TakeAway">
@@ -217,14 +267,6 @@ class PreCompleteOrderPage extends Component {
                 <div className="pre-order-col-subdiv">
                   <form className="pre-order-info-form">
                     <div className="pre-order-info-form-row">
-                      {/* <Form.Label htmlFor="bellName">Κουδούνι *</Form.Label>
-                      <Form.Control
-                        type="text"
-                        name="bellName"
-                        placeholder="Όνομα στο κουδούνι"
-                        required
-                        onChange={this.onChange}
-                      /> */}
                       <TextField
                         id="bellName"
                         name="bellName"
@@ -237,15 +279,6 @@ class PreCompleteOrderPage extends Component {
                     </div>
                     <div className="pre-order-info-form-row">
                       <div className="form-custom-row-group">
-                        {/* <Form.Label htmlFor="floorNumber">Όροφος *</Form.Label>
-                        <Form.Control
-                          type="string"
-                          name="floorNumber"
-                          placeholder="Όροφος"
-                          required
-                        onChange={this.onChange}
-                          />
-                          */}
                         <TextField
                           id="floorNumber"
                           name="floorNumber"
@@ -257,17 +290,10 @@ class PreCompleteOrderPage extends Component {
                         />
                       </div>
                       <div className="form-custom-row-group">
-                        {/* <Form.Label>Τηλέφωνο επικοινωνίας</Form.Label>
-                        <Form.Control
-                          type="text"
-                          name="phone"
-                          placeholder="Τηλέφωνο επικοινωνίας"
-                          required
-                          onChange={this.onChange}
-                        /> */}
                         <TextField
                           id="phone"
-                          name="floorNumber"
+                          type="tel"
+                          name="phone"
                           label="Τηλέφωνο επικοινωνίας"
                           variant="outlined"
                           placeholder="Τηλέφωνο επικοινωνίας"
@@ -277,14 +303,6 @@ class PreCompleteOrderPage extends Component {
                       </div>
                     </div>
                     <div className="pre-order-info-form-row">
-                      {/* <Form.Label htmlFor="commentsInput">Σχόλια</Form.Label>
-                      <Form.Control
-                        as="textarea"
-                        name="comment"
-                        placeholder="Έξτρα σχόλια"
-                        required
-                        onChange={this.onChange}
-                      /> */}
                       <TextField
                         id="comments"
                         name="comment"
@@ -305,22 +323,47 @@ class PreCompleteOrderPage extends Component {
               <div className="pre-order-col-container">
                 <div className="pre-order-col-title">2. Payment Options</div>
                 <div className="pre-order-col-subdiv">
-                  <span>Κάρτα</span>
-                  <br />
-                  <span>payment-details</span>
-                  <br />
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={this.state.payWithCard}
+                        onChange={() => this.handlePaymentChange("card")}
+                        name="Card"
+                      />
+                    }
+                    label="Credit Card"
+                  />
                 </div>
                 <div className="pre-order-col-subdiv">
-                  <span>Paypal?</span>
-                  <br />
-                  <span>payment-details</span>
-                  <br />
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={this.state.payWithPaypal}
+                        onChange={() => this.handlePaymentChange("paypal")}
+                        name="Paypal"
+                      />
+                    }
+                    label="Paypal"
+                  />
                 </div>
                 <div className="pre-order-col-subdiv">
-                  <span>Μετρητα</span>
-                  <br />
-                  <span>payment-details</span>
-                  <br />
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={this.state.payWithCash}
+                        onChange={() => this.handlePaymentChange("cash")}
+                        name="Cash"
+                      />
+                    }
+                    label="Cash"
+                  />
+                </div>
+                <div
+                  className="pre-order-col-subdiv"
+                  id="tip-div"
+                  style={{ display: "block" }}
+                >
+                  tipss
                 </div>
               </div>
             </div>
@@ -372,11 +415,10 @@ class PreCompleteOrderPage extends Component {
   }
 }
 
-const mapStateToProps = (state) => (
-  console.log(state),
-  {
-    userReducer: state.userReducer,
-    orderReducer: state.orderReducer,
-  }
+const mapStateToProps = (state) => ({
+  userReducer: state.userReducer,
+  orderReducer: state.orderReducer,
+});
+export default connect(mapStateToProps, { send_order, showErrorSnackbar })(
+  PreCompleteOrderPage
 );
-export default connect(mapStateToProps, { send_order })(PreCompleteOrderPage);

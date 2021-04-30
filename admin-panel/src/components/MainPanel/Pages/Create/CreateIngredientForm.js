@@ -40,6 +40,13 @@ class CreateIngredientForm extends Component {
       category: this.state.category,
     };
     this.props.create_ingredient(ingredient);
+    this.setState({
+      name: "",
+      price: 0,
+      description: "",
+      category: "",
+      display: "none",
+    });
   }
   showNewCat = (bool) => {
     if (bool) {
@@ -131,13 +138,10 @@ class CreateIngredientForm extends Component {
   }
 }
 
-const mapStateToProps = (state) => (
-  console.log(state),
-  {
-    isAuthenticated: state.userReducer.isAuthenticated,
-    categories: state.productReducer.ingredientCategories,
-  }
-);
+const mapStateToProps = (state) => ({
+  isAuthenticated: state.userReducer.isAuthenticated,
+  categories: state.productReducer.ingredientCategories,
+});
 
 export default connect(mapStateToProps, { create_ingredient })(
   CreateIngredientForm

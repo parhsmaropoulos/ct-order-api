@@ -2,10 +2,15 @@ package main
 
 import (
 	models "GoProjects/CoffeeTwist/backend/models"
+	websock "GoProjects/CoffeeTwist/backend/websocket"
+
 	"fmt"
+	"io"
+	"log"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
-	socketio "github.com/googollee/go-socket.io"
+	"github.com/gorilla/websocket"
 )
 
 func CORS() gin.HandlerFunc {
@@ -24,57 +29,112 @@ func CORS() gin.HandlerFunc {
 	}
 }
 
+var upgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+
+	// We wil need to chec the origin
+	CheckOrigin: func(r *http.Request) bool { return true },
+}
+
+// define a reader which will listen for
+// new messages being sent to our WebSocket
+// endpoint
+func Reader(conn *websocket.Conn) {
+	for {
+		// read in a message
+		messageType, p, err := conn.ReadMessage()
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		// print out that message for clarity
+		fmt.Println(string(p))
+
+		if err := conn.WriteMessage(messageType, p); err != nil {
+			log.Println(err)
+			return
+		}
+
+	}
+}
+
+func Upgrade(w http.ResponseWriter, r *http.Request) (*websocket.Conn, error) {
+	ws, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Println(err)
+		return ws, err
+	}
+	return ws, nil
+}
+
+func Writer(conn *websocket.Conn) {
+	for {
+		fmt.Println("Sending")
+		messageType, r, err := conn.NextReader()
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		w, err := conn.NextWriter(messageType)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+		if _, err := io.Copy(w, r); err != nil {
+			fmt.Println(err)
+			return
+		}
+		if err := w.Close(); err != nil {
+			fmt.Println(err)
+			return
+		}
+	}
+}
+
+// define our WebSocket endpoint
+func serveWs(pool *websock.Pool, w http.ResponseWriter, r *http.Request) {
+	fmt.Println("WebSocket Endpoint Hit")
+	conn, err := Upgrade(w, r)
+	if err != nil {
+		fmt.Fprintf(w, "%+v\n", err)
+	}
+
+	client := &websock.Client{
+		Conn: conn,
+		Pool: pool,
+	}
+
+	pool.Register <- client
+	client.Read()
+}
+
 func main() {
 	// Initialize Mongo DB session / collections
 	models.Init()
 	// Initialize gin router
 	router := gin.Default()
+
+	// Initialize websocket pool
+	pool := websock.NewPool()
+	go pool.Start()
 	router.Use(CORS())
 
 	// Static folder for images/video etc
 	router.Static("/assets", "./assets")
-	// Initialize socket server
-	ioserver := socketio.NewServer(nil)
 
-	// Socket server basic actions
-	ioserver.OnConnect("/", func(s socketio.Conn) error {
-		s.SetContext("")
-		fmt.Println("connected:", s.ID())
-		return nil
-	})
+	router.LoadHTMLGlob("templates/*.html")
 
-	ioserver.OnEvent("/", "notice", func(s socketio.Conn, msg string) {
-		fmt.Println("notice:", msg)
-		s.Emit("reply", "have "+msg)
-	})
-
-	ioserver.OnEvent("/chat", "msg", func(s socketio.Conn, msg string) string {
-		s.SetContext(msg)
-		return "recv " + msg
-	})
-
-	ioserver.OnEvent("/", "bye", func(s socketio.Conn) string {
-		last := s.Context().(string)
-		s.Emit("bye", last)
-		s.Close()
-		return last
-	})
-
-	ioserver.OnError("/", func(s socketio.Conn, e error) {
-		fmt.Println("meet error:", e)
-	})
-
-	ioserver.OnDisconnect("/", func(s socketio.Conn, msg string) {
-		fmt.Println("closed", msg)
-	})
-
-	go ioserver.Serve()
-	defer ioserver.Close()
-
-	socket := router.Group("/socket.io")
+	socket := router.Group("/socket/")
 	{
-		socket.GET("/*any", gin.WrapH(ioserver))
-		socket.POST("/*any", gin.WrapH(ioserver))
+		socket.GET("/ws", func(c *gin.Context) {
+			serveWs(pool, c.Writer, c.Request)
+		})
+	}
+
+	panel := router.Group("/panel/")
+	{
+		panel.GET("/", models.HomePage)
 	}
 
 	users := router.Group("/user/")
@@ -135,50 +195,5 @@ func main() {
 		// RATINGS
 		orders.POST("/post_rate", models.TokenAuthMiddleware(), models.CreateRate)
 	}
-
-	// admin := router.Group("/admin/")
-	// {
-	// 	users := admin.Group("/users/")
-	// 	{
-
-	// 	}
-	// 	products := admin.Group("/products/")
-	// 	{
-
-	// 	}
-	// 	product_categories := admin.Group("/product_categories/")
-	// 	{
-
-	// 	}
-	// 	ingredients := admin.Group("/ingredients/")
-	// 	{
-
-	// 	}
-	// 	choices := admin.Group("/choices/")
-	// 	{
-
-	// 	}
-	// 	orders := admin.Group("/orders/")
-	// 	{
-
-	// 	}
-	// 	comments := admin.Group("/comments/")
-	// 	{
-
-	// 	}
-	// 	ratings := admin.Group("/ratings/")
-	// 	{
-
-	// 	}
-	// 	discounts := admin.Group("/discounts/")
-	// 	{
-
-	// 	}
-	// }
-	// images := router.Group("/images")
-	// {
-	// 	images.POST("/post", models.TokenAuthMiddleware(), models.PostImage)
-	// 	images.GET("/get", models.GetImage)
-	// }
 	router.Run()
 }

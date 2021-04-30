@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { send_order } from "../../../../actions/orders";
-import { update_item } from "../../../../actions/items";
+import { update_item, update_ingredient } from "../../../../actions/items";
 import { PencilFill } from "react-bootstrap-icons";
 
 class ItemsComponent extends Component {
@@ -23,9 +23,9 @@ class ItemsComponent extends Component {
   static propTypes = {
     send_order: PropTypes.func.isRequired,
     update_item: PropTypes.func.isRequired,
-    products: PropTypes.array.isRequired,
-    categories: PropTypes.array.isRequired,
-    ingredients: PropTypes.array.isRequired,
+    // products: PropTypes.array.isRequired,
+    // categories: PropTypes.array.isRequired,
+    // ingredients: PropTypes.array.isRequired,
     // user_id: PropTypes.string.isRequired,
     // order_accepted: PropTypes.bool.isRequired,
     // order_declined: PropTypes.bool.isRequired,
@@ -37,6 +37,9 @@ class ItemsComponent extends Component {
 
   changeAvailability(item) {
     this.props.update_item(item.id, item, "change_availability");
+  }
+  changeAvailabilityIngredient(item) {
+    this.props.update_ingredient(item.id, item, "change_availability");
   }
 
   render() {
@@ -91,7 +94,9 @@ class ItemsComponent extends Component {
                         <Form.Check
                           type="switch"
                           defaultChecked={ingredient.available}
-                          onChange={() => this.changeAvailability(ingredient)}
+                          onChange={() =>
+                            this.changeAvailabilityIngredient(ingredient)
+                          }
                           id={ingredient.id}
                           label="Available"
                         />
@@ -162,6 +167,8 @@ const mapStateToProps = (state) => ({
   order_sent: state.orderReducer.sent,
 });
 
-export default connect(mapStateToProps, { send_order, update_item })(
-  ItemsComponent
-);
+export default connect(mapStateToProps, {
+  send_order,
+  update_item,
+  update_ingredient,
+})(ItemsComponent);

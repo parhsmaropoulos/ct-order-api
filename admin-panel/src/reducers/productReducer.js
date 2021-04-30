@@ -38,9 +38,19 @@ const productReducer = (state = defaultState, action) => {
         categories: action.categories,
       };
     case GET_INGREDIENTS:
+      let grouped_ingredients = [];
+      let grouped;
+      var _ = require("lodash");
+      if (action.ingredients.length > 0) {
+        grouped = _.groupBy(action.ingredients, "category");
+        for (var i in grouped) {
+          grouped_ingredients.push(grouped[i]);
+        }
+      }
+      console.log(grouped_ingredients);
       return {
         ...state,
-        ingredients: action.ingredients,
+        ingredients: grouped_ingredients,
         ingredientCategories: action.categories,
       };
     case GET_CHOICES:
@@ -76,7 +86,7 @@ const productReducer = (state = defaultState, action) => {
       let newItems = { ...state.products };
 
       var indexOfItemToUpdate = 0;
-      for (var i in newItems) {
+      for (i in newItems) {
         if (newItems[i].id === action.new_item.id) {
           indexOfItemToUpdate = i;
         }
@@ -84,7 +94,8 @@ const productReducer = (state = defaultState, action) => {
       newItems[indexOfItemToUpdate] = action.new_item;
       console.log(newItems);
       return {
-        products: newItems,
+        ...state,
+        products: [newItems],
       };
     case DELETE_PRODUCT:
       return {

@@ -170,6 +170,23 @@
   flex-flow: row wrap;
 }
 
+.ingredientCartList {
+  list-style-type: none;
+  text-align: left;
+  padding-inline-start: 0;
+}
+
+.orderItemModalIngredientsDiv {
+  display: flex;
+  flex-flow: row wrap;
+}
+.item-modal-ingredient-li {
+  max-width: 50%;
+}
+.MuiButtonBase-root {
+  background-color: antiquewhite;
+}
+
 .form-check {
   width: 45%;
   display: flex;
@@ -317,6 +334,12 @@
   margin: 1%;
 }
 
+.loading-div {
+  width: 100%;
+  text-align: center;
+  margin-top: 15%;
+  margin-bottom: 15%;
+}
 @media only screen and (max-width: 600px) {
   .pre-order-container-body {
     flex-direction: column;

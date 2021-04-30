@@ -10,7 +10,6 @@ import {
   Switch,
   Redirect,
 } from "react-router-dom";
-
 // Pages
 import UsersPage from "./MainPanel/Pages/Users/UsersPage";
 import StatsPage from "./MainPanel/Pages/Stats/StatsPage";
@@ -30,7 +29,7 @@ import Footer from "./Layout/Footer";
 import LogRegModal from "./Layout/LogRegModal";
 
 // Socket.io
-// import { connectSocket, socket } from "../socket";
+// import { connect, sendMsg } from "../socket";
 
 // redux
 
@@ -48,7 +47,6 @@ import PrivateRoute from "./MainPanel/Pages/Home/PrivateRoute";
 import SuccessSnackbar from "./Layout/SnackBars/SuccessSnackbar";
 import InfoSnackbar from "./Layout/SnackBars/InfoSnackbar";
 import ErrorSnackbar from "./Layout/SnackBars/ErrorSnackbar";
-
 const alertOptions = {
   timeout: 3000,
   position: "top center",
@@ -94,26 +92,26 @@ class App extends Component {
               <Switch>
                 {/* PUBLIC ROUTES */}
                 <Route path="/home" component={HomePage} />
+                <Route path="/items" component={ItemsPage} />
                 <Route exact path="/">
                   <Redirect to="/home" />
                 </Route>
                 <Route path="/admin" component={AdminMainPage} />
                 <Route path="/orders" component={OrdersPage} />
                 <Route path="/users" component={UsersPage} />
-                <Route path="/items" component={ItemsPage} />
                 <Route path="/single_item" component={SingleItemPage} />
                 <Route
                   path="/single_ingredient"
                   component={SingleIngredientPage}
                 />
-                <Route exact path="/order" component={OrderMainPage} />
+                <Route path="/order" component={OrderMainPage} />
 
                 {/* PRIVATE ROUTES */}
                 <PrivateRoute path="/stats" component={StatsPage} />
                 <PrivateRoute path="/create_item" component={CreatePage} />
                 <PrivateRoute path="/all_users" component={AllUsersPage} />
                 <PrivateRoute
-                  path="/pre_complete"
+                  path="/order/pre_complete"
                   component={PreCompleteOrderPage}
                 />
                 {/* <Route path="/order_menu" component={OrderMenuPage} /> */}

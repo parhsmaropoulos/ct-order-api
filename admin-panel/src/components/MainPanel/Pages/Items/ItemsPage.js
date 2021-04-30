@@ -13,9 +13,9 @@ class ItemsPage extends Component {
     get_items: PropTypes.func.isRequired,
     get_categories: PropTypes.func.isRequired,
     get_ingredients: PropTypes.func.isRequired,
-    // products: PropTypes.array.isRequired,
-    // categories: PropTypes.array.isRequired,
-    // ingredients: PropTypes.array.isRequired,
+    products: PropTypes.array.isRequired,
+    categories: PropTypes.array.isRequired,
+    ingredients: PropTypes.array.isRequired,
     isAuthenticated: PropTypes.bool,
     isReady: PropTypes.bool,
   };
@@ -30,11 +30,10 @@ class ItemsPage extends Component {
   render() {
     return (
       <div>
-        <h1>ItemPage</h1>
         <ItemsComponent
-        // products={this.props.products}
-        // categories={this.props.categories}
-        // ingredients={this.props.ingredients}
+          products={this.props.products}
+          categories={this.props.categories}
+          ingredients={this.props.ingredients}
         />
       </div>
     );
@@ -42,9 +41,9 @@ class ItemsPage extends Component {
 }
 const mapStateToProps = (state) => ({
   isAuthenticated: state.userReducer.isAuthenticated,
-  // categories: state.productReducer.categories,
-  // products: state.productReducer.products,
-  // ingredients: state.productReducer.ingredients,
+  categories: state.productReducer.categories,
+  products: state.productReducer.products,
+  ingredients: state.productReducer.ingredients,
   isReady: state.productReducer.isReady,
 });
 

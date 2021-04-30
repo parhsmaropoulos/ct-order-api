@@ -30,10 +30,11 @@ type Product struct {
 	Image       string             `json:"image"`
 	Ingredients []string           `json:"ingredients"`
 	Choices     []Choice           `json:"choices"`
+	Custom      bool               `json:"custom"`
 	// Ingredients_Ids       []string           `json:"Ingrdients"`
-	// Extra_Ingredients_Ids []string           `json:"Extra_Ingredients"`
-	Available bool `json:"available"`
-	Visible   bool `json:"visible"`
+	Extra_Ingredients []string `json:"extra_ingredients"`
+	Available         bool     `json:"available"`
+	Visible           bool     `json:"visible"`
 	// Quantity  int8 `json:"quantity"`
 }
 
@@ -110,6 +111,7 @@ func CreateProduct(c *gin.Context) {
 		Category:    input.Category,
 		Image:       imageName,
 		Choices:     input.Choices,
+		Custom:      input.Custom,
 	}
 
 	if len(input.Ingredients) > 0 {
@@ -199,8 +201,8 @@ func GetProducts(c *gin.Context) {
 	// 	f, err := gridfs.Open(filename)
 	// }
 
-	res, _ := http.Get("http://localhost:8080/products/choices")
-	fmt.Println(res)
+	// res, _ := http.Get("http://localhost:8080/products/choices")
+	// fmt.Println(res)
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Products found",

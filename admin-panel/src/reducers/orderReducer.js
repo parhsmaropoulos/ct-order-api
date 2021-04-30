@@ -23,6 +23,7 @@ const orderReducer = (state = defaultState, action) => {
       return {
         ...state,
         sent: true,
+        pending: true,
         accepted: false,
       };
     case ORDER_ACCEPTED:

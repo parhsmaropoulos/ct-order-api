@@ -290,7 +290,7 @@ export const update_item = (id, product, reason) => (dispatch) => {
     })
     .catch((err) => {
       console.log(err);
-      dispatch(returnErrors(err, err.status));
+      // dispatch(returnErrors(err, err.status));
       dispatch({
         type: SNACKBAR_ERROR,
         message: err.response.data.message,

@@ -2,10 +2,35 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Grid } from "@material-ui/core";
 import "../../../../css/Pages/adminpage.css";
+import ChatHistory from "./ChatHistory";
+import { connect as c } from "../../../../socket/index";
 
 class AdminMainPage extends Component {
+  constructor(props) {
+    super(props);
+    c((msg) => {
+      console.log(msg);
+      this.setState((prevState) => ({
+        chatHistory: [...this.state.chatHistory, msg],
+      }));
+      console.log(this.state);
+    });
+    this.state = {
+      chatHistory: [],
+    };
+  }
   componentDidMount() {
     console.log(this.state);
+    // c((msg) => {
+    //   console.log("New Message");
+    //   this.setState((prevState) => ({
+    //     chatHistory: [...this.state.chatHistory, msg],
+    //   }));
+    //   console.log(this.state);
+    // });
+    // axios.get("http://localhost:8080/sse/handeshake").then((res) => {
+    //   console.log(res);
+    // });
   }
   static propTypes = {};
   render() {
@@ -24,6 +49,7 @@ class AdminMainPage extends Component {
             Container
           </Grid>
         </Grid>
+        <ChatHistory chatHistory={this.state.chatHistory} />
       </div>
     );
   }

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
@@ -14,12 +15,13 @@ import (
 
 type Comment struct {
 	// Comments []string `json:"comments"`
-	ID       primitive.ObjectID `bson:"_id" json:"id"`
-	Text     string             `json:"text"`
-	Answer   string             `json:"answer"`
-	Approved bool               `json:"approved"`
-	User_id  string             `json:"user_id"`
-	Order_id string             `json:"order_id"`
+	ID         primitive.ObjectID `bson:"_id" json:"id"`
+	Text       string             `json:"text"`
+	Answer     string             `json:"answer"`
+	Approved   bool               `json:"approved"`
+	User_id    string             `json:"user_id"`
+	Order_id   string             `json:"order_id"`
+	Created_at time.Time          `json:"created_at"`
 }
 
 func CreateComment(c *gin.Context) {
