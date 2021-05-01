@@ -5,6 +5,7 @@ import {
   get_items,
   get_categories,
   get_ingredients,
+  get_choices,
 } from "../../../../actions/items";
 import PropTypes from "prop-types";
 
@@ -25,12 +26,14 @@ class HomePage extends Component {
       this.props.get_items();
       this.props.get_categories();
       this.props.get_ingredients();
+      this.props.get_choices();
     }
   }
   static propTypes = {
     get_items: PropTypes.func.isRequired,
     get_categories: PropTypes.func.isRequired,
     get_ingredients: PropTypes.func.isRequired,
+    get_choices: PropTypes.func.isRequired,
     productReducer: PropTypes.object.isRequired,
   };
 
@@ -42,7 +45,12 @@ class HomePage extends Component {
             <Link to="/order">Order Now</Link>
           </Button>
           <Link to="/create_item">Create</Link>
+          <br />
           <Link to="/items">Items</Link>
+          <br />
+          <Link to="/ingredients">Ingredients</Link>
+          <br />
+          <Link to="/choices">Choices</Link>
         </div>
         {/* <Carousel>
           <Carousel.Item>
@@ -100,4 +108,5 @@ export default connect(mapStateToProps, {
   get_items,
   get_categories,
   get_ingredients,
+  get_choices,
 })(HomePage);

@@ -359,6 +359,9 @@ func (prod Product) UpdateProductValue(id string) error {
 			"description": prod.Description,
 			"price":       prod.Price,
 			"category":    prod.Category,
+			"choices":     prod.Choices,
+			"custom":      prod.Custom,
+			"ingredients": prod.Ingredients,
 		}},
 		options.Update(),
 	)

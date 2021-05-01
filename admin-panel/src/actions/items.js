@@ -17,6 +17,7 @@ import {
   SNACKBAR_SUCCESS,
   UPDATE_INGREDIENT,
   UPDATE_ITEM,
+  UPDATE_CHOICE,
 } from "./actions";
 import { returnErrors } from "./messages";
 
@@ -286,6 +287,33 @@ export const update_item = (id, product, reason) => (dispatch) => {
       dispatch({
         type: SNACKBAR_SUCCESS,
         message: "item updated successfully",
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+      // dispatch(returnErrors(err, err.status));
+      dispatch({
+        type: SNACKBAR_ERROR,
+        message: err.response.data.message,
+      });
+    });
+};
+
+export const update_choice = (id, choice) => (dispatch) => {
+  const body = {
+    id: id,
+    choice: choice,
+  };
+  axios
+    .put(`http://localhost:8080/products/update_choice`, body, headers)
+    .then((res) => {
+      dispatch({
+        type: UPDATE_CHOICE,
+        new_item: res.data.data,
+      });
+      dispatch({
+        type: SNACKBAR_SUCCESS,
+        message: "Choice updated successfully",
       });
     })
     .catch((err) => {

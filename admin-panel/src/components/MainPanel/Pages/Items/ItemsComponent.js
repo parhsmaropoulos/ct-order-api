@@ -23,12 +23,6 @@ class ItemsComponent extends Component {
   static propTypes = {
     send_order: PropTypes.func.isRequired,
     update_item: PropTypes.func.isRequired,
-    // products: PropTypes.array.isRequired,
-    // categories: PropTypes.array.isRequired,
-    // ingredients: PropTypes.array.isRequired,
-    // user_id: PropTypes.string.isRequired,
-    // order_accepted: PropTypes.bool.isRequired,
-    // order_declined: PropTypes.bool.isRequired,
   };
 
   componentDidMount() {
@@ -61,14 +55,6 @@ class ItemsComponent extends Component {
                 </li>
               );
             })}
-            <li
-              className="row"
-              onClick={() => this.changeCategory("ingredients")}
-            >
-              <div id="button" name="selectedCategory">
-                Ingredients
-              </div>
-            </li>
           </ul>
         </div>
         <Table bordered striped className="Itemstable">
@@ -84,6 +70,7 @@ class ItemsComponent extends Component {
           <tbody>
             {this.state.selectedCategory === "ingredients"
               ? this.props.ingredients.map((ingredient, index) => {
+                  // console.log(ingredient);
                   return (
                     <tr key={index}>
                       <td>{ingredient.name}</td>

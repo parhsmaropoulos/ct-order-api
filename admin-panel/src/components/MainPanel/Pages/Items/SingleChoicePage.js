@@ -1,14 +1,15 @@
 import { Checkbox, List, ListItem, ListItemText } from "@material-ui/core";
 import React, { Component } from "react";
-import { Button, Form, Modal, Col } from "react-bootstrap";
+import { Button, Modal, Col, Form } from "react-bootstrap";
 import { connect } from "react-redux";
-import { create_choice } from "../../../../actions/items";
+import { update_choice } from "../../../../actions/items";
 import PropTypes from "prop-types";
 
-class CreateChoiceForm extends Component {
+class SingleChoicePage extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      id: 0,
       name: "",
       desctription: "",
       options: [],
@@ -26,8 +27,20 @@ class CreateChoiceForm extends Component {
     this.onSumbit = this.onSubmit.bind(this);
   }
 
+  componentWillMount() {
+    let choice = this.props.location.state.choice;
+    this.setState({
+      id: choice.id,
+      name: choice.name,
+      description: choice.description,
+      options: choice.options,
+      multiple: choice.multiple,
+      required: choice.required,
+    });
+  }
+
   static propTypes = {
-    create_choice: PropTypes.func.isRequired,
+    update_choice: PropTypes.func.isRequired,
   };
 
   removeOption = (index) => {
@@ -41,7 +54,6 @@ class CreateChoiceForm extends Component {
   };
 
   handleShow = () => {
-    console.log("open");
     this.setState({ show: true });
   };
   handleClose = () => {
@@ -63,14 +75,15 @@ class CreateChoiceForm extends Component {
     event.preventDefault();
 
     const choice = {
+      id: this.state.id,
       name: this.state.name,
       description: this.state.description,
       required: this.state.required,
       multiple: this.state.multiple,
       options: this.state.options,
     };
-    console.log(choice);
-    this.props.create_choice(choice);
+    // console.log(choice);
+    this.props.update_choice(choice.id, choice);
   }
 
   render() {
@@ -82,6 +95,7 @@ class CreateChoiceForm extends Component {
             <Form.Control
               name="name"
               type="text"
+              value={this.state.name}
               placeholder="Enter name"
               required
               onChange={this.onChange}
@@ -92,6 +106,7 @@ class CreateChoiceForm extends Component {
             <Form.Control
               name="description"
               type="text"
+              value={this.state.description}
               placeholder="Enter description"
               required
               onChange={this.onChange}
@@ -135,7 +150,7 @@ class CreateChoiceForm extends Component {
               Add option
             </Button>
             <Button variant="primary" type="submit">
-              Save choice
+              Update choice
             </Button>
           </Form.Row>
         </Form>
@@ -183,4 +198,7 @@ class CreateChoiceForm extends Component {
   }
 }
 
-export default connect(null, { create_choice })(CreateChoiceForm);
+const mapStateToProps = (state) => ({
+  isAuthenticated: state.userReducer.isAuthenticated,
+});
+export default connect(mapStateToProps, { update_choice })(SingleChoicePage);

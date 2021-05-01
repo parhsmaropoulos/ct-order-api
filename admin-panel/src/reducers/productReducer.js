@@ -47,7 +47,7 @@ const productReducer = (state = defaultState, action) => {
           grouped_ingredients.push(grouped[i]);
         }
       }
-      console.log(grouped_ingredients);
+      // console.log(grouped_ingredients);
       return {
         ...state,
         ingredients: grouped_ingredients,

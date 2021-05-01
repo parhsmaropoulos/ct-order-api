@@ -47,10 +47,57 @@ import PrivateRoute from "./MainPanel/Pages/Home/PrivateRoute";
 import SuccessSnackbar from "./Layout/SnackBars/SuccessSnackbar";
 import InfoSnackbar from "./Layout/SnackBars/InfoSnackbar";
 import ErrorSnackbar from "./Layout/SnackBars/ErrorSnackbar";
+import NotFound from "./Layout/NotFound";
+import SingleChoicePage from "./MainPanel/Pages/Items/SingleChoicePage";
+
 const alertOptions = {
   timeout: 3000,
   position: "top center",
 };
+
+// const routes = [
+//   {
+//     path: "/home",
+//     component: HomePage,
+//   },
+//   {
+//     path: "/",
+//     component: HomePage,
+//   },
+//   {
+//     path: "/items",
+//     component: ItemsPage,
+//   },
+//   {
+//     path: "/ingredients",
+//     component: ItemsPage,
+//   },
+//   {
+//     path: "/choices",
+//     component: ItemsPage,
+//   },
+//   {
+//     path: "/order",
+//     component: OrderMainPage,
+//   },
+//   {
+//     path: "/pre_complete",
+//     component: PreCompleteOrderPage,
+//   },
+// ];
+
+// function RouteWithSubRoutes(route) {
+//   return (
+//     <Route
+//       path={route.path}
+//       component={route.Component}
+//       // render={(props) => (
+//       //   // pass the sub-routes down to keep nesting
+//       //   <route.component {...props} routes={route.routes} />
+//       // )}
+//     />
+//   );
+// }
 
 class App extends Component {
   constructor() {
@@ -90,30 +137,34 @@ class App extends Component {
             {/* <AlertsOverlay /> */}
             <Container fluid id="Panel">
               <Switch>
+                {/* {routes.map((route, i) => (
+                  <RouteWithSubRoutes key={i} {...route} />
+                ))} */}
                 {/* PUBLIC ROUTES */}
                 <Route path="/home" component={HomePage} />
                 <Route path="/items" component={ItemsPage} />
+                <Route path="/ingredients" component={ItemsPage} />
+                <Route path="/choices" component={ItemsPage} />
                 <Route exact path="/">
                   <Redirect to="/home" />
                 </Route>
+                <Route path="/order" component={OrderMainPage} />
+                <Route path="/pre_complete" component={PreCompleteOrderPage} />
+                {/* ADMIN ROUTES */}
                 <Route path="/admin" component={AdminMainPage} />
                 <Route path="/orders" component={OrdersPage} />
                 <Route path="/users" component={UsersPage} />
+
                 <Route path="/single_item" component={SingleItemPage} />
                 <Route
                   path="/single_ingredient"
                   component={SingleIngredientPage}
                 />
-                <Route path="/order" component={OrderMainPage} />
-
+                <Route path="/single_choice" component={SingleChoicePage} />
                 {/* PRIVATE ROUTES */}
                 <PrivateRoute path="/stats" component={StatsPage} />
                 <PrivateRoute path="/create_item" component={CreatePage} />
                 <PrivateRoute path="/all_users" component={AllUsersPage} />
-                <PrivateRoute
-                  path="/order/pre_complete"
-                  component={PreCompleteOrderPage}
-                />
                 {/* <Route path="/order_menu" component={OrderMenuPage} /> */}
                 <PrivateRoute exact path="/account" component={MainPage} />
                 <PrivateRoute
@@ -131,6 +182,9 @@ class App extends Component {
                   path="/account/ratings"
                   component={UserRatings}
                 />
+                <Route path="*">
+                  <NotFound />
+                </Route>
               </Switch>
             </Container>
             <Footer className="footer" />

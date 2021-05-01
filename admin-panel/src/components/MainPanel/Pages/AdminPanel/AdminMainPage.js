@@ -10,6 +10,7 @@ class AdminMainPage extends Component {
     super(props);
     c((msg) => {
       console.log(msg);
+      console.log(JSON.parse(JSON.parse(msg.data).body));
       this.setState((prevState) => ({
         chatHistory: [...this.state.chatHistory, msg],
       }));

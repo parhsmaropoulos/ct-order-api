@@ -10,6 +10,7 @@ import { showInfoSnackbar } from "../../../../actions/snackbar";
 import AlertModal from "../Alert/AlertModal";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { TextField, Typography } from "@material-ui/core";
+import { Link } from "react-router-dom";
 
 var _ = require("lodash");
 
@@ -218,7 +219,7 @@ class OrderMainPage extends Component {
   };
 
   componentDidMount() {
-    console.log(this.props.products);
+    // console.log(this.props.products);
     if (!this.props.isReady) {
       return <Redirect to="/home" />;
     }
@@ -274,7 +275,7 @@ class OrderMainPage extends Component {
       );
     }
     if (this.state.continueOrder) {
-      return <Redirect to="/order/pre_complete" />;
+      return <Redirect to="/pre_complete" />;
     }
     if (!this.props.isReady) {
       return <Redirect to="/home" />;
@@ -544,7 +545,7 @@ class OrderMainPage extends Component {
                       onClick={this.continueOrder}
                     >
                       Συνέχεια
-                      {/* <Link to="pre_complete">Συνέχεια</Link> */}
+                      {/* <Link to="/order/pre_complete">Συνέχεια</Link> */}
                     </Button>
                     <br />
                     <Card.Text

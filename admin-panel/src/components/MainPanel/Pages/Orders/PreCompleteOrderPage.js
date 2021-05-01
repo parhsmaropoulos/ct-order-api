@@ -20,10 +20,14 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import EditAddressModal from "../../../Layout/EditAddressModal";
 import { showErrorSnackbar } from "../../../../actions/snackbar";
+import { connect as con, sendOrder } from "../../../../socket";
 
 class PreCompleteOrderPage extends Component {
   constructor(props) {
     super(props);
+    con((msg) => {
+      console.log("Entered");
+    });
     this.state = {
       payment_type: "Cash",
       payWithCard: false,
@@ -96,7 +100,7 @@ class PreCompleteOrderPage extends Component {
 
   sendOrder = (e) => {
     // check input requirements
-    const data = {
+    const order = {
       products: this.props.orderReducer.products,
       user_id: this.props.userReducer.user.id,
       delivery_type: this.state.deliveryOption,
@@ -111,18 +115,22 @@ class PreCompleteOrderPage extends Component {
     };
 
     if (
-      data.delivery_type === "" ||
-      data.payment_type === "" ||
-      data.address === "" ||
-      data.floor === "" ||
-      data.bell_name === "" ||
-      data.phone === ""
+      order.delivery_type === "" ||
+      order.payment_type === "" ||
+      order.address === "" ||
+      order.floor === "" ||
+      order.bell_name === "" ||
+      order.phone === ""
     ) {
       this.props.showErrorSnackbar("Please fill all the fields");
     } else {
-      this.props.send_order(data);
+      // this.props.send_order(data);
+      let data = {
+        order: order,
+      };
+      sendOrder(data);
     }
-    console.log(data);
+    console.log(order);
   };
 
   onChange = (e) => {
@@ -159,6 +167,7 @@ class PreCompleteOrderPage extends Component {
   };
 
   componentDidMount() {
+    console.log("here");
     if (this.props.userReducer.isAuthenticated === false) {
       return <Redirect to="/home" />;
     }
@@ -225,7 +234,7 @@ class PreCompleteOrderPage extends Component {
                       name="deliveryOption"
                       onChange={this.onSelectChange}
                       required
-                      defaultChecked="Delivery"
+                      defaultValue="Delivery"
                     >
                       <MenuItem value="Delivery">Delivery</MenuItem>
                       <MenuItem value="TakeAway">
@@ -243,6 +252,7 @@ class PreCompleteOrderPage extends Component {
                       labelId="selectAddressLabel"
                       id="selectAddress"
                       name="selectedAddress"
+                      defaultValue={this.props.userReducer.user.addresses[0]}
                       onChange={this.onAddressChange}
                       required
                     >

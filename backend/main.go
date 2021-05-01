@@ -146,7 +146,6 @@ func main() {
 		users.POST("/login", models.Login)
 		users.POST("/logout", models.Logout)
 		users.GET("/:id", models.GetSingleUser)
-		// users.POST("/logout", models.TokenAuthMiddleware(), models.Logout)
 	}
 	token := router.Group("/token/")
 	{
@@ -184,7 +183,7 @@ func main() {
 	orders := router.Group("/orders/")
 	{
 		// ORDERS
-		orders.POST("/send_order", models.CreateOrder)
+		orders.POST("/send_order", models.TokenAuthMiddleware(), models.CreateOrder)
 		orders.PUT("/update_order", models.UpdateOrder)
 		orders.GET("/:id", models.GetSingleOrder)
 		// orders.DELETE("/delete_order", models.DeleteOrder)

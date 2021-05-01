@@ -98,7 +98,7 @@ class OrderItemModal extends Component {
     if (this.props.update) {
       item.extra_ingredients = this.state.extra_ingredients;
     }
-    console.log(item);
+    // console.log(item);
     if (this.props.update) {
       this.props.onUpdate &&
         this.props.onUpdate(item, this.state.quantity, this.props.index);
@@ -181,7 +181,7 @@ class OrderItemModal extends Component {
 
   render() {
     let text = "";
-    console.log(this.props);
+    // console.log(this.props);
     if (!this.props.show) {
       return null;
     } else {
