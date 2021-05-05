@@ -68,11 +68,11 @@ func CreateAuth(userid primitive.ObjectID, td *TokenDetails) error {
 
 	enc_id := userid.Hex()
 
-	errAccess := Redis_client.Set(context.Background(), td.AccessUuid, enc_id, at.Sub(now)).Err()
+	errAccess := Redis_client.Set(td.AccessUuid, enc_id, at.Sub(now)).Err()
 	if errAccess != nil {
 		return errAccess
 	}
-	errRefresh := Redis_client.Set(context.Background(), td.RefreshUuid, enc_id, rt.Sub(now)).Err()
+	errRefresh := Redis_client.Set(td.RefreshUuid, enc_id, rt.Sub(now)).Err()
 	if errRefresh != nil {
 		return errRefresh
 	}
@@ -154,7 +154,7 @@ func ExtractTokenMetadata(r *http.Request) (*AccessDetails, error) {
 }
 
 func FetchAuth(authD *AccessDetails) (uint64, error) {
-	userid, err := Redis_client.Get(context.Background(), authD.AccessUuid).Result()
+	userid, err := Redis_client.Get(authD.AccessUuid).Result()
 	if err != nil {
 		return 0, err
 	}
@@ -163,7 +163,7 @@ func FetchAuth(authD *AccessDetails) (uint64, error) {
 }
 
 func DeleteAuth(givenId string) (int64, error) {
-	deleted, err := Redis_client.Del(context.Background(), givenId).Result()
+	deleted, err := Redis_client.Del(givenId).Result()
 	if err != nil {
 		return 0, err
 	}

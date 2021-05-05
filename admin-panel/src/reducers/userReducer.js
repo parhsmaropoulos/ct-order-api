@@ -52,7 +52,7 @@ const userReducer = (state = defaultState, action) => {
         error: "",
       };
     case USER_LOADED:
-      localStorage.setItem("isLoading", false);
+      localStorage.setItem("isAuthenticated", true);
       return {
         ...state,
         isAuthenticated: true,
@@ -61,6 +61,7 @@ const userReducer = (state = defaultState, action) => {
       };
     case LOGIN_SUCCESS:
       localStorage.setItem("token", action.token);
+      sessionStorage.setItem("isAuthenticated", true);
       // console.log(action);
       return {
         ...state,
@@ -79,8 +80,6 @@ const userReducer = (state = defaultState, action) => {
       };
     case REGISTER_SUCCESS:
       localStorage.setItem("token", action.payload.token);
-      // localStorage.setItem("isAuthenticated", true);
-      // localStorage.setItem("isLoading",false);
       return {
         ...state,
         ...action.payload,
@@ -90,6 +89,7 @@ const userReducer = (state = defaultState, action) => {
       };
     case LOGOUT_SUCCESS:
       localStorage.removeItem("token");
+      sessionStorage.removeItem("isAuthenticated");
       return {
         ...state,
         token: null,
@@ -110,7 +110,6 @@ const userReducer = (state = defaultState, action) => {
         isAuthenticated: false,
         isLoading: false,
       };
-
     default:
       return state;
   }

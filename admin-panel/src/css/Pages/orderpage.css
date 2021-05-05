@@ -340,6 +340,10 @@
   margin-top: 15%;
   margin-bottom: 15%;
 }
+
+.list-group-item {
+  cursor: pointer;
+}
 @media only screen and (max-width: 600px) {
   .pre-order-container-body {
     flex-direction: column;

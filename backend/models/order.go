@@ -197,9 +197,8 @@ func CreateOrder(c *gin.Context) {
 		log.Fatal(err)
 	}
 
-	c.HTML(http.StatusOK, "index.html", order)
 	c.JSON(http.StatusOK, gin.H{
-		"message":      "Order is sent!",
+		"message":      "Order has been created!",
 		"order":        order,
 		"user_details": userDetails,
 	})

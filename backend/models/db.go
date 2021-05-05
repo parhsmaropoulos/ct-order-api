@@ -68,7 +68,7 @@ func Init() {
 	Redis_client = redis.NewClient(&redis.Options{
 		Addr: dsn, //redis port
 	})
-	_, err = Redis_client.Ping(ctx).Result()
+	_, err = Redis_client.Ping().Result()
 	if err != nil {
 		panic(err)
 	}

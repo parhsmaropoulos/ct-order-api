@@ -2,15 +2,10 @@ package main
 
 import (
 	models "GoProjects/CoffeeTwist/backend/models"
+	sse "GoProjects/CoffeeTwist/backend/sse"
 	websock "GoProjects/CoffeeTwist/backend/websocket"
 
-	"fmt"
-	"io"
-	"log"
-	"net/http"
-
 	"github.com/gin-gonic/gin"
-	"github.com/gorilla/websocket"
 )
 
 func CORS() gin.HandlerFunc {
@@ -29,85 +24,85 @@ func CORS() gin.HandlerFunc {
 	}
 }
 
-var upgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
+// var upgrader = websocket.Upgrader{
+// 	ReadBufferSize:  1024,
+// 	WriteBufferSize: 1024,
 
-	// We wil need to chec the origin
-	CheckOrigin: func(r *http.Request) bool { return true },
-}
+// 	// We wil need to chec the origin
+// 	CheckOrigin: func(r *http.Request) bool { return true },
+// }
 
 // define a reader which will listen for
 // new messages being sent to our WebSocket
 // endpoint
-func Reader(conn *websocket.Conn) {
-	for {
-		// read in a message
-		messageType, p, err := conn.ReadMessage()
-		if err != nil {
-			log.Println(err)
-			return
-		}
-		// print out that message for clarity
-		fmt.Println(string(p))
+// func Reader(conn *websocket.Conn) {
+// 	for {
+// 		// read in a message
+// 		messageType, p, err := conn.ReadMessage()
+// 		if err != nil {
+// 			log.Println(err)
+// 			return
+// 		}
+// 		// print out that message for clarity
+// 		fmt.Println(string(p))
 
-		if err := conn.WriteMessage(messageType, p); err != nil {
-			log.Println(err)
-			return
-		}
+// 		if err := conn.WriteMessage(messageType, p); err != nil {
+// 			log.Println(err)
+// 			return
+// 		}
 
-	}
-}
+// 	}
+// }
 
-func Upgrade(w http.ResponseWriter, r *http.Request) (*websocket.Conn, error) {
-	ws, err := upgrader.Upgrade(w, r, nil)
-	if err != nil {
-		log.Println(err)
-		return ws, err
-	}
-	return ws, nil
-}
+// func Upgrade(w http.ResponseWriter, r *http.Request) (*websocket.Conn, error) {
+// 	ws, err := upgrader.Upgrade(w, r, nil)
+// 	if err != nil {
+// 		log.Println(err)
+// 		return ws, err
+// 	}
+// 	return ws, nil
+// }
 
-func Writer(conn *websocket.Conn) {
-	for {
-		fmt.Println("Sending")
-		messageType, r, err := conn.NextReader()
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		w, err := conn.NextWriter(messageType)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		if _, err := io.Copy(w, r); err != nil {
-			fmt.Println(err)
-			return
-		}
-		if err := w.Close(); err != nil {
-			fmt.Println(err)
-			return
-		}
-	}
-}
+// func Writer(conn *websocket.Conn) {
+// 	for {
+// 		fmt.Println("Sending")
+// 		messageType, r, err := conn.NextReader()
+// 		if err != nil {
+// 			fmt.Println(err)
+// 			return
+// 		}
+// 		w, err := conn.NextWriter(messageType)
+// 		if err != nil {
+// 			fmt.Println(err)
+// 			return
+// 		}
+// 		if _, err := io.Copy(w, r); err != nil {
+// 			fmt.Println(err)
+// 			return
+// 		}
+// 		if err := w.Close(); err != nil {
+// 			fmt.Println(err)
+// 			return
+// 		}
+// 	}
+// }
 
 // define our WebSocket endpoint
-func serveWs(pool *websock.Pool, w http.ResponseWriter, r *http.Request) {
-	fmt.Println("WebSocket Endpoint Hit")
-	conn, err := Upgrade(w, r)
-	if err != nil {
-		fmt.Fprintf(w, "%+v\n", err)
-	}
+// func serveWs(pool *websock.Pool, w http.ResponseWriter, r *http.Request) {
+// 	fmt.Println("WebSocket Endpoint Hit")
+// 	conn, err := Upgrade(w, r)
+// 	if err != nil {
+// 		fmt.Fprintf(w, "%+v\n", err)
+// 	}
 
-	client := &websock.Client{
-		Conn: conn,
-		Pool: pool,
-	}
+// 	client := &websock.Client{
+// 		Conn: conn,
+// 		Pool: pool,
+// 	}
 
-	pool.Register <- client
-	client.Read()
-}
+// 	pool.Register <- client
+// 	client.Read()
+// }
 
 func main() {
 	// Initialize Mongo DB session / collections
@@ -120,21 +115,52 @@ func main() {
 	go pool.Start()
 	router.Use(CORS())
 
+	// SSEE
+	// Make a new Broker instance
+	b := &sse.Broker{
+		make(map[chan string]string, 2),
+		make(chan (chan string), 2),
+		make(chan (chan string), 2),
+		make(chan string, 2),
+	}
+
+	// Start processing events
+	b.Start()
+
 	// Static folder for images/video etc
 	router.Static("/assets", "./assets")
 
 	router.LoadHTMLGlob("templates/*.html")
 
-	socket := router.Group("/socket/")
-	{
-		socket.GET("/ws", func(c *gin.Context) {
-			serveWs(pool, c.Writer, c.Request)
-		})
-	}
+	// socket := router.Group("/socket/")
+	// {
+	// 	socket.GET("/ws", func(c *gin.Context) {
+	// 		serveWs(pool, c.Writer, c.Request)
+	// 	})
+	// }
 
 	panel := router.Group("/panel/")
 	{
 		panel.GET("/", models.HomePage)
+	}
+	sse_events := router.Group("/sse/")
+	{
+		// Make b the HTTP handler for "/events/".  It can do
+		// this because it has a ServeHTTP method.  That method
+		// is called in a separate goroutine for each
+		// request to "/events/".
+		sse_events.GET("/events/:id", func(c *gin.Context) {
+
+			b.ServeHTTP(c.Writer, c.Request, c.Param("id"))
+		})
+
+		sse_events.POST("/sendorder/:id", func(c *gin.Context) {
+			sse.SendOrder(b, c)
+		})
+
+		sse_events.POST("/acceptorder", func(c *gin.Context) {
+			sse.AcceptOrder(b, c)
+		})
 	}
 
 	users := router.Group("/user/")
@@ -183,7 +209,7 @@ func main() {
 	orders := router.Group("/orders/")
 	{
 		// ORDERS
-		orders.POST("/send_order", models.TokenAuthMiddleware(), models.CreateOrder)
+		orders.POST("/send_order", models.CreateOrder)
 		orders.PUT("/update_order", models.UpdateOrder)
 		orders.GET("/:id", models.GetSingleOrder)
 		// orders.DELETE("/delete_order", models.DeleteOrder)

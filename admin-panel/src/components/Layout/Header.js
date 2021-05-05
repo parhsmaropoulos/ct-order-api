@@ -1,3 +1,7 @@
+/**
+ * Footer Component Contains Search Bar and Menu Links.
+ */
+
 import React, { Component } from "react";
 import {
   Col,

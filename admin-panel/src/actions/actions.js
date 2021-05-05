@@ -1,3 +1,11 @@
+/**
+ * Containts all the constant action names
+ * for the reducers of the app.
+ */
+
+/**
+ * User reducer constants
+ */
 // REGISTER
 export const REGISTER_SUCCESS = "REGISTER_SUCCESS";
 export const REGISTER_FAIL = "REGISTER_FAIL";
@@ -16,6 +24,10 @@ export const GET_USER = "GET_USER";
 export const SUBSCRIBE_USER = "SUBSCRIBE_USER";
 export const UNSUBSCRIBE_USER = "UNSUBSCRIBE_USER";
 
+/**
+ * Error reducer constans
+ */
+
 // ERRORS
 export const GET_ERRORS = "GET_ERRORS";
 export const CREATE_MESSAGE = "CREATE_MESSAGE";
@@ -29,6 +41,10 @@ export const SNACKBAR_SUCCESS = "SNACKBAR_SUCCESS";
 export const SNACKBAR_ERROR = "SNACKBAR_ERROR";
 export const SNACKBAR_INFO = "SNACKBAR_INFO";
 export const SNACKBAR_CLEAR = "SNACKBAR_CLEAR";
+
+/**
+ * Product reducer constans
+ */
 
 // PRODUCTS - CATEGORIES - INGREDIENTS - CHOICES
 export const GET_ITEMS = "GET_ITEMS";
@@ -52,6 +68,10 @@ export const UPDATE_INGREDIENT = "UPDATE_INGREDIENT";
 export const UPDATE_ITEM = "UPDATE_ITEM";
 export const UPDATE_CHOICE = "UPDATE_CHOICE";
 
+/**
+ * Order reducer constants
+ */
+
 // ORDERS
 export const SEND_ORDER = "SEND_ORDER";
 export const ACCEPT_ORDER = "ACCEPT_ORDER";
@@ -64,6 +84,10 @@ export const REMOVE_ITEM = "REMOVE_ITEM";
 export const UPDATE_CART = "UPDATE_CART";
 export const UPDATE_ORDER = "UPDATE_ORDER";
 export const EMPTY_CART = "EMPTY_CART";
+
+/**
+ * Web socket reducer constants
+ */
 
 // WEB-SOCKET
 export const SEND_ORDER_REQUEST = "SEND_ORDER_REQUEST";

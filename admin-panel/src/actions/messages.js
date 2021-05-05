@@ -1,3 +1,14 @@
+/**
+ * Here are the action that are called through the app and redux
+ * about error and their functionalities.
+ * First every action performs a request and then
+ * depending on the response there is an event dispatch
+ */
+
+/**
+ * IMPORTS
+ */
+
 import { uniqueId } from "lodash";
 import {
   ADD_ALERT,

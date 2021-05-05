@@ -1,7 +1,7 @@
 {
   "name": "admin-panel",
   "version": "0.1.0",
-  "proxy":"http://localhost:8080",
+  "proxy": "http://localhost:8080",
   "private": true,
   "dependencies": {
     "@material-ui/core": "^4.11.3",
@@ -42,6 +42,8 @@
     "redux-devtools-extension": "^2.13.8",
     "redux-thunk": "^2.3.0",
     "socket.io-client": "^3.1.0",
+    "use-sound": "^3.0.1",
+    "uuid": "^8.3.2",
     "web-vitals": "^0.2.4"
   },
   "scripts": {

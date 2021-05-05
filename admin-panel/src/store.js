@@ -3,15 +3,29 @@ import rootReducer from "./reducers/index";
 import thunk from "redux-thunk";
 import { composeWithDevTools } from "redux-devtools-extension";
 
-const initialState = {};
+const CreateStore = () => {
+  const initialState = {};
 
-const middleware = [thunk];
+  const middleware = [thunk];
 
-const store = createStore(
-  rootReducer,
-  initialState,
-  composeWithDevTools(applyMiddleware(...middleware)),
-  +window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
-);
+  const store = createStore(
+    rootReducer,
+    initialState,
+    composeWithDevTools(applyMiddleware(...middleware)),
+    +window.__REDUX_DEVTOOLS_EXTENSION__ &&
+      window.__REDUX_DEVTOOLS_EXTENSION__()
+  );
 
-export default store;
+  // Persist on hot reaload
+  // if (module.hot) {
+  //   module.hot.accept("./reducers/index", () => {
+  //     const nextReducer = require("./reducers/index").default;
+
+  //     store.replaceReducer(nextReducer);
+  //   });
+  // }
+
+  return store;
+};
+
+export default CreateStore();

@@ -1,3 +1,8 @@
+/**
+ * Footer Component Contains Subscription Logic
+ * and all the needed links to pages/text we need.
+ */
+
 import React, { Component } from "react";
 import { Col, Container, Row, Image } from "react-bootstrap";
 import { connect } from "react-redux";
@@ -8,8 +13,18 @@ import { SocialIcon } from "react-social-icons";
 import PropTypes from "prop-types";
 import { FormHelperText, TextField } from "@material-ui/core";
 import { subscribe } from "../../actions/user";
+import { Link } from "react-router-dom";
 
 class Footer extends Component {
+  /**
+   *
+   * @param {*} props
+   * Constructor that inherits the parent props.
+   * State: {
+   *           News letter email,
+   * }
+   *
+   */
   constructor(props) {
     super(props);
     this.state = {
@@ -22,9 +37,17 @@ class Footer extends Component {
     subscribe: PropTypes.func.isRequired,
   };
 
+  /**
+   * Input change event
+   */
+
   onChange = (e) => {
     this.setState({ [e.target.name]: e.target.value });
   };
+
+  /**
+   * On email subscription check if mail is valid throught regex
+   */
 
   onSubscribe = () => {
     const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -50,7 +73,13 @@ class Footer extends Component {
   render() {
     return (
       <Container fluid={true} className="footerContainer">
+        {/* 
+            ########################## Upper Row ################################
+          */}
         <Row id="footerRow">
+          {/* 
+            ########################## Logo Column ################################
+          */}
           <Col className="logoCol">
             <Image src={logo} className="headerLogo" />
             <Row>
@@ -68,6 +97,9 @@ class Footer extends Component {
               </Col>
             </Row>
           </Col>
+          {/* 
+            ########################## News Letter Column ################################
+          */}
           <Col>
             <div className="newsLetter">
               <div className="newsLetterTitle">Εγγραφή Newsletter </div>
@@ -90,23 +122,48 @@ class Footer extends Component {
               </div>
             </div>
           </Col>
+          {/* 
+            ########################## First Menu Column ################################
+          */}
           <Col className="menu1Col">
             <ul>
-              <li>Όροι χρήσης</li>
-              <li>Επικοινωνία</li>
-              <li>Πως λειτουργεί</li>
-              <li>Ποιοί Είμαστε</li>
+              <Link to="/document/oroi_xrisis">
+                <li>Όροι χρήσης</li>
+              </Link>
+              <Link to="/document/epikoinwnia">
+                <li>Επικοινωνία</li>
+              </Link>
+              <Link to="/document/how_it_works">
+                <li>Πως λειτουργεί</li>
+              </Link>
+              <Link to="/document/who_we_are">
+                <li>Ποιοί Είμαστε</li>
+              </Link>
             </ul>
           </Col>
+          {/* 
+            ########################## Second Menu Column ################################
+          */}
           <Col className="menu2Col">
             <ul>
-              <li>Πολιτική Προστασίας</li>
-              <li>Πολιτική cookies</li>
-              <li>Πολιτική Αξιολόγησης</li>
-              <li>Πολιτική Απορρήτου</li>
+              <Link to="/document/protection">
+                <li>Πολιτική Προστασίας</li>
+              </Link>
+              <Link to="/document/coockies">
+                <li>Πολιτική cookies</li>
+              </Link>
+              <Link to="/document/ratings">
+                <li>Πολιτική Αξιολόγησης</li>
+              </Link>
+              <Link to="/document/privacy_policy">
+                <li>Πολιτική Απορρήτου</li>
+              </Link>
             </ul>
           </Col>
         </Row>
+        {/* 
+            ########################## Bottom Row ################################
+          */}
         <Row className="subFooterRow">
           <div className="subFooterContent">
             <p className="subFooterText">

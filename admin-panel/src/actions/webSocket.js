@@ -1,3 +1,14 @@
+/**
+ * Here are the action that are called through the app and redux
+ * about web socket and their functionalities.
+ * First every action performs a request and then
+ * depending on the response there is an event dispatch
+ */
+
+/**
+ * IMPORTS
+ */
+
 import axios from "axios";
 import {
   CREATE_ROOM_ERROR,
@@ -9,12 +20,14 @@ import {
   SET_USERNAME,
 } from "./actions";
 
+// Creates a room
 export function createRoomRequest() {
   return {
     type: CREATE_ROOM_REQUEST,
   };
 }
 
+// Completing a room
 export function createRoomSuccess(payload) {
   return {
     type: CREATE_ROOM_SUCCESS,
@@ -22,6 +35,7 @@ export function createRoomSuccess(payload) {
   };
 }
 
+// Error on creating a room
 export function createRoomError(error) {
   return {
     type: CREATE_ROOM_ERROR,
@@ -29,6 +43,7 @@ export function createRoomError(error) {
   };
 }
 
+// Creates a room
 export function createRoom(roomName) {
   return async function (dispatch) {
     dispatch(createRoomRequest());

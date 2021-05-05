@@ -13,6 +13,7 @@ const defaultState = {
   sent: false,
   pending: false,
   accepted: false,
+  recieved: false,
   products: [],
   totalPrice: 0,
 };
@@ -31,6 +32,8 @@ const orderReducer = (state = defaultState, action) => {
         ...state,
         sent: true,
         accepted: true,
+        recieved: true,
+        pending: false,
       };
     case ORDER_DECLINED:
       return {
@@ -40,10 +43,12 @@ const orderReducer = (state = defaultState, action) => {
       };
     case ADD_ITEM:
       console.log(action);
+      let newProducts = [...state.products, action.product];
+      let newPrice = state.totalPrice + action.totalPrice;
       return {
         ...state,
-        products: [...state.products, action.product],
-        totalPrice: state.totalPrice + action.product.price,
+        products: newProducts,
+        totalPrice: newPrice,
       };
     case UPDATE_CART:
       return {

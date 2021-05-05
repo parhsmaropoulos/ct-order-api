@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import "../../css/Layout/marker.css";
+import "../../css/common/marker.css";
 
 class Marker extends Component {
   constructor(props) {

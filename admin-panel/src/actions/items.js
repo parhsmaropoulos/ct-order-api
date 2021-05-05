@@ -1,3 +1,14 @@
+/**
+ * Here are the action that are called through the app and redux
+ * about items and their functionalities.
+ * First every action performs a request and then
+ * depending on the response there is an event dispatch
+ */
+
+/**
+ * IMPORTS
+ */
+
 import axios from "axios";
 import { headers } from "../utils/axiosHeaders";
 import {
@@ -21,7 +32,11 @@ import {
 } from "./actions";
 import { returnErrors } from "./messages";
 
-// GET ITEMS
+/**
+ * ITEM ACTIONS
+ */
+
+// GET ALL ITEMS
 export const get_items = () => (dispatch) => {
   axios
     .get("http://localhost:8080/products/all")
@@ -46,7 +61,75 @@ export const get_items = () => (dispatch) => {
     });
 };
 
-// GET CATEGORIES
+// CREATE PRODUCT
+export const create_product = (data, image) => (dispatch) => {
+  // const body = data;
+  let body = new FormData();
+  body.append("file", image);
+  body.append("data", JSON.stringify(data));
+  const headers = {
+    "Content-Type": "multipart/form-data",
+  };
+
+  axios
+    .post("http://localhost:8080/products/create_product", body, headers)
+    .then((res) => {
+      dispatch({
+        type: CREATE_ITEM,
+        new_product: res.data.data,
+        new_category: res.data.new_cat,
+      });
+    })
+    .then((res) => {
+      dispatch({
+        type: SNACKBAR_SUCCESS,
+        message: "product created successfully",
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+      dispatch(returnErrors(err, err.status));
+      dispatch({
+        type: SNACKBAR_ERROR,
+        message: err.response.data.message,
+      });
+    });
+};
+
+// Update an item
+export const update_item = (id, product, reason) => (dispatch) => {
+  const body = {
+    id: id,
+    product: product,
+    reason: reason,
+  };
+  axios
+    .put(`http://localhost:8080/products/update`, body, headers)
+    .then((res) => {
+      dispatch({
+        type: UPDATE_ITEM,
+        new_item: res.data.data,
+      });
+      dispatch({
+        type: SNACKBAR_SUCCESS,
+        message: "item updated successfully",
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+      // dispatch(returnErrors(err, err.status));
+      dispatch({
+        type: SNACKBAR_ERROR,
+        message: err.response.data.message,
+      });
+    });
+};
+
+/**
+ * CATEGORY ACTIONS
+ */
+
+// GET ALL CATEGORIES
 export const get_categories = () => (dispatch) => {
   axios
     .get("http://localhost:8080/product_category/all")
@@ -70,57 +153,7 @@ export const get_categories = () => (dispatch) => {
     });
 };
 
-// GET INGREDIENTS
-export const get_ingredients = () => (dispatch) => {
-  axios
-    .get("http://localhost:8080/products/ingredients")
-    .then((res) => {
-      dispatch({
-        type: GET_INGREDIENTS,
-        ingredients: res.data.data,
-        categories: res.data.categories,
-      });
-      dispatch({
-        type: SNACKBAR_SUCCESS,
-        message: "Ingredients fetched successfully!",
-      });
-    })
-    .catch((err) => {
-      console.log(err);
-      dispatch(returnErrors(err, err.status));
-      dispatch({
-        type: SNACKBAR_ERROR,
-        message: err.response.data.message,
-      });
-    });
-};
-
-// GET ITEMS
-export const get_choices = () => (dispatch) => {
-  axios
-    .get("http://localhost:8080/products/choices")
-    .then((res) => {
-      // console.log(res);
-      dispatch({
-        type: GET_CHOICES,
-        choices: res.data.data,
-      });
-      dispatch({
-        type: SNACKBAR_SUCCESS,
-        message: "Choices fetched successfully!",
-      });
-    })
-    .catch((err) => {
-      console.log(err);
-      dispatch(returnErrors(err, err.status));
-      dispatch({
-        type: SNACKBAR_ERROR,
-        message: err.response.data.message,
-      });
-    });
-};
-
-// CREATE CATEGOY
+// CREATE A CATEGOY
 export const create_category = (data, image) => (dispatch) => {
   let body = new FormData();
   body.append("file", image);
@@ -153,29 +186,23 @@ export const create_category = (data, image) => (dispatch) => {
     });
 };
 
-// CREATE PRODUCT
-export const create_product = (data, image) => (dispatch) => {
-  // const body = data;
-  let body = new FormData();
-  body.append("file", image);
-  body.append("data", JSON.stringify(data));
-  const headers = {
-    "Content-Type": "multipart/form-data",
-  };
+/**
+ * INGREDIENTS ACTIONS
+ */
 
+// GET ALL INGREDIENTS
+export const get_ingredients = () => (dispatch) => {
   axios
-    .post("http://localhost:8080/products/create_product", body, headers)
+    .get("http://localhost:8080/products/ingredients")
     .then((res) => {
       dispatch({
-        type: CREATE_ITEM,
-        new_product: res.data.data,
-        new_category: res.data.new_cat,
+        type: GET_INGREDIENTS,
+        ingredients: res.data.data,
+        categories: res.data.categories,
       });
-    })
-    .then((res) => {
       dispatch({
         type: SNACKBAR_SUCCESS,
-        message: "product created successfully",
+        message: "Ingredients fetched successfully!",
       });
     })
     .catch((err) => {
@@ -217,32 +244,7 @@ export const create_ingredient = (data) => (dispatch) => {
     });
 };
 
-// CREATE CATEGOY
-export const create_choice = (data) => (dispatch) => {
-  const body = data;
-  axios
-    .post("http://localhost:8080/products/create_product_choice", body, headers)
-    .then((res) => {
-      dispatch({
-        type: CREATE_CHOICE,
-        choice: res.data.data,
-      });
-      dispatch({
-        type: SNACKBAR_SUCCESS,
-        message: "Choice created successfully",
-      });
-    })
-    .catch((err) => {
-      console.log(err);
-      dispatch(returnErrors(err, err.status));
-      dispatch({
-        type: SNACKBAR_ERROR,
-        message: err.response.data.message,
-      });
-    });
-};
-
-// Update Ingredient
+// Update an Ingredient
 export const update_ingredient = (id, ingredient, reason) => (dispatch) => {
   const body = {
     id: id,
@@ -271,27 +273,28 @@ export const update_ingredient = (id, ingredient, reason) => (dispatch) => {
     });
 };
 
-export const update_item = (id, product, reason) => (dispatch) => {
-  const body = {
-    id: id,
-    product: product,
-    reason: reason,
-  };
+/**
+ * CHOICES ACTIONS
+ */
+
+// GET ALL CHOICES
+export const get_choices = () => (dispatch) => {
   axios
-    .put(`http://localhost:8080/products/update`, body, headers)
+    .get("http://localhost:8080/products/choices")
     .then((res) => {
+      // console.log(res);
       dispatch({
-        type: UPDATE_ITEM,
-        new_item: res.data.data,
+        type: GET_CHOICES,
+        choices: res.data.data,
       });
       dispatch({
         type: SNACKBAR_SUCCESS,
-        message: "item updated successfully",
+        message: "Choices fetched successfully!",
       });
     })
     .catch((err) => {
       console.log(err);
-      // dispatch(returnErrors(err, err.status));
+      dispatch(returnErrors(err, err.status));
       dispatch({
         type: SNACKBAR_ERROR,
         message: err.response.data.message,
@@ -299,6 +302,32 @@ export const update_item = (id, product, reason) => (dispatch) => {
     });
 };
 
+// CREATE A CHOICE
+export const create_choice = (data) => (dispatch) => {
+  const body = data;
+  axios
+    .post("http://localhost:8080/products/create_product_choice", body, headers)
+    .then((res) => {
+      dispatch({
+        type: CREATE_CHOICE,
+        choice: res.data.data,
+      });
+      dispatch({
+        type: SNACKBAR_SUCCESS,
+        message: "Choice created successfully",
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+      dispatch(returnErrors(err, err.status));
+      dispatch({
+        type: SNACKBAR_ERROR,
+        message: err.response.data.message,
+      });
+    });
+};
+
+// Update a choice
 export const update_choice = (id, choice) => (dispatch) => {
   const body = {
     id: id,
@@ -326,6 +355,8 @@ export const update_choice = (id, choice) => (dispatch) => {
     });
 };
 
+// Delete an item, here an item
+// can be either a Product,Category,Choice,Ingredient
 export const delete_item = (id, type) => (dispatch) => {
   const body = {
     id: id,

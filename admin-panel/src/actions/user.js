@@ -1,3 +1,14 @@
+/**
+ * Here are the action that are called through the app and redux
+ * about the user  and their functionalities.
+ * First every action performs a request and then
+ * depending on the response there is an event dispatch
+ */
+
+/**
+ * IMPORTS
+ */
+
 import axios from "axios";
 import jwt from "jwt-decode";
 import {
@@ -73,11 +84,6 @@ export const login = (email, password) => (dispatch) => {
     });
 };
 
-export const isLoggedIn = () => {
-  if (localStorage.getItem("token")) return true;
-  return false;
-};
-
 // Update User
 export const updateUser = (data) => (dispatch) => {
   // Headers
@@ -113,7 +119,7 @@ export const updateUser = (data) => (dispatch) => {
     });
 };
 
-// Get User
+// Get User by id
 export const getUser = (id) => (dispatch) => {
   // Headers
   const config = {
