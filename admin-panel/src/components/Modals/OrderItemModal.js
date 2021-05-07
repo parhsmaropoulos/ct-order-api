@@ -244,72 +244,76 @@ class OrderItemModal extends Component {
                         {choice.required ? <span>*</span> : <span></span>}
                       </p>
                       <div className="orderItemModalChoiceDiv" key={indx}>
-                        {choice.options.map((option, index) => {
-                          // if (this.props.update) {
-                          let show = false;
-                          for (var i in this.props.updateItem.options) {
-                            let update_option = this.props.updateItem.options[
-                              i
-                            ];
-                            if (
-                              update_option.name === choice.name &&
-                              update_option.choice === option.name
-                            ) {
-                              show = true;
+                        {choice.options ? (
+                          choice.options.map((option, index) => {
+                            // if (this.props.update) {
+                            let show = false;
+                            for (var i in this.props.updateItem.options) {
+                              let update_option = this.props.updateItem.options[
+                                i
+                              ];
+                              if (
+                                update_option.name === choice.name &&
+                                update_option.choice === option.name
+                              ) {
+                                show = true;
+                              }
                             }
-                          }
-                          if (this.props.update && show) {
-                            return (
-                              <div className="form-check" key={index}>
-                                <input
-                                  className="form-check-input"
-                                  type="radio"
-                                  name={`${choice.name}`}
-                                  value={`${option.name}`}
-                                  id={`${option.name}${index}`}
-                                  onClick={() =>
-                                    this.onChangeChoice(choice.name, option)
-                                  }
-                                  defaultChecked
-                                />
-                                <label
-                                  className="form-check-label"
-                                  htmlFor={`${option.name}${index}`}
-                                >
-                                  {option.name}
-                                </label>
-                                <span className="form-check-price">
-                                  {option.price} €
-                                </span>
-                              </div>
-                            );
-                            // }
-                          } else {
-                            return (
-                              <div className="form-check" key={index}>
-                                <input
-                                  className="form-check-input"
-                                  type="radio"
-                                  name={`${choice.name}`}
-                                  value={`${option.name}`}
-                                  id={`${option.name}${index}`}
-                                  onClick={() =>
-                                    this.onChangeChoice(choice.name, option)
-                                  }
-                                />
-                                <label
-                                  className="form-check-label"
-                                  htmlFor={`${option.name}${index}`}
-                                >
-                                  {option.name}
-                                </label>
-                                <span className="form-check-price">
-                                  {option.price} €
-                                </span>
-                              </div>
-                            );
-                          }
-                        })}
+                            if (this.props.update && show) {
+                              return (
+                                <div className="form-check" key={index}>
+                                  <input
+                                    className="form-check-input"
+                                    type="radio"
+                                    name={`${choice.name}`}
+                                    value={`${option.name}`}
+                                    id={`${option.name}${index}`}
+                                    onClick={() =>
+                                      this.onChangeChoice(choice.name, option)
+                                    }
+                                    defaultChecked
+                                  />
+                                  <label
+                                    className="form-check-label"
+                                    htmlFor={`${option.name}${index}`}
+                                  >
+                                    {option.name}
+                                  </label>
+                                  <span className="form-check-price">
+                                    {option.price} €
+                                  </span>
+                                </div>
+                              );
+                              // }
+                            } else {
+                              return (
+                                <div className="form-check" key={index}>
+                                  <input
+                                    className="form-check-input"
+                                    type="radio"
+                                    name={`${choice.name}`}
+                                    value={`${option.name}`}
+                                    id={`${option.name}${index}`}
+                                    onClick={() =>
+                                      this.onChangeChoice(choice.name, option)
+                                    }
+                                  />
+                                  <label
+                                    className="form-check-label"
+                                    htmlFor={`${option.name}${index}`}
+                                  >
+                                    {option.name}
+                                  </label>
+                                  <span className="form-check-price">
+                                    {option.price} €
+                                  </span>
+                                </div>
+                              );
+                            }
+                          })
+                        ) : (
+                          <span></span>
+                        )}
                       </div>
                     </div>
                   );

@@ -45,6 +45,7 @@ class AddressModal extends Component {
   };
 
   handleSelect = (address) => {
+    console.log(address);
     geocodeByAddress(address)
       .then((results) => this.saveResults(results))
       .then((results) => getLatLng(results[0]))

@@ -36,11 +36,11 @@ export const send_order = (data) => (dispatch, getState) => {
       SSEdata.order = res.data.order;
       SSEdata.from = res.data.order.user_id;
       SSEdata.user_details = res.data.user_details;
-      axios
-        .post(`http://localhost:8080/sse/sendorder/${SSEdata.from}`, SSEdata)
-        .then((res) => {
-          // console.log(res);
-        });
+      // axios
+      //   .post(`http://localhost:8080/sse/sendorder/${SSEdata.from}`, SSEdata)
+      //   .then((res) => {
+      //     // console.log(res);
+      //   });
       dispatch({
         type: SEND_ORDER,
       });
@@ -50,7 +50,7 @@ export const send_order = (data) => (dispatch, getState) => {
       });
     })
     .catch((err) => {
-      console.log(err);
+      console.log(err.response);
       dispatch({
         type: SNACKBAR_ERROR,
         message: err.response.data.message,

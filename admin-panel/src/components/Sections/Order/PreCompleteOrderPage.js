@@ -18,12 +18,16 @@ import {
   CircularProgress,
   FormControlLabel,
   Checkbox,
+  FormGroup,
 } from "@material-ui/core";
 import AddressModal from "../../Modals/AddressModal";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import EditAddressModal from "../../Modals/EditAddressModal";
 import { showErrorSnackbar } from "../../../actions/snackbar";
+import { FormLabel } from "react-bootstrap";
+
+const availableTipOptions = [0.5, 1.0, 1.5, 2.0, 5.0, 10.0];
 
 class PreCompleteOrderPage extends Component {
   constructor(props) {
@@ -35,6 +39,7 @@ class PreCompleteOrderPage extends Component {
 
     this.state = {
       id: 0,
+      availableAddress: [],
       payment_type: "Cash",
       payWithCard: false,
       payWithCash: true,
@@ -45,7 +50,7 @@ class PreCompleteOrderPage extends Component {
         floor: "",
       },
       selectedAddress: {},
-      tips: 0,
+      tips: "0",
       comments: "",
       showAddressModal: false,
       showEditModal: false,
@@ -55,20 +60,59 @@ class PreCompleteOrderPage extends Component {
         send: false,
         awaiting: false,
       },
+      hasLoaded: false,
     };
     this.onSelectChange = this.onSelectChange.bind(this);
     this.onChange = this.onChange.bind(this);
     this.recieveOrder = this.recieveOrder.bind(this);
     this.sendOrder = this.sendOrder.bind(this);
     this.handlePaymentChange = this.handlePaymentChange.bind(this);
+    this.handleTipsChange = this.handleTipsChange.bind(this);
   }
+
   static getDerivedStateFromProps(props, state) {
     // console.log(props);
-    if (props.match.params) {
+    if (
+      props.userReducer.user.last_order !== null &&
+      state.hasLoaded === false
+    ) {
+      let newState = state;
+      newState.userDetails.bellName =
+        props.userReducer.user.last_order.bell_name;
+      newState.userDetails.floor = props.userReducer.user.last_order.floor;
       return {
-        id: props.match.params.id,
+        userDetails: newState.userDetails,
+        hasLoaded: true,
+        phone: props.userReducer.user.last_order.phone,
       };
     }
+    // if (
+    //   props.userReducer.user.addresses.length > 0 &&
+    //   state.selectedAddress === {}
+    // ) {
+    //   let availableAd = [];
+    //   let currentAd = {};
+    //   for (var i in props.userReducer.user.addresses) {
+    //     currentAd = props.userReducer.user.addresses[i];
+
+    //     console.log(i, currentAd);
+    //     if (currentAd.address_name !== null) {
+    //       availableAd.push(
+    //         String(
+    //           currentAd.address_name +
+    //             " " +
+    //             currentAd.address_number +
+    //             ", " +
+    //             currentAd.area_name +
+    //             " "
+    //         )
+    //       );
+    //     }
+    //   }
+    //   return {
+    //     availableAddress: availableAd,
+    //   };
+    // }
     return null;
   }
 
@@ -77,7 +121,12 @@ class PreCompleteOrderPage extends Component {
     showErrorSnackbar: PropTypes.func.isRequired,
     empty_cart: PropTypes.func.isRequired,
     order_accepted: PropTypes.func.isRequired,
+    userReducer: PropTypes.object.isRequired,
+    orderReducer: PropTypes.object.isRequired,
   };
+  handleTipsChange(tip) {
+    this.setState({ tips: tip });
+  }
 
   recieveOrder(response) {
     let data = JSON.parse(response.data);
@@ -208,12 +257,9 @@ class PreCompleteOrderPage extends Component {
     if (this.props.userReducer.isAuthenticated === false) {
       return <Redirect to="/home" />;
     }
+
     this.eventSource.onmessage = (e) => this.recieveOrder(e);
   }
-  static propTypes = {
-    userReducer: PropTypes.object.isRequired,
-    orderReducer: PropTypes.object.isRequired,
-  };
 
   showEditModal = (bool) => {
     this.setState({
@@ -306,7 +352,7 @@ class PreCompleteOrderPage extends Component {
                       labelId="selectAddressLabel"
                       id="selectAddress"
                       name="selectedAddress"
-                      defaultValue={this.props.userReducer.user.addresses[0]}
+                      defaultValue={"0"}
                       onChange={this.onAddressChange}
                       required
                     >
@@ -334,6 +380,7 @@ class PreCompleteOrderPage extends Component {
                       <TextField
                         id="bellName"
                         name="bellName"
+                        value={this.state.userDetails.bellName}
                         label="Κουδούνι *"
                         variant="outlined"
                         placeholder="Όνομα στο κουδούνι"
@@ -347,6 +394,7 @@ class PreCompleteOrderPage extends Component {
                           id="floorNumber"
                           name="floorNumber"
                           label="Όροφος *"
+                          value={this.state.userDetails.floor}
                           variant="outlined"
                           placeholder="Όροφος"
                           className="pre-complete-input"
@@ -359,6 +407,7 @@ class PreCompleteOrderPage extends Component {
                           type="tel"
                           name="phone"
                           label="Τηλέφωνο επικοινωνίας"
+                          value={this.state.phone}
                           variant="outlined"
                           placeholder="Τηλέφωνο επικοινωνίας"
                           className="pre-complete-input"
@@ -427,7 +476,31 @@ class PreCompleteOrderPage extends Component {
                   id="tip-div"
                   style={{ display: "block" }}
                 >
-                  tipss
+                  <FormControl>
+                    <FormLabel>Select Tips</FormLabel>
+                    <FormGroup row={true}>
+                      {availableTipOptions.map((option, index) => {
+                        let active = false;
+                        if (this.state.tips === option) {
+                          active = true;
+                        }
+                        return (
+                          <FormControlLabel
+                            key={index}
+                            value={option}
+                            control={
+                              <Checkbox
+                                checked={active}
+                                name={option}
+                                onChange={() => this.handleTipsChange(option)}
+                              />
+                            }
+                            label={option}
+                          />
+                        );
+                      })}
+                    </FormGroup>
+                  </FormControl>
                 </div>
               </div>
             </div>

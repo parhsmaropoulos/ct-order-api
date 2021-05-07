@@ -13,13 +13,12 @@ import {
 } from "../actions/actions";
 
 const defaultState = {
-  token: localStorage.getItem("token"),
+  token: sessionStorage.getItem("token"),
   isAuthenticated: false,
   isLoading: false,
   hasLoaded: false,
   user: null,
   error: "",
-  users: [],
 };
 
 const userReducer = (state = defaultState, action) => {
@@ -52,7 +51,7 @@ const userReducer = (state = defaultState, action) => {
         error: "",
       };
     case USER_LOADED:
-      localStorage.setItem("isAuthenticated", true);
+      sessionStorage.setItem("isAuthenticated", true);
       return {
         ...state,
         isAuthenticated: true,
@@ -60,8 +59,11 @@ const userReducer = (state = defaultState, action) => {
         user: action.user,
       };
     case LOGIN_SUCCESS:
-      localStorage.setItem("token", action.token);
       sessionStorage.setItem("isAuthenticated", true);
+      sessionStorage.setItem("token", action.token);
+      sessionStorage.setItem("refreshToken", action.refresh_token);
+      sessionStorage.setItem("userID", action.user.id);
+      // sessionStorage.setItem("isAuthenticated", true);
       // console.log(action);
       return {
         ...state,
@@ -79,7 +81,7 @@ const userReducer = (state = defaultState, action) => {
         error: action.error,
       };
     case REGISTER_SUCCESS:
-      localStorage.setItem("token", action.payload.token);
+      sessionStorage.setItem("token", action.payload.token);
       return {
         ...state,
         ...action.payload,
@@ -88,8 +90,9 @@ const userReducer = (state = defaultState, action) => {
         user: action.user,
       };
     case LOGOUT_SUCCESS:
-      localStorage.removeItem("token");
+      sessionStorage.removeItem("token");
       sessionStorage.removeItem("isAuthenticated");
+      sessionStorage.removeItem("userID");
       return {
         ...state,
         token: null,
@@ -100,7 +103,7 @@ const userReducer = (state = defaultState, action) => {
         isLoading: false,
       };
     case REGISTER_FAIL:
-      localStorage.removeItem("token");
+      sessionStorage.removeItem("token");
       return {
         ...state,
         token: null,

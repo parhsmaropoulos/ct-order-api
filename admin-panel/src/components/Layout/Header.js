@@ -15,7 +15,7 @@ import {
 } from "react-bootstrap";
 import { PersonCircle } from "react-bootstrap-icons";
 import { connect } from "react-redux";
-import { logout } from "../../actions/user";
+import { logout, refreshToken } from "../../actions/user";
 import PropTypes from "prop-types";
 import "../../css/Layout/header.css";
 import logo from "../../assets/Images/transparent-logo.png";
@@ -28,13 +28,13 @@ class Header extends Component {
       selectedLangeuage: "EN",
       searchText: "",
       focus: false,
-      isAuthenticated: false,
+      isAuthenticated: "",
       results: [],
     };
   }
 
   static propTypes = {
-    isAuthenticated: PropTypes.bool.isRequired,
+    isAuthenticated: PropTypes.string.isRequired,
     logout: PropTypes.func.isRequired,
     products: PropTypes.array.isRequired,
   };
@@ -53,6 +53,9 @@ class Header extends Component {
   }
 
   render() {
+    if (this.props.isAuthenticated === "true" && this.props.user === null) {
+      this.props.refreshToken(this.props.refresh_token);
+    }
     return (
       <Container fluid className="headerContainer">
         <Col>
@@ -130,8 +133,11 @@ class Header extends Component {
 }
 
 const mapStateToProps = (state) => ({
-  isAuthenticated: state.userReducer.isAuthenticated,
+  isAuthenticated: sessionStorage.getItem("isAuthenticated"),
+  userID: sessionStorage.getItem("userID"),
+  refresh_token: sessionStorage.getItem("refreshToken"),
+  user: state.userReducer.user,
   products: state.productReducer.products,
 });
 
-export default connect(mapStateToProps, { logout })(Header);
+export default connect(mapStateToProps, { logout, refreshToken })(Header);

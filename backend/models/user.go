@@ -47,6 +47,7 @@ type User struct {
 	Ratings      []Rating  `json:"ratings"`
 	Ratings_ids  []string  `json:"ratings_ids"`
 	Orders       []Order   `json:"orders"`
+	Last_Order   Order     `json:"last_order"`
 	Orders_ids   []string  `json:"orders_ids"`
 	// Last Order
 
@@ -99,6 +100,7 @@ func CreateProfile(c *gin.Context) {
 		Addresses:    []Address{},
 		Created_at:   time.Now(),
 		Orders:       []Order{},
+		Last_Order:   Order{},
 		Comments:     []Comment{},
 		Ratings:      []Rating{},
 		Orders_ids:   []string{},
@@ -261,9 +263,11 @@ func Login(c *gin.Context) {
 	var user User
 	err := Users.FindOne(context.Background(),
 		bson.M{"email": input.Email}).Decode(&user)
+	fmt.Print(err)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
 			"message": "Email is not valid!",
+			"error":   err,
 		})
 		return
 	}
@@ -271,20 +275,27 @@ func Login(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
 			"message": "Password is wrong!",
+			"error":   err,
 		})
 		return
 	}
+
+	// if len(user.Orders_ids) > 0 {
+	// 	err = Orders.FindOne(context.Background(),
+	// 		bson.M{"_id": user.Orders_ids[len(user.Orders_ids)-1]}).Decode(&user.Last_Order)
+	// }
+
 	user.Password = ""
 
 	// Token
 	ts, err := CreateToken(user.ID, user)
 	if err != nil {
-		c.JSON(http.StatusUnprocessableEntity, err.Error())
+		c.JSON(http.StatusUnprocessableEntity, err)
 		return
 	}
 	saveErr := CreateAuth(user.ID, ts)
 	if saveErr != nil {
-		c.JSON(http.StatusUnprocessableEntity, saveErr.Error())
+		c.JSON(http.StatusUnprocessableEntity, saveErr)
 	}
 	tokens := map[string]string{
 		"access_token":  ts.AccessToken,

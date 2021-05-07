@@ -25,7 +25,7 @@ class UserOrders extends Component {
     this.state = {
       selectedOrder: {},
       comment: "",
-      rating: 0,
+      rating: 4,
       showCommentModal: false,
     };
   }
@@ -187,14 +187,21 @@ class UserOrders extends Component {
                             </ul>
                           </Col>
                           <Col className="orderRowCol optionsCol">
-                            <button
-                              className="commentButton"
-                              onClick={() =>
-                                this.showCommentModal(false, order)
-                              }
-                            >
-                              Comment!
-                            </button>
+                            {order.rating.use_id !== "" ? (
+                              <button
+                                className="commentButton"
+                                onClick={() =>
+                                  this.showCommentModal(false, order)
+                                }
+                              >
+                                Comment!
+                              </button>
+                            ) : (
+                              <span>
+                                Comment: {order.comments.comment_text}, Rate:{" "}
+                                {order.rating.rate}
+                              </span>
+                            )}
                           </Col>
                         </Row>
                       );

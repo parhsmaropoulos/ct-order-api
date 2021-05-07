@@ -4,6 +4,8 @@ import (
 	models "GoProjects/CoffeeTwist/backend/models"
 	sse "GoProjects/CoffeeTwist/backend/sse"
 	websock "GoProjects/CoffeeTwist/backend/websocket"
+	"fmt"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -23,86 +25,6 @@ func CORS() gin.HandlerFunc {
 		c.Next()
 	}
 }
-
-// var upgrader = websocket.Upgrader{
-// 	ReadBufferSize:  1024,
-// 	WriteBufferSize: 1024,
-
-// 	// We wil need to chec the origin
-// 	CheckOrigin: func(r *http.Request) bool { return true },
-// }
-
-// define a reader which will listen for
-// new messages being sent to our WebSocket
-// endpoint
-// func Reader(conn *websocket.Conn) {
-// 	for {
-// 		// read in a message
-// 		messageType, p, err := conn.ReadMessage()
-// 		if err != nil {
-// 			log.Println(err)
-// 			return
-// 		}
-// 		// print out that message for clarity
-// 		fmt.Println(string(p))
-
-// 		if err := conn.WriteMessage(messageType, p); err != nil {
-// 			log.Println(err)
-// 			return
-// 		}
-
-// 	}
-// }
-
-// func Upgrade(w http.ResponseWriter, r *http.Request) (*websocket.Conn, error) {
-// 	ws, err := upgrader.Upgrade(w, r, nil)
-// 	if err != nil {
-// 		log.Println(err)
-// 		return ws, err
-// 	}
-// 	return ws, nil
-// }
-
-// func Writer(conn *websocket.Conn) {
-// 	for {
-// 		fmt.Println("Sending")
-// 		messageType, r, err := conn.NextReader()
-// 		if err != nil {
-// 			fmt.Println(err)
-// 			return
-// 		}
-// 		w, err := conn.NextWriter(messageType)
-// 		if err != nil {
-// 			fmt.Println(err)
-// 			return
-// 		}
-// 		if _, err := io.Copy(w, r); err != nil {
-// 			fmt.Println(err)
-// 			return
-// 		}
-// 		if err := w.Close(); err != nil {
-// 			fmt.Println(err)
-// 			return
-// 		}
-// 	}
-// }
-
-// define our WebSocket endpoint
-// func serveWs(pool *websock.Pool, w http.ResponseWriter, r *http.Request) {
-// 	fmt.Println("WebSocket Endpoint Hit")
-// 	conn, err := Upgrade(w, r)
-// 	if err != nil {
-// 		fmt.Fprintf(w, "%+v\n", err)
-// 	}
-
-// 	client := &websock.Client{
-// 		Conn: conn,
-// 		Pool: pool,
-// 	}
-
-// 	pool.Register <- client
-// 	client.Read()
-// }
 
 func main() {
 	// Initialize Mongo DB session / collections
@@ -131,13 +53,6 @@ func main() {
 	router.Static("/assets", "./assets")
 
 	router.LoadHTMLGlob("templates/*.html")
-
-	// socket := router.Group("/socket/")
-	// {
-	// 	socket.GET("/ws", func(c *gin.Context) {
-	// 		serveWs(pool, c.Writer, c.Request)
-	// 	})
-	// }
 
 	panel := router.Group("/panel/")
 	{
@@ -175,7 +90,7 @@ func main() {
 	}
 	token := router.Group("/token/")
 	{
-		token.POST("/refresh", models.TokenAuthMiddleware(), models.Refresh)
+		token.POST("/refresh", models.Refresh)
 	}
 	products := router.Group("/products/")
 	{
@@ -220,5 +135,14 @@ func main() {
 		// RATINGS
 		orders.POST("/post_rate", models.TokenAuthMiddleware(), models.CreateRate)
 	}
+
+	router.Any("/", func(c *gin.Context) {
+		if c.Request.URL.Path != "/" {
+			http.NotFound(c.Writer, c.Request)
+			return
+		}
+		fmt.Print("Hello there")
+	})
+
 	router.Run()
 }

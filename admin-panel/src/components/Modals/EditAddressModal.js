@@ -3,23 +3,15 @@ import PropTypes from "prop-types";
 import { Button, Col, Form } from "react-bootstrap";
 import "../../css/Layout/general.css";
 import { connect } from "react-redux";
-// import PlacesAutocomplete from "react-places-autocomplete";
 import { updateUser } from "../../actions/user";
 import GoogleMapReact from "google-map-react";
 
-// import {
-//   geocodeByAddress,
-//   geocodeByPlaceId,
-//   getLatLng,
-// } from "react-places-autocomplete";
-// import { Redirect } from "react-router";
 import Marker from "../Layout/Marker";
-
-// const SimpleComponent = ({ text }) => <div>{text}</div>;
 
 class EditAddressModal extends Component {
   constructor(props) {
     super(props);
+
     this.state = {
       address: "",
       addressName: "",
@@ -34,6 +26,7 @@ class EditAddressModal extends Component {
       },
       zoom: 17,
     };
+
     this.onAddAddress = this.onAddAddress.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
   }
@@ -73,6 +66,28 @@ class EditAddressModal extends Component {
   };
 
   onChange = (e) => {
+    // var newState = this.state;
+    // var newName = e.target.name;
+    // newState[newName] = e.target.value;
+
+    // var newAddress =
+    //   newState.addressName +
+    //   " " +
+    //   newState.addressNumber +
+    //   ", " +
+    //   newState.areaName +
+    //   " " +
+    //   newState.zipCode +
+    //   " , Greece";
+    // geocodeByAddress(newAddress)
+    //   .then((results) => getLatLng(results[0]))
+    //   .then(
+    //     (latLng) => (
+    //       (newState.center.lat = latLng.lat), (newState.center.lng = latLng.lng)
+    //     )
+    //   )
+    //   .then(this.setState(newState));
+
     this.setState({ [e.target.name]: e.target.value });
   };
 
@@ -228,11 +243,14 @@ class EditAddressModal extends Component {
               <div style={{ height: "100%", width: "100%" }}>
                 <GoogleMapReact
                   defaultCenter={this.state.center}
+                  // center={this.state.center}
                   defaultZoom={this.state.zoom}
                 >
                   <Marker
+                    eventHandlers={this.eventHandlers}
                     lat={this.state.center.lat}
                     lng={this.state.center.lng}
+                    draggable={true}
                     name="Here"
                     color="blue"
                   />

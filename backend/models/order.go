@@ -60,7 +60,11 @@ type Order struct {
 	Floor     string  `json:"floor"`
 
 	// Comment Comment `json:"comment"`
-	Rating  Rating `json:"rating"`
+	// Rating  Rating `json:"rating"`
+	Rating struct {
+		Rate    float32            `json:"rate"`
+		User_ID primitive.ObjectID `json:"user_id"`
+	} `json:"rating"`
 	Comment struct {
 		Comment  string `json:"comment_text"`
 		Answer   string `json:"comment_answer"`
@@ -102,7 +106,7 @@ func CreateOrder(c *gin.Context) {
 		Created_at:         time.Now(),
 		Comments:           input.Comments,
 		// Comment:            Comment{ID: primitive.NewObjectID()},
-		Rating:    Rating{ID: primitive.NewObjectID()},
+		// Rating:    Rating{ID: primitive.NewObjectID()},
 		User_id:   input.User_id,
 		Canceled:  false,
 		Completed: false,
@@ -111,27 +115,6 @@ func CreateOrder(c *gin.Context) {
 	if input.Discounts_ids != nil {
 		order.Discounts_ids = input.Discounts_ids
 	}
-	// Append Products
-	// for _, prod_id := range input.Product_Ids {
-	// 	var curr_prod Product
-	// 	fmt.Println(prod_id)
-	// 	id, errs := primitive.ObjectIDFromHex(prod_id)
-	// 	if errs != nil {
-	// 		c.JSON(http.StatusInternalServerError, gin.H{
-	// 			"message": "Server error1!",
-	// 		})
-	// 		return
-	// 	}
-	// 	err := Products.FindOne(context.Background(), bson.M{"_id": id}).Decode(&curr_prod)
-	// 	if err != nil {
-	// 		c.JSON(http.StatusNotFound, gin.H{
-	// 			"message": "Product not found!",
-	// 		})
-	// 	} else {
-	// 		order.Products = append(order.Products, curr_prod)
-	// 	}
-
-	// }
 	// Appends Discounts
 	for _, disc_id := range input.Discounts_ids {
 		var curr_disc Discount
@@ -181,7 +164,11 @@ func CreateOrder(c *gin.Context) {
 		bson.M{"_id": user_id},
 		bson.M{
 			"$push": bson.M{
-				"orders": order,
+				"orders_ids": order.ID,
+				"orders":     order,
+			},
+			"$set": bson.M{
+				"last_order": order,
 			},
 		},
 		options.Update(),
@@ -225,6 +212,21 @@ func GetOrders(c *gin.Context) {
 		"data":    orders,
 	})
 }
+
+// func GetUsersOrder(c *gin.Context) {
+// 	if c.Request.Method != "GET" {
+// 		fmt.Println("Only get here no give!")
+// 		return
+// 	}
+
+// 	id, errs := primitive.ObjectIDFromHex(c.Param("id"))
+// 	if errs != nil {
+// 		c.JSON(http.StatusInternalServerError, gin.H{
+// 			"message": "Server error!",
+// 		})
+// 		return
+// 	}
+// }
 
 func GetSingleOrder(c *gin.Context) {
 	if c.Request.Method != "GET" {
@@ -353,7 +355,6 @@ func UpdateOrder(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Order  updated successfully",
-		"data":    order,
 	})
 
 }
@@ -394,16 +395,43 @@ func (order Order) CommentOrder(id primitive.ObjectID, text string, rate Rating)
 		bson.M{"_id": id},
 		bson.M{
 			"$set": bson.M{
+				"rating": bson.M{
+					"_id":     order.ID,
+					"rate":    rate.Rate,
+					"user_id": rate.User_id,
+				},
 				"comment": bson.M{
 					"comment_text": text,
-					"approved":     false,
-					"answer":       "",
 				},
-				"rating": rate,
 			},
 		},
+
 		options.Update(),
 	)
+
+	_, err = Users.UpdateOne(
+		context.Background(),
+		bson.M{"_id": rate.User_id, "orders._id": id},
+		bson.M{
+			"$set": bson.M{
+				"orders.$[order]": bson.M{
+					"rating": bson.M{
+						"rate":    rate.Rate,
+						"user_id": rate.User_id,
+					},
+					"comment": bson.M{
+						"comment_text": text,
+					},
+				},
+			},
+		},
+		options.Update().SetArrayFilters(options.ArrayFilters{
+			Filters: []interface{}{bson.M{
+				"order._id": id,
+			}},
+		}),
+	)
+
 	if err != nil {
 		return err
 	}

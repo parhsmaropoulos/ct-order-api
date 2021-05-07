@@ -183,13 +183,16 @@ func TokenAuthMiddleware() gin.HandlerFunc {
 }
 
 func Refresh(c *gin.Context) {
-	mapToken := map[string]string{}
-	if err := c.ShouldBindJSON(&mapToken); err != nil {
+	// mapToken := map[string]string{}
+	var RToken struct {
+		Refresh_Token string `json:"refresh_token"`
+	}
+	if err := c.ShouldBindJSON(&RToken); err != nil {
 		c.JSON(http.StatusUnprocessableEntity, err.Error())
 		return
 	}
-	refreshToken := mapToken["refresh_token"]
-
+	refreshToken := RToken.Refresh_Token
+	fmt.Print(refreshToken)
 	//verify the token
 	os.Setenv("REFRESH_SECRET", "mcmvmkmsdnfsdmfdsjf") //this should be in an env file
 	token, err := jwt.Parse(refreshToken, func(token *jwt.Token) (interface{}, error) {

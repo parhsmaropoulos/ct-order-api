@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import TextData from "./TextData";
+// import TextData from "./TextData";
 
 class TextPage extends Component {
   constructor(props) {

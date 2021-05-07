@@ -6,10 +6,16 @@ import OrderItemModal from "../../Modals/OrderItemModal";
 import PropTypes from "prop-types";
 import { Redirect } from "react-router";
 import { update_cart } from "../../../actions/orders";
+import {
+  GetAsyncCategories,
+  GetAsyncItems,
+  get_items,
+  get_categories,
+} from "../../../actions/items";
 import { showInfoSnackbar } from "../../../actions/snackbar";
 // import AlertModal from "../../MainPanel/Pages/Alert/AlertModal";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { TextField, Typography } from "@material-ui/core";
+import { CircularProgress, TextField, Typography } from "@material-ui/core";
 // import { Link } from "react-router-dom";
 
 var _ = require("lodash");
@@ -38,6 +44,9 @@ class OrderMainPage extends Component {
     showAlert: false,
     alertMessage: "",
     continueOrder: false,
+    products: [],
+    categories: [],
+    isReady: false,
   };
   static propTypes = {
     orderReducer: PropTypes.object.isRequired,
@@ -47,6 +56,10 @@ class OrderMainPage extends Component {
     isReady: PropTypes.bool.isRequired,
     update_cart: PropTypes.func.isRequired,
     showInfoSnackbar: PropTypes.func.isRequired,
+    GetAsyncCategories: PropTypes.func.isRequired,
+    GetAsyncItems: PropTypes.func.isRequired,
+    get_items: PropTypes.func.isRequired,
+    get_categories: PropTypes.func.isRequired,
   };
   changeCategory = (category) => {
     this.setState({ selectedCategory: category });
@@ -177,7 +190,6 @@ class OrderMainPage extends Component {
 
   componentWillUnmount() {
     this.props.update_cart(this.state.cart, this.state.totalPrice);
-    // console.log(this.props.products);
   }
   showAlert = (bool, msg) => {
     this.setState({
@@ -195,7 +207,6 @@ class OrderMainPage extends Component {
       if (type === "keydown") {
         name = e.target.value;
       }
-      // console.log(name);
       let product;
       let found = false;
       for (var i in this.props.products) {
@@ -205,7 +216,6 @@ class OrderMainPage extends Component {
           break;
         }
       }
-      // console.log(product);
       if (found)
         this.setState(
           {
@@ -220,24 +230,27 @@ class OrderMainPage extends Component {
 
   componentDidMount() {
     if (!this.props.isReady) {
-      return <Redirect to="/home" />;
+      this.props.get_items();
+      this.props.get_categories();
     }
     if (this.props.orderReducer.products.length > 0) {
       let grouped = _.groupBy(this.props.products, "category");
+      let category = this.props.categories[0].name;
+      if (this.state.searchParam !== "") {
+        for (var i in this.props.products) {
+          if (this.props.products[i].name === this.state.searchParam) {
+            category = this.props.products[i].categroy;
+            break;
+          }
+        }
+      }
       this.setState({
-        selectedCategory: this.props.categories[0].name,
+        selectedCategory: category,
         grouped: grouped,
         cart: this.props.orderReducer.products,
         totalPrice: this.props.orderReducer.totalPrice,
       });
-    } else {
-      let grouped = _.groupBy(this.props.products, "category");
-      this.setState({
-        selectedCategory: this.props.categories[0].name,
-        grouped: grouped,
-      });
     }
-    // console.log(this.state);
   }
 
   render() {
@@ -265,14 +278,16 @@ class OrderMainPage extends Component {
       );
     }
     if (this.state.continueOrder) {
-      // if (localStorage.getItem("state").isReady) {
       return (
         <Redirect to={`/pre_complete/${this.props.userReducer.user.id}`} />
       );
     }
-    // if (!this.props.isReady) {
     if (!this.props.isReady) {
-      return <Redirect to="/home" />;
+      return (
+        <div className="loading-div">
+          <CircularProgress disableShrink />{" "}
+        </div>
+      );
     } else {
       return (
         <div id="orderMainPageContainer">
@@ -282,10 +297,15 @@ class OrderMainPage extends Component {
               <div className="categoriesList">
                 <ListGroup className="categoriesListGroup">
                   {this.props.categories.map((categ, index) => {
+                    let selected = false;
+                    if (this.state.selectedCategory === categ.name) {
+                      selected = true;
+                    }
                     return (
                       <ListGroup.Item
                         key={index}
                         onClick={() => this.changeCategory(categ.name)}
+                        active={selected}
                       >
                         {categ.name}
                       </ListGroup.Item>
@@ -313,6 +333,9 @@ class OrderMainPage extends Component {
                       {option.name}
                     </Typography>
                   )}
+                  // <NavLink to={`/search/${option.name}`}>
+                  //   {option.name}
+                  // </NavLink>
                   renderInput={(params) => (
                     <TextField
                       {...params}
@@ -567,6 +590,11 @@ const mapStateToProps = (state) => ({
   isReady: state.productReducer.isReady,
 });
 
-export default connect(mapStateToProps, { update_cart, showInfoSnackbar })(
-  OrderMainPage
-);
+export default connect(mapStateToProps, {
+  update_cart,
+  showInfoSnackbar,
+  GetAsyncItems,
+  GetAsyncCategories,
+  get_items,
+  get_categories,
+})(OrderMainPage);

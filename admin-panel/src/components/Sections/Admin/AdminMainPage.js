@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Grid, InputLabel, MenuItem, Select } from "@material-ui/core";
+import { Grid } from "@material-ui/core";
 import "../../../css/Pages/adminpage.css";
 import axios from "axios";
-import { FormControl } from "react-bootstrap";
+import SimplePaper from "./Components/Sidebar";
 
 class AdminMainPage extends Component {
   constructor(props) {
@@ -68,31 +68,11 @@ class AdminMainPage extends Component {
   render() {
     return (
       <div className="adminPanel">
-        <Grid container spacing={2}>
-          <Grid item xs className="leftColMenu">
-            <div className="menuItemContainer">
-              <div className="menuItemText">Orders</div>
-            </div>
-            <div className="menuItemContainer">Users</div>
-            <div className="menuItemContainer">Order!s</div>
-            <div className="menuItemContainer">Order!s</div>
+        <Grid container>
+          <Grid item xs={2} spacing={2} className="leftColMenu">
+            <SimplePaper />
           </Grid>
-          <Grid item xs={9} className="menuContainer">
-            {this.state.orders.map((order, id) => {
-              return (
-                <div key={id}>
-                  {order.id}{" "}
-                  <button onClick={() => this.acceptOrder(order)}>
-                    accept
-                  </button>
-                  <button onClick={() => this.rejectOrder(order)}>
-                    Reject
-                  </button>
-                </div>
-              );
-            })}
-            Container
-          </Grid>
+          <Grid item xs={10} spacing={2} className="menuItemContainer"></Grid>
         </Grid>
         {/* <ChatHistory chatHistory={this.state.chatHistory} /> */}
       </div>

@@ -458,3 +458,27 @@ export const delete_item = (id, type) => (dispatch) => {
       return;
   }
 };
+
+// ################# ASYNC METHODS ##################
+
+export const GetAsyncItems = async () => {
+  try {
+    const resp = await axios.get("http://localhost:8080/products/all");
+    return resp.data;
+  } catch (err) {
+    console.log(err);
+    return err;
+  }
+};
+
+export const GetAsyncCategories = async () => {
+  try {
+    const resp = await axios.get(
+      "http://localhost:8080/product_categories/all"
+    );
+    return resp.data;
+  } catch (err) {
+    console.log(err);
+    return err;
+  }
+};

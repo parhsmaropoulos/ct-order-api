@@ -160,7 +160,7 @@ class LogRegModal extends Component {
                   </Form.Group> */}
                   <TextField
                     name="email"
-                    id="email"
+                    id="log_email"
                     label="Email"
                     type="email"
                     placeholder="input@example.com"
@@ -170,7 +170,7 @@ class LogRegModal extends Component {
                   />
                   <TextField
                     name="password"
-                    id="password"
+                    id="log_password"
                     label="Password"
                     type="password"
                     placeholder="Password"
@@ -203,7 +203,7 @@ class LogRegModal extends Component {
                 <form onSubmit={this.onSubmitRegister}>
                   <TextField
                     name="email"
-                    id="email"
+                    id="reg_email"
                     label="Email"
                     type="email"
                     placeholder="input@example.com"
@@ -213,7 +213,7 @@ class LogRegModal extends Component {
                   />
                   <TextField
                     name="password"
-                    id="password"
+                    id="reg_pass"
                     label="Password"
                     type="password"
                     placeholder="Password"
@@ -223,7 +223,7 @@ class LogRegModal extends Component {
                   />
                   <TextField
                     name="password2"
-                    id="password2"
+                    id="reg_pass_2"
                     label="Password2"
                     type="password"
                     placeholder=" Repeat Password"
