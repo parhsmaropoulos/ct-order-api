@@ -11,6 +11,7 @@ import {
   GetAsyncItems,
   get_items,
   get_categories,
+  get_ingredients,
 } from "../../../actions/items";
 import { showInfoSnackbar } from "../../../actions/snackbar";
 // import AlertModal from "../../MainPanel/Pages/Alert/AlertModal";
@@ -60,6 +61,7 @@ class OrderMainPage extends Component {
     GetAsyncItems: PropTypes.func.isRequired,
     get_items: PropTypes.func.isRequired,
     get_categories: PropTypes.func.isRequired,
+    get_ingredients: PropTypes.func.isRequired,
   };
   changeCategory = (category) => {
     this.setState({ selectedCategory: category });
@@ -67,7 +69,7 @@ class OrderMainPage extends Component {
 
   continueOrder = () => {
     if (this.state.cart.length > 0) {
-      if (this.props.userReducer.isAuthenticated === false) {
+      if (sessionStorage.getItem("isAuthenticated") !== "true") {
         // this.showAlert(true, "You have to login first!");
         this.props.showInfoSnackbar("You have to login first!");
       } else {
@@ -232,6 +234,7 @@ class OrderMainPage extends Component {
     if (!this.props.isReady) {
       this.props.get_items();
       this.props.get_categories();
+      this.props.get_ingredients();
     }
     if (this.props.orderReducer.products.length > 0) {
       let grouped = _.groupBy(this.props.products, "category");
@@ -279,7 +282,7 @@ class OrderMainPage extends Component {
     }
     if (this.state.continueOrder) {
       return (
-        <Redirect to={`/pre_complete/${this.props.userReducer.user.id}`} />
+        <Redirect to={`/pre_complete/${sessionStorage.getItem("userID")}`} />
       );
     }
     if (!this.props.isReady) {
@@ -596,5 +599,6 @@ export default connect(mapStateToProps, {
   GetAsyncItems,
   GetAsyncCategories,
   get_items,
+  get_ingredients,
   get_categories,
 })(OrderMainPage);

@@ -42,13 +42,13 @@ type User struct {
 	Addresses []Address `json:"addresses"`
 	// User's info for the shop
 
-	Comments     []Comment `json:"comments"`
-	Comments_ids []string  `json:"comments_ids"`
-	Ratings      []Rating  `json:"ratings"`
-	Ratings_ids  []string  `json:"ratings_ids"`
-	Orders       []Order   `json:"orders"`
-	Last_Order   Order     `json:"last_order"`
-	Orders_ids   []string  `json:"orders_ids"`
+	Comments []Comment `json:"comments"`
+	// Comments_ids []string  `json:"comments_ids"`
+	// Ratings      []Rating  `json:"ratings"`
+	// Ratings_ids  []string  `json:"ratings_ids"`
+	Orders     []Order  `json:"orders"`
+	Last_Order Order    `json:"last_order"`
+	Orders_ids []string `json:"orders_ids"`
 	// Last Order
 
 	// Account info
@@ -90,22 +90,23 @@ func CreateProfile(c *gin.Context) {
 	}
 	password = string(bs)
 	user := User{
-		ID:           primitive.NewObjectID(),
-		Username:     input.Username,
-		Password:     password,
-		Email:        input.Email,
-		Name:         input.Name,
-		Surname:      input.Surname,
-		Phone:        input.Phone,
-		Addresses:    []Address{},
-		Created_at:   time.Now(),
-		Orders:       []Order{},
-		Last_Order:   Order{},
-		Comments:     []Comment{},
-		Ratings:      []Rating{},
-		Orders_ids:   []string{},
-		Comments_ids: []string{},
-		Ratings_ids:  []string{}}
+		ID:         primitive.NewObjectID(),
+		Username:   input.Username,
+		Password:   password,
+		Email:      input.Email,
+		Name:       input.Name,
+		Surname:    input.Surname,
+		Phone:      input.Phone,
+		Addresses:  []Address{},
+		Created_at: time.Now(),
+		Orders:     []Order{},
+		Last_Order: Order{},
+		Comments:   []Comment{},
+		// Ratings:      []Rating{},
+		Orders_ids: []string{},
+		// Comments_ids: []string{},
+		// Ratings_ids:  []string{}
+	}
 
 	Users.InsertOne(context.Background(), user)
 
@@ -286,6 +287,7 @@ func Login(c *gin.Context) {
 	// }
 
 	user.Password = ""
+	user.Orders = nil
 
 	// Token
 	ts, err := CreateToken(user.ID, user)
@@ -355,7 +357,7 @@ func UpdateUser(c *gin.Context) {
 	var err error
 	switch input.Reason {
 	case "change_password":
-		err = user.ChangePassword(input.ID, user.Password)
+		err = user.ChangePassword(input.ID, input.Password)
 	case "update_user":
 		err = user.UpdateUserValue(input.ID)
 	case "add_address":

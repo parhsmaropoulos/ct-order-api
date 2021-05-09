@@ -384,53 +384,67 @@ func (order Order) AcceptOrder(id primitive.ObjectID) error {
 }
 
 func (order Order) CommentOrder(id primitive.ObjectID, text string, rate Rating) error {
-	// id_hex, errs := primitive.ObjectIDFromHex(id)
-	// if errs != nil {
-	// 	return errs
-	// }
 
+	user_id_hex, errs := primitive.ObjectIDFromHex(rate.User_id)
+	if errs != nil {
+		return errs
+	}
+	comment := Comment{
+		ID:         primitive.NewObjectID(),
+		Text:       text,
+		Answer:     "",
+		Approved:   false,
+		User_id:    user_id_hex,
+		Order_id:   id,
+		Rate:       rate.Rate,
+		Created_at: time.Now(),
+	}
+	Comments.InsertOne(context.Background(), comment)
+
+	_, err := Users.UpdateOne(context.Background(), bson.M{"_id": comment.User_id}, bson.M{"$push": bson.M{"comments": comment}})
 	// TODO need this as return?
-	_, err := Orders.UpdateOne(
-		context.Background(),
-		bson.M{"_id": id},
-		bson.M{
-			"$set": bson.M{
-				"rating": bson.M{
-					"_id":     order.ID,
-					"rate":    rate.Rate,
-					"user_id": rate.User_id,
-				},
-				"comment": bson.M{
-					"comment_text": text,
-				},
-			},
-		},
+	// _, err := Orders.UpdateOne(
+	// 	context.Background(),
+	// 	bson.M{"_id": id},
+	// 	bson.M{
+	// 		"$set": bson.M{
+	// 			"rating": bson.M{
+	// 				"rate":    rate.Rate,
+	// 				"user_id": rate.User_id,
+	// 			},
+	// 			"comment": bson.M{
+	// 				"comment_text":   text,
+	// 				"comment_answer": order.Comment.Answer,
+	// 				"approved":       order.Comment.Approved,
+	// 			},
+	// 		},
+	// 	},
 
-		options.Update(),
-	)
+	// 	options.Update(),
+	// )
 
-	_, err = Users.UpdateOne(
-		context.Background(),
-		bson.M{"_id": rate.User_id, "orders._id": id},
-		bson.M{
-			"$set": bson.M{
-				"orders.$[order]": bson.M{
-					"rating": bson.M{
-						"rate":    rate.Rate,
-						"user_id": rate.User_id,
-					},
-					"comment": bson.M{
-						"comment_text": text,
-					},
-				},
-			},
-		},
-		options.Update().SetArrayFilters(options.ArrayFilters{
-			Filters: []interface{}{bson.M{
-				"order._id": id,
-			}},
-		}),
-	)
+	// _, err = Users.UpdateOne(
+	// 	context.Background(),
+	// 	bson.M{"_id": rate.User_id, "orders._id": id},
+	// 	bson.M{
+	// 		"$set": bson.M{
+	// 			"orders.$[order]": bson.M{
+	// 				"rating": bson.M{
+	// 					"rate":    rate.Rate,
+	// 					"user_id": rate.User_id,
+	// 				},
+	// 				"comment": bson.M{
+	// 					"comment_text": text,
+	// 				},
+	// 			},
+	// 		},
+	// 	},
+	// 	options.Update().SetArrayFilters(options.ArrayFilters{
+	// 		Filters: []interface{}{bson.M{
+	// 			"order._id": id,
+	// 		}},
+	// 	}),
+	// )
 
 	if err != nil {
 		return err

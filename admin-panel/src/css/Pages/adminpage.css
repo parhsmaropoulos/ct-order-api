@@ -30,4 +30,24 @@
   /* margin: 0.3rem; */
   display: flex;
   border: 1px solid black;
+  width: 100%;
+}
+
+.loading-div {
+  width: 100%;
+  text-align: center;
+  margin-top: 15%;
+  margin-bottom: 15%;
+}
+
+.comment-list-item {
+  width: 100%;
+  max-width: "40rem";
+  background-color: gray;
+}
+
+.selected {
+  display: block;
+  background-color: #007bff;
+  color: white;
 }

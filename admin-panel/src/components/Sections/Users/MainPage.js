@@ -27,6 +27,7 @@ class MainPage extends Component {
     };
     this.onUpdateSubmit = this.onUpdateSubmit.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
+    this.onChangePasswordSubmit = this.onChangePasswordSubmit.bind(this);
   }
 
   static propTypes = {
@@ -85,7 +86,7 @@ class MainPage extends Component {
   }
 
   render() {
-    if (this.props.userReducer.isAuthenticated === false) {
+    if (sessionStorage.getItem("isAuthenticated") === "false") {
       return <Redirect to="/home" />;
     } else {
       return (
@@ -170,8 +171,8 @@ class MainPage extends Component {
                     <Form.Control
                       onChange={this.onChange}
                       type="text"
-                      name="password"
-                      value={this.state.newPassword}
+                      name="newPassword"
+                      // value={this.state.newPassword}
                       placeholder="Enter Password"
                     />
                   </Form.Group>
@@ -180,8 +181,8 @@ class MainPage extends Component {
                     <Form.Control
                       onChange={this.onChange}
                       type="text"
-                      name="password2"
-                      value={this.state.newPassword2}
+                      name="newPassword2"
+                      // value={this.state.newPassword2}
                       placeholder="Repeat Password"
                     />
                   </Form.Group>

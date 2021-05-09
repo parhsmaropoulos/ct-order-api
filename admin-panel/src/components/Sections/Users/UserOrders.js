@@ -13,11 +13,13 @@ import {
 import { Link, Redirect } from "react-router-dom";
 import "../../../css/Pages/accountpage.css";
 import { update_order } from "../../../actions/orders";
+import { getUser } from "../../../actions/user";
 
 import StarBorderIcon from "@material-ui/icons/StarBorder";
 import Rating from "@material-ui/lab/Rating";
 import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
+import { CircularProgress } from "@material-ui/core";
 
 class UserOrders extends Component {
   constructor(props) {
@@ -25,6 +27,7 @@ class UserOrders extends Component {
     this.state = {
       selectedOrder: {},
       comment: "",
+      comment_order_ids: [],
       rating: 4,
       showCommentModal: false,
     };
@@ -59,14 +62,21 @@ class UserOrders extends Component {
     if (this.props.userReducer.isAuthenticated === false) {
       return <Redirect to="/home" />;
     }
+    let comment_ids = [];
+    for (var i in this.props.userReducer.user.comments) {
+      comment_ids.push(this.props.userReducer.user.comments[i].order_id);
+    }
+    this.setState({ comment_order_ids: comment_ids });
   }
 
   onChange = (e) => {
-    console.log(e.target.name);
+    // console.log(e.target.name);
     this.setState({ [e.target.name]: e.target.value });
   };
 
   render() {
+    let authenticated =
+      sessionStorage.getItem("isAuthenticated") === "true" ? true : false;
     let commentModal;
     if (this.state.showCommentModal)
       commentModal = (
@@ -124,8 +134,16 @@ class UserOrders extends Component {
           </Modal.Footer>
         </Modal>
       );
-    if (this.props.userReducer.isAuthenticated === false) {
+    if (authenticated === false) {
       return <Redirect to="/home" />;
+    }
+    if (authenticated === true && this.props.userReducer.hasLoaded === false) {
+      this.props.getUser(sessionStorage.getItem("userID"));
+      return (
+        <div className="loading-div">
+          <CircularProgress disableShrink />{" "}
+        </div>
+      );
     } else {
       return (
         <Container className="accountMainPage">
@@ -187,7 +205,23 @@ class UserOrders extends Component {
                             </ul>
                           </Col>
                           <Col className="orderRowCol optionsCol">
-                            {order.rating.use_id !== "" ? (
+                            {/* {console.log(this.state.comment_order_ids)}
+                            {console.log(order.id)} */}
+                            {this.state.comment_order_ids.includes(order.id) ? (
+                              <span>
+                                {/* Comment:{" "}
+                                {
+                                  this.props.userReducer.user.comments[order.id]
+                                    .comment_text
+                                }
+                                , Rate:{" "}
+                                {
+                                  this.props.userReducer.user.comments[order.id]
+                                    .rate
+                                } */}
+                                Commented
+                              </span>
+                            ) : (
                               <button
                                 className="commentButton"
                                 onClick={() =>
@@ -196,11 +230,6 @@ class UserOrders extends Component {
                               >
                                 Comment!
                               </button>
-                            ) : (
-                              <span>
-                                Comment: {order.comments.comment_text}, Rate:{" "}
-                                {order.rating.rate}
-                              </span>
                             )}
                           </Col>
                         </Row>
@@ -224,4 +253,4 @@ const mapStateToProps = (state) => ({
   userReducer: state.userReducer,
 });
 
-export default connect(mapStateToProps, { update_order })(UserOrders);
+export default connect(mapStateToProps, { update_order, getUser })(UserOrders);

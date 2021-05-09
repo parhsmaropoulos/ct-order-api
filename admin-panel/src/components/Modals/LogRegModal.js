@@ -8,6 +8,7 @@ import { returnErrors } from "../../actions/messages";
 import PropTypes from "prop-types";
 import ClipLoader from "react-spinners/ClipLoader";
 import { TextField } from "@material-ui/core";
+import { showErrorSnackbar } from "../../actions/snackbar";
 
 class LogRegModal extends Component {
   constructor(props) {
@@ -16,7 +17,8 @@ class LogRegModal extends Component {
       selectedTab: "login",
       email: "",
       password: "",
-      password2: "",
+      reg_password: "",
+      reg_password2: "",
       ready: false,
       showError: true,
     };
@@ -30,6 +32,7 @@ class LogRegModal extends Component {
     login: PropTypes.func.isRequired,
     register: PropTypes.func.isRequired,
     isAuthenticated: PropTypes.bool,
+    showErrorSnackbar: PropTypes.func.isRequired,
   };
 
   componentDidMount() {
@@ -41,16 +44,21 @@ class LogRegModal extends Component {
 
   onSubmit(e) {
     e.preventDefault();
+    console.log(this.state.email, this.state.password);
     this.props.login(this.state.email, this.state.password);
   }
 
   onSubmitRegister(e) {
     e.preventDefault();
-    const user = {
-      email: this.state.email,
-      password: this.state.password,
-    };
-    this.props.register(user);
+    if (this.state.reg_password !== this.state.reg_password2) {
+      this.props.showErrorSnackbar("Passwords does not match");
+    } else {
+      const user = {
+        email: this.state.email,
+        password: this.state.password,
+      };
+      this.props.register(user);
+    }
   }
 
   onChangeTab = (key) => {
@@ -67,7 +75,7 @@ class LogRegModal extends Component {
 
   checkPasswords = (e) => {
     e.preventDefault();
-    if (this.state.password !== e.target.value) {
+    if (this.state.reg_password !== this.state.reg_password2) {
       document.getElementById("passwordMatchText").style.visibility = "visible";
       this.setState({ ready: false });
     } else {
@@ -80,7 +88,7 @@ class LogRegModal extends Component {
     if (!this.props.show) {
       return null;
     }
-    if (this.props.userReducer.isAuthenticated) {
+    if (sessionStorage.getItem("isAuthenticated") === "true") {
       return null;
     }
     return (
@@ -140,29 +148,12 @@ class LogRegModal extends Component {
                 </div>
                 <hr />
                 <form onSubmit={this.onSubmit}>
-                  {/* <Form.Group>
-                    <Form.Label>Email</Form.Label>
-                    <Form.Control
-                      type="email"
-                      name="email"
-                      placeholder="input@example.com"
-                      onChange={this.onChange}
-                    />
-                  </Form.Group>
-                  <Form.Group>
-                    <Form.Label>Password</Form.Label>
-                    <Form.Control
-                      type="password"
-                      name="password"
-                      onChange={this.onChange}
-                      placeholder="Password"
-                    />
-                  </Form.Group> */}
                   <TextField
                     name="email"
                     id="log_email"
                     label="Email"
                     type="email"
+                    autoComplete="section-login username"
                     placeholder="input@example.com"
                     onChange={this.onChange}
                     variant="outlined"
@@ -173,6 +164,7 @@ class LogRegModal extends Component {
                     id="log_password"
                     label="Password"
                     type="password"
+                    autoComplete="section-login password"
                     placeholder="Password"
                     onChange={this.onChange}
                     style={{ width: "100%", margin: "0.5%" }}
@@ -212,20 +204,22 @@ class LogRegModal extends Component {
                     style={{ width: "100%", margin: "0.5%" }}
                   />
                   <TextField
-                    name="password"
+                    name="reg_password"
                     id="reg_pass"
-                    label="Password"
+                    label="Enter Password"
                     type="password"
+                    autoComplete="section-login new-password"
                     placeholder="Password"
                     onChange={this.onChange}
                     style={{ width: "100%", margin: "0.5%" }}
                     variant="outlined"
                   />
                   <TextField
-                    name="password2"
+                    name="reg_password2"
                     id="reg_pass_2"
-                    label="Password2"
+                    label="Repeat Password"
                     type="password"
+                    autoComplete="section-login new-password2"
                     placeholder=" Repeat Password"
                     onChange={this.onChange}
                     style={{ width: "100%", margin: "0.5%" }}
@@ -236,7 +230,6 @@ class LogRegModal extends Component {
                       type="submit"
                       variant="outline-primary"
                       id="registerButton"
-                      disabled={!this.state.ready}
                     >
                       Εγγραφή
                     </Button>
@@ -264,6 +257,9 @@ const mapStateToProps = (state) => ({
   errorReducer: state.errorReducer,
 });
 
-export default connect(mapStateToProps, { login, register, returnErrors })(
-  LogRegModal
-);
+export default connect(mapStateToProps, {
+  login,
+  register,
+  returnErrors,
+  showErrorSnackbar,
+})(LogRegModal);

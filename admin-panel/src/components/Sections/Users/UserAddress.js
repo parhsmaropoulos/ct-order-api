@@ -18,6 +18,7 @@ import EditAddressModal from "../../Modals/EditAddressModal";
 import { getUser, updateUser } from "../../../actions/user";
 import AddressModal from "../../Modals/AddressModal";
 import { MdRemoveCircle } from "react-icons/md";
+import { CircularProgress } from "@material-ui/core";
 
 class UserAdress extends Component {
   constructor(props) {
@@ -95,6 +96,8 @@ class UserAdress extends Component {
     let editAddressModal;
     let addAddressModal;
     let removeAddressdialog;
+    let authenticated =
+      sessionStorage.getItem("isAuthenticated") === "true" ? true : false;
     if (this.state.showRemoveAddressDialog) {
       removeAddressdialog = (
         <Modal
@@ -136,19 +139,29 @@ class UserAdress extends Component {
         />
       );
     }
+    console.log(this.state.showAddressModal);
     if (this.state.showAddressModal) {
       addAddressModal = (
         <AddressModal
           displayModal={this.state.showAddressModal}
-          closeModal={(showadd, showedit, address) =>
-            this.selectAddressModal(showadd, showedit, address)
+          closeModal={() => this.selectAddressModal(false, false, "")}
+          editAddress={(showAdd, showEdit, address) =>
+            this.selectAddressModal(showAdd, showEdit, address)
           }
         />
       );
     }
 
-    if (this.props.userReducer.isAuthenticated === false) {
+    if (authenticated === false) {
       return <Redirect to="/home" />;
+    }
+    if (authenticated === true && this.props.userReducer.hasLoaded === false) {
+      this.props.getUser(sessionStorage.getItem("userID"));
+      return (
+        <div className="loading-div">
+          <CircularProgress disableShrink />{" "}
+        </div>
+      );
     } else {
       return (
         <Container className="accountMainPage">

@@ -103,9 +103,11 @@ export const update_item = (id, product, reason) => (dispatch) => {
     product: product,
     reason: reason,
   };
+  console.log(body);
   axios
     .put(`http://localhost:8080/products/update`, body, headers)
     .then((res) => {
+      console.log(res.data);
       dispatch({
         type: UPDATE_ITEM,
         new_item: res.data.data,

@@ -72,47 +72,24 @@ class PreCompleteOrderPage extends Component {
 
   static getDerivedStateFromProps(props, state) {
     // console.log(props);
-    if (
-      props.userReducer.user.last_order !== null &&
-      state.hasLoaded === false
-    ) {
-      let newState = state;
-      newState.userDetails.bellName =
-        props.userReducer.user.last_order.bell_name;
-      newState.userDetails.floor = props.userReducer.user.last_order.floor;
-      return {
-        userDetails: newState.userDetails,
-        hasLoaded: true,
-        phone: props.userReducer.user.last_order.phone,
-      };
-    }
-    // if (
-    //   props.userReducer.user.addresses.length > 0 &&
-    //   state.selectedAddress === {}
-    // ) {
-    //   let availableAd = [];
-    //   let currentAd = {};
-    //   for (var i in props.userReducer.user.addresses) {
-    //     currentAd = props.userReducer.user.addresses[i];
+    if (sessionStorage.getItem("isAuthenticated") === "false") {
+      if (
+        props.userReducer.user.last_order !== null &&
+        state.hasLoaded === false
+      ) {
+        let newState = state;
+        newState.userDetails.bellName =
+          props.userReducer.user.last_order.bell_name;
+        newState.userDetails.floor = props.userReducer.user.last_order.floor;
 
-    //     console.log(i, currentAd);
-    //     if (currentAd.address_name !== null) {
-    //       availableAd.push(
-    //         String(
-    //           currentAd.address_name +
-    //             " " +
-    //             currentAd.address_number +
-    //             ", " +
-    //             currentAd.area_name +
-    //             " "
-    //         )
-    //       );
-    //     }
-    //   }
-    //   return {
-    //     availableAddress: availableAd,
-    //   };
-    // }
+        return {
+          userDetails: newState.userDetails,
+          hasLoaded: true,
+          phone: props.userReducer.user.last_order.phone,
+        };
+      }
+      return null;
+    }
     return null;
   }
 
@@ -178,12 +155,18 @@ class PreCompleteOrderPage extends Component {
   };
 
   selectAddressModal = (showadd, showedit, address) => {
-    console.log(address);
+    console.log(showadd, showedit, address);
     this.setState({
       showAddressModal: showadd,
       showEditModal: showedit,
       selectedAddress: address,
     });
+    // console.log(address);
+    // this.setState({
+    //   showAddressModal: showadd,
+    //   showEditModal: showedit,
+    //   selectedAddress: address,
+    // });
   };
 
   sendOrder = (e) => {
@@ -201,7 +184,6 @@ class PreCompleteOrderPage extends Component {
       bell_name: this.state.userDetails.bellName,
       floor: this.state.userDetails.floor,
     };
-
     if (
       order.delivery_type === "" ||
       order.payment_type === "" ||
@@ -254,10 +236,6 @@ class PreCompleteOrderPage extends Component {
   }
 
   componentDidMount() {
-    if (this.props.userReducer.isAuthenticated === false) {
-      return <Redirect to="/home" />;
-    }
-
     this.eventSource.onmessage = (e) => this.recieveOrder(e);
   }
 
@@ -268,15 +246,20 @@ class PreCompleteOrderPage extends Component {
   };
 
   render() {
-    console.log("renderd");
     let addAddressModal;
     let editAddressModal;
+    let authenticated =
+      sessionStorage.getItem("isAuthenticated") === "true" ? true : false;
+    if (!authenticated) {
+      return <Redirect to="/home" />;
+    }
     if (this.state.showAddressModal) {
       addAddressModal = (
         <AddressModal
           displayModal={this.state.showAddressModal}
-          closeModal={(showadd, showedit, address) =>
-            this.selectAddressModal(showadd, showedit, address)
+          closeModal={() => this.selectAddressModal(false, false, "")}
+          editAddress={(showAdd, showEdit, address) =>
+            this.selectAddressModal(showAdd, showEdit, address)
           }
         />
       );
@@ -305,17 +288,6 @@ class PreCompleteOrderPage extends Component {
           {this.state.orderStatus.accepted ? <p>accepted</p> : <p>declined</p>}
         </div>
       );
-    }
-    // if (this.props.orderReducer.pending) {
-    //   return (
-    //     // <Redirect to="/waiting" />
-    //     <div className="loading-div">
-    //       <CircularProgress disableShrink />;
-    //     </div>
-    //   );
-    // }
-    if (this.props.userReducer.isAuthenticated === false) {
-      return <Redirect to="/home" />;
     } else {
       return (
         <div className="pre-order-container">
@@ -352,7 +324,6 @@ class PreCompleteOrderPage extends Component {
                       labelId="selectAddressLabel"
                       id="selectAddress"
                       name="selectedAddress"
-                      defaultValue={"0"}
                       onChange={this.onAddressChange}
                       required
                     >
@@ -487,11 +458,11 @@ class PreCompleteOrderPage extends Component {
                         return (
                           <FormControlLabel
                             key={index}
-                            value={option}
+                            value={String(option)}
                             control={
                               <Checkbox
                                 checked={active}
-                                name={option}
+                                name={option.toString()}
                                 onChange={() => this.handleTipsChange(option)}
                               />
                             }

@@ -188,7 +188,8 @@ func UpdateIngredient(c *gin.Context) {
 	var err error
 	switch input.Reason {
 	case "change_availability":
-		err = ingredient.ChangeAvailability(input.ID, !(ingredient.Available))
+		err = ingredient.ChangeAvailability(input.ID)
+		ingredient.Available = !ingredient.Available
 	case "update_ingredient":
 		err = ingredient.UpdateValues(input.ID)
 	default:
@@ -205,18 +206,18 @@ func UpdateIngredient(c *gin.Context) {
 	})
 }
 
-func (ingr Ingredient) ChangeAvailability(id string, av bool) error {
+func (ingr Ingredient) ChangeAvailability(id string) error {
 	id_hex, errs := primitive.ObjectIDFromHex(id)
 	if errs != nil {
 		return errs
 	}
-
+	// ingr.Available = av
 	_, err := Ingredients.UpdateOne(
 		context.Background(),
 		bson.M{"_id": id_hex},
 		bson.M{
 			"$set": bson.M{
-				"available": av,
+				"available": !ingr.Available,
 			},
 		},
 		options.Update(),

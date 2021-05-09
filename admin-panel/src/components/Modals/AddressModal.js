@@ -45,7 +45,7 @@ class AddressModal extends Component {
   };
 
   handleSelect = (address) => {
-    console.log(address);
+    // console.log(address);
     geocodeByAddress(address)
       .then((results) => this.saveResults(results))
       .then((results) => getLatLng(results[0]))
@@ -71,10 +71,19 @@ class AddressModal extends Component {
     });
     return results;
   };
+  componentWillUnmount() {
+    this.setState({
+      address: "",
+      addressName: "",
+      addressNumber: "",
+      areaName: "",
+      zipCode: "",
+    });
+  }
 
   onAddAddress(e) {
     e.preventDefault();
-    console.log(this.props);
+    // console.log(this.props);
 
     const data = {
       id: this.props.userReducer.user.id,
@@ -88,7 +97,7 @@ class AddressModal extends Component {
       },
       reason: "add_address",
     };
-    this.props.closeModal && this.props.closeModal(false, true, data.address);
+    this.props.editAddress && this.props.editAddress(false, true, data.address);
 
     // if (
     //   this.state.addressName === "" ||
@@ -133,10 +142,6 @@ class AddressModal extends Component {
     }
     return (
       <div className="modal " onClick={this.props.closeModal} style={style}>
-        {/* <AlertModal
-          show={this.state.showErrorModal}
-          message={this.state.errorMessage}
-        /> */}
         <div
           className="modal-content address-modal-content"
           onClick={(e) => e.stopPropagation()}

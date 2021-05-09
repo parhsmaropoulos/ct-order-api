@@ -34,13 +34,13 @@ class Header extends Component {
   }
 
   static propTypes = {
-    isAuthenticated: PropTypes.string.isRequired,
+    // isAuthenticated: PropTypes.string.isRequired,
     logout: PropTypes.func.isRequired,
     products: PropTypes.array.isRequired,
   };
 
   onClose = (e) => {
-    console.log("e");
+    // console.log("e");
     this.props.onClose && this.props.onClose(e);
   };
 
@@ -53,7 +53,13 @@ class Header extends Component {
   }
 
   render() {
-    if (this.props.isAuthenticated === "true" && this.props.user === null) {
+    let autheticated = sessionStorage.getItem("isAuthenticated");
+    if (autheticated === "true") {
+      autheticated = true;
+    } else {
+      autheticated = false;
+    }
+    if (autheticated === "true" && this.props.user === null) {
       this.props.refreshToken(this.props.refresh_token);
     }
     return (
@@ -82,7 +88,7 @@ class Header extends Component {
                     EN
                   </NavDropdown.Item>
                 </NavDropdown>
-                {this.props.isAuthenticated ? (
+                {autheticated ? (
                   <Row style={{ marginLeft: 10 }}>
                     <Dropdown>
                       <Dropdown.Toggle variant="success" id="dropdown-basic">
@@ -133,7 +139,6 @@ class Header extends Component {
 }
 
 const mapStateToProps = (state) => ({
-  isAuthenticated: sessionStorage.getItem("isAuthenticated"),
   userID: sessionStorage.getItem("userID"),
   refresh_token: sessionStorage.getItem("refreshToken"),
   user: state.userReducer.user,

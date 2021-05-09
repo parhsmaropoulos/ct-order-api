@@ -8,7 +8,7 @@ import store from "./store";
 import { BrowserRouter } from "react-router-dom";
 
 ReactDOM.render(
-  <Provider store={store.store}>
+  <Provider store={store}>
     {/* <PersistGate loading={null} persistor={store.persistor}> */}
     <BrowserRouter>
       <App />

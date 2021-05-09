@@ -83,7 +83,7 @@ const productReducer = (state = defaultState, action) => {
         isReady: false,
       };
     case UPDATE_ITEM:
-      let newItems = { ...state.products };
+      let newItems = [...state.products];
 
       var indexOfItemToUpdate = 0;
       for (i in newItems) {
@@ -95,7 +95,7 @@ const productReducer = (state = defaultState, action) => {
       console.log(newItems);
       return {
         ...state,
-        products: [newItems],
+        products: newItems,
       };
     case DELETE_PRODUCT:
       return {
@@ -126,9 +126,25 @@ const productReducer = (state = defaultState, action) => {
         isReady: false,
       };
     case UPDATE_INGREDIENT:
+      let newIngredients = [...state.ingredients];
+
+      var indexOfIngredientToUpdate_outer = 0;
+      var indexOfIngredientToUpdate_inner = 0;
+      for (i in newIngredients) {
+        for (var j in newIngredients[i]) {
+          if (newIngredients[i][j].id === action.new_ingredient.id) {
+            indexOfIngredientToUpdate_outer = i;
+            indexOfIngredientToUpdate_inner = j;
+          }
+        }
+      }
+      newIngredients[indexOfIngredientToUpdate_outer][
+        indexOfIngredientToUpdate_inner
+      ] = action.new_ingredient;
+      console.log(action.new_ingredient);
       return {
         ...state,
-        isReady: false,
+        ingredients: newIngredients,
       };
     default:
       return state;

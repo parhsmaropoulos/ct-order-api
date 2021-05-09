@@ -24,6 +24,8 @@ class OrderItemModal extends Component {
       extraPrice: 0,
       item: {},
       extra_ingredients: [""],
+      loaded: false,
+      item_available_ingredients: [],
     };
     this.onSubmit = this.onSubmit.bind(this);
     this.onClose = this.onClose.bind(this);
@@ -51,7 +53,9 @@ class OrderItemModal extends Component {
   }
 
   componentWillUnmount() {
-    // console.log("im leaving");
+    this.setState({
+      loaded: false,
+    });
   }
 
   handleToggle = (ingredient) => {
@@ -161,6 +165,29 @@ class OrderItemModal extends Component {
     this.setState({ [e.target.name]: e.target.value });
   };
 
+  static getDerivedStateFromProps(props, state) {
+    // console.log(props, state);
+    if (
+      props.item.custom === true &&
+      props.item.extra_ingredients !== undefined &&
+      state.loaded === false
+    ) {
+      let grouped_ingredients = [];
+      let grouped;
+      var _ = require("lodash");
+      grouped = _.groupBy(props.item.extra_ingredients, "category");
+      for (var i in grouped) {
+        grouped_ingredients.push(grouped[i]);
+      }
+      // console.log(grouped_ingredients);
+      return {
+        loaded: true,
+        item_available_ingredients: grouped_ingredients,
+      };
+    }
+    return null;
+  }
+
   onClose = (e) => {
     this.props.onClose && this.props.onClose(e);
     this.setState({
@@ -181,7 +208,7 @@ class OrderItemModal extends Component {
 
   render() {
     let text = "";
-    // console.log(this.props);
+    // console.log(this.props.item);
     if (!this.props.show) {
       return null;
     } else {
@@ -319,89 +346,94 @@ class OrderItemModal extends Component {
                   );
                 })}
               </Form.Group>
-              {this.props.item.custom === true ? (
-                <Form.Group controlId="ingrdients">
+              <Form.Group controlId="ingrdients">
+                {this.props.item.custom === true &&
+                this.props.item.extra_ingredients !== undefined ? (
                   <List
                     className="create-item-ingredient-list"
                     id="ingredient-list"
                   >
-                    {this.props.ingredients.map((ingredientCategory, index) => {
-                      return (
-                        <div key={index}>
-                          <p className="modalChoiceName">
-                            {`${ingredientCategory[0].category}`}
-                          </p>
-                          <div
-                            className="orderItemModalIngredientsDiv"
-                            key={index}
-                          >
-                            {ingredientCategory.map((ingredient, index) => {
-                              const labelId = `ingredient-item-${ingredient.name}`;
-                              return (
-                                <ListItem
-                                  key={index}
-                                  role={undefined}
-                                  dense
-                                  className="item-modal-ingredient-li"
-                                  // style={{ maxWidth: "50%", minWidth: "50%" }}
-                                  button
-                                  onClick={() => this.handleToggle(ingredient)}
-                                >
-                                  <ListItemIcon style={{ width: "100%" }}>
-                                    <Checkbox
-                                      edge="start"
-                                      checked={
-                                        this.state.extra_ingredients.indexOf(
-                                          ingredient.name
-                                        ) !== -1
-                                      }
-                                      tabIndex={-1}
-                                      disableRipple
-                                      inputProps={{
-                                        "aria-labelledby": labelId,
-                                      }}
-                                    />
-                                    <ListItemText
-                                      id={labelId}
-                                      primary={
-                                        <Typography
-                                          type="body2"
-                                          style={{
-                                            color: "black",
-                                            textAlgin: "center",
-                                          }}
-                                        >
-                                          {ingredient.name}
-                                        </Typography>
-                                      }
-                                    />
-                                    <ListItemText
-                                      id={labelId}
-                                      primary={
-                                        <Typography
-                                          type="subtitle1"
-                                          style={{
-                                            color: "black",
-                                            textAlign: "right",
-                                          }}
-                                        >
-                                          {ingredient.price} €
-                                        </Typography>
-                                      }
-                                    />
-                                  </ListItemIcon>
-                                </ListItem>
-                              );
-                            })}
+                    {this.state.item_available_ingredients.map(
+                      (ingredientCategory, index) => {
+                        return (
+                          <div key={index}>
+                            <p className="modalChoiceName">
+                              {`${ingredientCategory[0].category}`}
+                            </p>
+                            <div
+                              className="orderItemModalIngredientsDiv"
+                              key={index}
+                            >
+                              {ingredientCategory.map((ingredient, index) => {
+                                const labelId = `ingredient-item-${ingredient.name}`;
+                                return (
+                                  <ListItem
+                                    key={index}
+                                    role={undefined}
+                                    dense
+                                    className="item-modal-ingredient-li"
+                                    // style={{ maxWidth: "50%", minWidth: "50%" }}
+                                    button
+                                    onClick={() =>
+                                      this.handleToggle(ingredient)
+                                    }
+                                  >
+                                    <ListItemIcon style={{ width: "100%" }}>
+                                      <Checkbox
+                                        edge="start"
+                                        checked={
+                                          this.state.extra_ingredients.indexOf(
+                                            ingredient.name
+                                          ) !== -1
+                                        }
+                                        tabIndex={-1}
+                                        disableRipple
+                                        inputProps={{
+                                          "aria-labelledby": labelId,
+                                        }}
+                                      />
+                                      <ListItemText
+                                        id={labelId}
+                                        primary={
+                                          <Typography
+                                            type="body2"
+                                            style={{
+                                              color: "black",
+                                              textAlgin: "center",
+                                            }}
+                                          >
+                                            {ingredient.name}
+                                          </Typography>
+                                        }
+                                      />
+                                      <ListItemText
+                                        id={labelId}
+                                        primary={
+                                          <Typography
+                                            type="subtitle1"
+                                            style={{
+                                              color: "black",
+                                              textAlign: "right",
+                                            }}
+                                          >
+                                            {ingredient.price} €
+                                          </Typography>
+                                        }
+                                      />
+                                    </ListItemIcon>
+                                  </ListItem>
+                                );
+                              })}
+                            </div>
                           </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      }
+                    )}
                   </List>
-                </Form.Group>
-              ) : (
-                <span></span>
-              )}
+                ) : (
+                  <span></span>
+                )}
+              </Form.Group>
               <Form.Group>
                 <Form.Label className="modalChoiceName">Comments</Form.Label>
                 <Form.Control
@@ -450,9 +482,11 @@ class OrderItemModal extends Component {
     );
   }
 }
-const mapStateToProps = (state) => ({
-  isAuthenticated: state.userReducer.isAuthenticated,
-  ingredients: state.productReducer.ingredients,
-});
+const mapStateToProps = (state) =>
+  // console.log(state.productReducer.ingredients),
+  ({
+    isAuthenticated: state.userReducer.isAuthenticated,
+    ingredients: state.productReducer.ingredients,
+  });
 
 export default connect(mapStateToProps, {})(OrderItemModal);

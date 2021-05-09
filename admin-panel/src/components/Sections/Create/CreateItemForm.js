@@ -25,6 +25,7 @@ class CreateItemForm extends Component {
       source: "",
       image: null,
       extra_ingredients: [""],
+      available_ingredients: [""],
       checkedChoices: [-1],
       hasIngredients: false,
       showChoices: false,
@@ -58,6 +59,7 @@ class CreateItemForm extends Component {
       price: parseFloat(this.state.price),
       category: this.state.category,
       ingredients: this.state.extra_ingredients.slice(1),
+      extra_ingredients: [],
       choices: this.state.choices,
       custom: this.state.isCustom,
     };
@@ -66,9 +68,18 @@ class CreateItemForm extends Component {
         item.choices.push(this.props.choices[this.state.checkedChoices[i]]);
       }
     }
-    console.log(item.choices);
+    let in_cat = this.props.ingredients;
+    let avail_ingredients = this.state.available_ingredients;
+    for (i in in_cat) {
+      for (var j in in_cat[i]) {
+        if (avail_ingredients.includes(in_cat[i][j].name)) {
+          item.extra_ingredients.push(in_cat[i][j]);
+        }
+      }
+    }
+    // console.log(item.choices);
     const image = this.state.image;
-    // console.log(item);
+    console.log(item);
     this.props.create_product(item, image);
     this.setState({
       name: "",
@@ -102,6 +113,21 @@ class CreateItemForm extends Component {
     });
   };
 
+  handleAvailableToggle = (value) => {
+    const currentIndex = this.state.available_ingredients.indexOf(value);
+    const newChecked = [...this.state.available_ingredients];
+
+    if (currentIndex === -1) {
+      newChecked.push(value);
+    } else {
+      newChecked.splice(currentIndex, 1);
+    }
+
+    this.setState({
+      available_ingredients: newChecked,
+    });
+  };
+
   handleChoiceToggle = (choice) => {
     const currentIndex = this.state.checkedChoices.indexOf(choice);
     const newChecked = [...this.state.checkedChoices];
@@ -129,6 +155,16 @@ class CreateItemForm extends Component {
 
   onCustomChange() {
     this.setState({ isCustom: !this.state.isCustom });
+    if (
+      document.getElementById("available-ingredient-list").style.display ===
+      "block"
+    ) {
+      document.getElementById("available-ingredient-list").style.display =
+        "none";
+    } else {
+      document.getElementById("available-ingredient-list").style.display =
+        "block";
+    }
   }
 
   onChange = (e) => {
@@ -274,6 +310,54 @@ class CreateItemForm extends Component {
             }
             label="Is product custom?"
           />
+          <List
+            style={{ display: "none" }}
+            className="create-item-ingredient-list"
+            id="available-ingredient-list"
+            subhead={<li />}
+          >
+            {this.props.ingredients.map((ingredientCategory, index) => {
+              return (
+                <li key={index}>
+                  <ul>
+                    <ListSubheader>{`${ingredientCategory[0].category}`}</ListSubheader>
+                    {ingredientCategory.map((ingredient, index) => {
+                      const labelId = `ingredient-item-${ingredient.name}`;
+                      return (
+                        <ListItem
+                          key={index}
+                          role={undefined}
+                          dense
+                          button
+                          onClick={() =>
+                            this.handleAvailableToggle(ingredient.name)
+                          }
+                        >
+                          <ListItemIcon>
+                            <Checkbox
+                              edge="start"
+                              checked={
+                                this.state.available_ingredients.indexOf(
+                                  ingredient.name
+                                ) !== -1
+                              }
+                              tabIndex={-1}
+                              disableRipple
+                              inputProps={{ "aria-labelledby": labelId }}
+                            />
+                            <ListItemText
+                              id={labelId}
+                              primary={`${ingredient.name}`}
+                            />
+                          </ListItemIcon>
+                        </ListItem>
+                      );
+                    })}
+                  </ul>
+                </li>
+              );
+            })}
+          </List>
         </Form.Group>
         <Form.Group controlId="ingredients">
           <FormControlLabel

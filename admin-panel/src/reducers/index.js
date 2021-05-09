@@ -4,6 +4,7 @@ import orderReducer from "./orderReducer";
 import errorReducer from "./errors";
 import uiReducer from "./uiReducer";
 import webSocketReducer from "./webSocketReducer";
+import adminReducer from "./adminReducer";
 import { combineReducers } from "redux";
 
 const rootReducer = combineReducers({
@@ -13,6 +14,7 @@ const rootReducer = combineReducers({
   errorReducer,
   uiReducer,
   webSocketReducer,
+  adminReducer,
 });
 
 export default rootReducer;

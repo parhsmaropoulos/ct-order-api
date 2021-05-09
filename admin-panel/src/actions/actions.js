@@ -24,6 +24,12 @@ export const GET_USER = "GET_USER";
 export const SUBSCRIBE_USER = "SUBSCRIBE_USER";
 export const UNSUBSCRIBE_USER = "UNSUBSCRIBE_USER";
 
+// COMMENTS
+export const GET_COMMENTS = "GET_COMMENTS";
+export const COMMENT_ANSWERED = "COMMENT_ANSWERED";
+export const REJECT_COMMENT = "REJECT_COMMENT";
+export const APPROVE_COMMENT = "APPROVE_COMMENT";
+
 /**
  * Error reducer constans
  */

@@ -11,6 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type Comment struct {
@@ -19,8 +20,10 @@ type Comment struct {
 	Text       string             `json:"text"`
 	Answer     string             `json:"answer"`
 	Approved   bool               `json:"approved"`
-	User_id    string             `json:"user_id"`
-	Order_id   string             `json:"order_id"`
+	Answered   bool               `json:"answered"`
+	User_id    primitive.ObjectID `json:"user_id"`
+	Order_id   primitive.ObjectID `json:"order_id"`
+	Rate       float32            `json:"rate"`
 	Created_at time.Time          `json:"created_at"`
 }
 
@@ -40,6 +43,7 @@ func CreateComment(c *gin.Context) {
 		ID:       primitive.NewObjectID(),
 		Text:     input.Text,
 		Answer:   "",
+		Answered: false,
 		User_id:  input.User_id,
 		Approved: false,
 	}
@@ -53,15 +57,16 @@ func CreateComment(c *gin.Context) {
 	}
 
 	// Append Comment to User
-	user_id, err := primitive.ObjectIDFromHex(input.User_id)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Server error1!",
-		})
-		return
-	}
+	// user_id, err := primitive.ObjectIDFromHex(input.User_id)
+	user_id := input.User_id
+	// if err != nil {
+	// 	c.JSON(http.StatusInternalServerError, gin.H{
+	// 		"message": "Server error1!",
+	// 	})
+	// 	return
+	// }
 
-	_, err = Users.UpdateOne(
+	_, err := Users.UpdateOne(
 		context.Background(),
 		bson.M{"_id": user_id},
 		bson.M{"$push": bson.M{"comments": comment}},
@@ -161,5 +166,116 @@ func DeleteComment(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"message":        "Comment deleted",
 		"delete_product": comment,
+	})
+}
+
+func ApproveComment(c *gin.Context) {
+	if c.Request.Method != "POST" {
+		fmt.Print("only post here dude.")
+	}
+	id, errs := primitive.ObjectIDFromHex(c.Param("id"))
+	if errs != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Error on id fetch",
+			"error":   errs,
+		})
+	}
+
+	var comment Comment
+	err_comment := Comments.FindOneAndUpdate(context.Background(),
+		bson.M{"_id": id},
+		bson.M{"$set": bson.M{
+			"approved": true,
+			"answered": true,
+		}},
+	).Decode(&comment)
+
+	if err_comment == mongo.ErrNoDocuments {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Comment approval failed, no such comment",
+		})
+		return
+	}
+	comment.Approved = true
+	comment.Answered = true
+	c.JSON(200, gin.H{
+		"message": "Comment approved",
+		"data":    comment,
+	})
+}
+
+func RejectComment(c *gin.Context) {
+	if c.Request.Method != "POST" {
+		fmt.Print("only post here dude.")
+	}
+	id, errs := primitive.ObjectIDFromHex(c.Param("id"))
+	if errs != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Error on id fetch",
+			"error":   errs,
+		})
+	}
+
+	var comment Comment
+	err_comment := Comments.FindOneAndUpdate(context.Background(),
+		bson.M{"_id": id},
+		bson.M{"$set": bson.M{
+			"approved": false,
+			"answered": true,
+		}},
+	).Decode(&comment)
+
+	if err_comment == mongo.ErrNoDocuments {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Comment rejection failed, no such comment",
+		})
+		return
+	}
+	comment.Approved = false
+	comment.Answered = true
+	c.JSON(200, gin.H{
+		"message": "Comment rejected",
+		"data":    comment,
+	})
+}
+
+func AnswerComment(c *gin.Context) {
+	if c.Request.Method != "POST" {
+		fmt.Print("only post here dude.")
+	}
+	id, errs := primitive.ObjectIDFromHex(c.Param("id"))
+	if errs != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Error on id fetch",
+			"error":   errs,
+		})
+	}
+	var input struct {
+		Text string `json:"text"`
+	}
+
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "message": err})
+		return
+	}
+
+	var comment Comment
+	err_comment := Comments.FindOneAndUpdate(context.Background(),
+		bson.M{"_id": id},
+		bson.M{"$set": bson.M{
+			"answer": input.Text,
+		}},
+	).Decode(&comment)
+
+	if err_comment == mongo.ErrNoDocuments {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Comment answer failed, no such comment",
+		})
+		return
+	}
+	comment.Answer = input.Text
+	c.JSON(200, gin.H{
+		"message": "Comment answered!",
+		"data":    comment,
 	})
 }

@@ -136,6 +136,15 @@ func main() {
 		orders.POST("/post_rate", models.TokenAuthMiddleware(), models.CreateRate)
 	}
 
+	comments := router.Group("/comments/")
+	{
+		// COMMENTS
+		comments.GET("/all", models.GetComments)
+		comments.POST("/approve/:id", models.ApproveComment)
+		comments.POST("/reject/:id", models.RejectComment)
+		comments.POST("/answer/:id", models.AnswerComment)
+	}
+
 	router.Any("/", func(c *gin.Context) {
 		if c.Request.URL.Path != "/" {
 			http.NotFound(c.Writer, c.Request)

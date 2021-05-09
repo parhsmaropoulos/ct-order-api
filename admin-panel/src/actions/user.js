@@ -52,13 +52,13 @@ export const login = (email, password) => (dispatch) => {
     .then((res) => {
       // Decode token
       const token = jwt(res.data.access_token);
-      const refreshToken = jwt(res.data.refresh_token);
-      console.log(refreshToken);
+      // const refreshToken = jwt(res.data.refresh_token);
+      // console.log(refreshToken);
       const data = {
         id: token.user_id,
         user: token.user,
       };
-      console.log(data.user);
+      // console.log(data.user);
       dispatch({
         type: LOGIN_SUCCESS,
         token: res.data.access_token,

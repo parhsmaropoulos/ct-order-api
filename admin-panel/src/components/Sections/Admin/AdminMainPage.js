@@ -1,9 +1,19 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Grid } from "@material-ui/core";
+import { CircularProgress, Container, Grid } from "@material-ui/core";
 import "../../../css/Pages/adminpage.css";
+import {
+  get_items,
+  get_categories,
+  get_choices,
+  get_ingredients,
+} from "../../../actions/items";
 import axios from "axios";
+import PropTypes from "prop-types";
 import SimplePaper from "./Components/Sidebar";
+import { tabs } from "./Common/tabs";
+import RightContainer from "./Components/RightContainer";
+import { get_comments } from "../../../actions/comments";
 
 class AdminMainPage extends Component {
   constructor(props) {
@@ -15,9 +25,26 @@ class AdminMainPage extends Component {
     this.state = {
       orders: [],
       selected_time: 0,
+      selected_tab: "",
     };
     this.onSelectChange = this.onSelectChange.bind(this);
+    this.changeTab = this.changeTab.bind(this);
   }
+
+  static propTypes = {
+    get_items: PropTypes.func.isRequired,
+    get_categories: PropTypes.func.isRequired,
+    get_choices: PropTypes.func.isRequired,
+    get_ingredients: PropTypes.func.isRequired,
+    get_comments: PropTypes.func.isRequired,
+    orderReducer: PropTypes.object.isRequired,
+    adminReducer: PropTypes.object.isRequired,
+  };
+
+  changeTab = (tab) => {
+    console.log(tab);
+    this.setState({ selected_tab: tab });
+  };
 
   onSelectChange = (e) => {
     this.setState({ [e.target.name]: e.target.value });
@@ -66,20 +93,58 @@ class AdminMainPage extends Component {
   }
   static propTypes = {};
   render() {
+    if (this.props.productReducer.isReady === false) {
+      this.props.get_items();
+      this.props.get_choices();
+      this.props.get_ingredients();
+      this.props.get_categories();
+      if (this.props.adminReducer.loaded === false) {
+        this.props.get_comments();
+      }
+      return (
+        <div className="loading-div">
+          <CircularProgress disableShrink />{" "}
+        </div>
+      );
+    }
     return (
-      <div className="adminPanel">
-        <Grid container>
-          <Grid item xs={2} spacing={2} className="leftColMenu">
-            <SimplePaper />
+      <Container className="adminPanel">
+        <Grid container spacing={2}>
+          <Grid item xs={2} className="leftColMenu">
+            <SimplePaper
+              tabs={tabs}
+              selectedTab={this.state.selected_tab}
+              onSelectChange={(selected_tab) => this.changeTab(selected_tab)}
+            />
           </Grid>
-          <Grid item xs={10} spacing={2} className="menuItemContainer"></Grid>
+          <Grid item xs={10} className="menuItemContainer">
+            <RightContainer
+              ingredients={this.props.productReducer.ingredients}
+              ingredientCategories={
+                this.props.productReducer.ingredientCategories
+              }
+              products={this.props.productReducer.products}
+              comments={this.props.adminReducer.comments}
+              categories={this.props.productReducer.categories}
+              selectedTab={this.state.selected_tab}
+            />
+          </Grid>
         </Grid>
         {/* <ChatHistory chatHistory={this.state.chatHistory} /> */}
-      </div>
+      </Container>
     );
   }
 }
 
-const mapStateToProps = (state) => ({});
+const mapStateToProps = (state) => ({
+  productReducer: state.productReducer,
+  adminReducer: state.adminReducer,
+});
 
-export default connect(mapStateToProps, {})(AdminMainPage);
+export default connect(mapStateToProps, {
+  get_items,
+  get_categories,
+  get_choices,
+  get_ingredients,
+  get_comments,
+})(AdminMainPage);

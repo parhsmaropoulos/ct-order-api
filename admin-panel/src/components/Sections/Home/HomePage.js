@@ -56,8 +56,10 @@ class HomePage extends Component {
           <Link to="/ingredients">Ingredients</Link>
           <br />
           <Link to="/choices">Choices</Link>
+          {/* <br />
+          <Link to={`/stats/${this.state.id}`}>Choices</Link> */}
           <br />
-          <Link to={`/stats/${this.state.id}`}>Choices</Link>
+          <Link to={`/comments`}>Comments</Link>
         </div>
         {/* <Carousel>
           <Carousel.Item>

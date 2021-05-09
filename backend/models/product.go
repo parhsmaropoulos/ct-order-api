@@ -32,9 +32,9 @@ type Product struct {
 	Choices     []Choice           `json:"choices"`
 	Custom      bool               `json:"custom"`
 	// Ingredients_Ids       []string           `json:"Ingrdients"`
-	Extra_Ingredients []string `json:"extra_ingredients"`
-	Available         bool     `json:"available"`
-	Visible           bool     `json:"visible"`
+	Extra_Ingredients []Ingredient `json:"extra_ingredients"`
+	Available         bool         `json:"available"`
+	Visible           bool         `json:"visible"`
 	// Quantity  int8 `json:"quantity"`
 }
 
@@ -117,6 +117,9 @@ func CreateProduct(c *gin.Context) {
 	if len(input.Ingredients) > 0 {
 		product.Ingredients = input.Ingredients
 	}
+	if len(input.Extra_Ingredients) > 0 {
+		product.Extra_Ingredients = input.Extra_Ingredients
+	}
 
 	product.Price = math.Round((product.Price * 100) / 100)
 	_, err = Products.InsertOne(context.Background(), product)
@@ -162,6 +165,7 @@ func UpdateProduct(c *gin.Context) {
 	switch input.Reason {
 	case "change_availability":
 		err = product.ChangeAvailability(input.ID, !(product.Available))
+		product.Available = !product.Available
 	case "update_product":
 		err = product.UpdateProductValue(input.ID)
 	default:
@@ -327,7 +331,7 @@ func (prod Product) ChangeAvailability(id string, av bool) error {
 	}
 	// fmt.Println("here")
 	// fmt.Println(av)
-
+	prod.Available = av
 	_, err := Products.UpdateOne(
 		context.Background(),
 		bson.M{"_id": id_hex},

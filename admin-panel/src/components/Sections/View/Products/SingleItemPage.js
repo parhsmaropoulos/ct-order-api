@@ -61,7 +61,7 @@ class SingleItemPage extends Component {
 
   static propTypes = {
     isAuthenticated: PropTypes.bool.isRequired,
-    get_categories: PropTypes.func.isRequired,
+    // get_categories: PropTypes.func.isRequired,
     update_item: PropTypes.func.isRequired,
     categories: PropTypes.array.isRequired,
     choices: PropTypes.array.isRequired,

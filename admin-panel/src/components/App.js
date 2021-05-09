@@ -6,11 +6,11 @@ import "../css/App/App.css";
 // Routing
 import {
   Route,
-  BrowserRouter as Router,
+  // BrowserRouter as Router,
   Switch,
   Redirect,
 } from "react-router-dom";
-import { createBrowserHistory } from "history";
+// import { createBrowserHistory } from "history";
 
 // Pages
 // import UsersPage from "./Sections/Users/
@@ -53,13 +53,14 @@ import ErrorSnackbar from "./Logging/SnackBars/ErrorSnackbar";
 import NotFound from "./Layout/NotFound";
 import SingleChoicePage from "./Sections/View/Choices/SingleChoicePage";
 import TextPage from "./Sections/Common/TextPage";
+import AllComents from "./Sections/Admin/Comments/AllComents";
 
 // const alertOptions = {
 //   timeout: 3000,
 //   position: "top center",
 // };
 
-const customHistory = createBrowserHistory();
+// const customHistory = createBrowserHistory();
 
 class App extends Component {
   constructor() {
@@ -119,6 +120,7 @@ class App extends Component {
             <Route path="/single_ingredient" component={SingleIngredientPage} />
             <Route path="/single_choice" component={SingleChoicePage} />
             <Route path="/document/:type" component={TextPage} />
+            <Route path="/comments" component={AllComents} />
             {/* PRIVATE ROUTES */}
             <PrivateRoute path="/stats/:id" component={StatsPage} />
             <PrivateRoute path="/create_item" component={CreatePage} />
