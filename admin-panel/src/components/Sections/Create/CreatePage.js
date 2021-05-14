@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import "../../../css/Pages/CreatePage.css";
+import "../../../css/Pages/createpage.css";
 import CreateForm from "./CreateForm";
 import { CreateOptionsData } from "./CreateOptionsData";
 import {

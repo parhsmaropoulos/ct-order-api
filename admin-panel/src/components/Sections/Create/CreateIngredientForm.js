@@ -3,7 +3,7 @@ import { Form, Button } from "react-bootstrap";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { create_ingredient } from "../../../actions/items";
-import "../../../css/Pages/CreatePage.css";
+import "../../../css/Pages/createpage.css";
 
 class CreateIngredientForm extends Component {
   constructor(props) {
