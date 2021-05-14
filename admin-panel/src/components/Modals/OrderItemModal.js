@@ -276,9 +276,8 @@ class OrderItemModal extends Component {
                             // if (this.props.update) {
                             let show = false;
                             for (var i in this.props.updateItem.options) {
-                              let update_option = this.props.updateItem.options[
-                                i
-                              ];
+                              let update_option =
+                                this.props.updateItem.options[i];
                               if (
                                 update_option.name === choice.name &&
                                 update_option.choice === option.name
@@ -366,63 +365,111 @@ class OrderItemModal extends Component {
                             >
                               {ingredientCategory.map((ingredient, index) => {
                                 const labelId = `ingredient-item-${ingredient.name}`;
-                                return (
-                                  <ListItem
-                                    key={index}
-                                    role={undefined}
-                                    dense
-                                    className="item-modal-ingredient-li"
-                                    // style={{ maxWidth: "50%", minWidth: "50%" }}
-                                    button
-                                    onClick={() =>
-                                      this.handleToggle(ingredient)
-                                    }
-                                  >
-                                    <ListItemIcon style={{ width: "100%" }}>
-                                      <Checkbox
-                                        edge="start"
-                                        checked={
-                                          this.state.extra_ingredients.indexOf(
-                                            ingredient.name
-                                          ) !== -1
-                                        }
-                                        tabIndex={-1}
-                                        disableRipple
-                                        inputProps={{
-                                          "aria-labelledby": labelId,
-                                        }}
-                                      />
-                                      <ListItemText
-                                        id={labelId}
-                                        primary={
-                                          <Typography
-                                            type="body2"
-                                            style={{
-                                              color: "black",
-                                              textAlgin: "center",
-                                            }}
-                                          >
-                                            {ingredient.name}
-                                          </Typography>
-                                        }
-                                      />
-                                      <ListItemText
-                                        id={labelId}
-                                        primary={
-                                          <Typography
-                                            type="subtitle1"
-                                            style={{
-                                              color: "black",
-                                              textAlign: "right",
-                                            }}
-                                          >
-                                            {ingredient.price} €
-                                          </Typography>
-                                        }
-                                      />
-                                    </ListItemIcon>
-                                  </ListItem>
-                                );
+                                if (ingredient.available) {
+                                  return (
+                                    <ListItem
+                                      key={index}
+                                      role={undefined}
+                                      dense
+                                      className="item-modal-ingredient-li"
+                                      // style={{ maxWidth: "50%", minWidth: "50%" }}
+                                      button
+                                      onClick={() =>
+                                        this.handleToggle(ingredient)
+                                      }
+                                    >
+                                      <ListItemIcon style={{ width: "100%" }}>
+                                        <Checkbox
+                                          edge="start"
+                                          checked={
+                                            this.state.extra_ingredients.indexOf(
+                                              ingredient.name
+                                            ) !== -1
+                                          }
+                                          tabIndex={-1}
+                                          disableRipple
+                                          inputProps={{
+                                            "aria-labelledby": labelId,
+                                          }}
+                                        />
+                                        <ListItemText
+                                          id={labelId}
+                                          primary={
+                                            <Typography
+                                              type="body2"
+                                              style={{
+                                                color: "black",
+                                                textAlgin: "center",
+                                              }}
+                                            >
+                                              {ingredient.name}
+                                            </Typography>
+                                          }
+                                        />
+                                        <ListItemText
+                                          id={labelId}
+                                          primary={
+                                            <Typography
+                                              type="subtitle1"
+                                              style={{
+                                                color: "black",
+                                                textAlign: "right",
+                                              }}
+                                            >
+                                              {ingredient.price} €
+                                            </Typography>
+                                          }
+                                        />
+                                      </ListItemIcon>
+                                    </ListItem>
+                                  );
+                                } else {
+                                  return (
+                                    <ListItem
+                                      key={index}
+                                      role={undefined}
+                                      dense
+                                      disabled
+                                      className="item-modal-ingredient-li"
+                                      // style={{ maxWidth: "50%", minWidth: "50%" }}
+                                      button
+                                      onClick={() =>
+                                        this.handleToggle(ingredient)
+                                      }
+                                    >
+                                      <ListItemIcon style={{ width: "100%" }}>
+                                        <ListItemText
+                                          id={labelId}
+                                          primary={
+                                            <Typography
+                                              type="body2"
+                                              style={{
+                                                color: "black",
+                                                textAlgin: "center",
+                                              }}
+                                            >
+                                              {ingredient.name}
+                                            </Typography>
+                                          }
+                                        />
+                                        <ListItemText
+                                          id={labelId}
+                                          primary={
+                                            <Typography
+                                              type="subtitle1"
+                                              style={{
+                                                color: "black",
+                                                textAlign: "right",
+                                              }}
+                                            >
+                                              {ingredient.price} €
+                                            </Typography>
+                                          }
+                                        />
+                                      </ListItemIcon>
+                                    </ListItem>
+                                  );
+                                }
                               })}
                             </div>
                           </div>

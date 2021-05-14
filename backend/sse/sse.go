@@ -86,22 +86,21 @@ func (b *Broker) Start() {
 					for s := range b.Clients {
 						client := b.Clients[s]
 						fmt.Print(client)
-						current_id := id
 						if client == "admin" {
+							log.Printf("Broadcast message to  clients with id %s", client)
 							s <- msg
 							break
 						}
-						log.Printf("Broadcast message to  clients with id %s", current_id)
 					}
 				} else {
 					for s := range b.Clients {
 						client := b.Clients[s]
 						fmt.Print(client)
-						current_id := id
-						if client == current_id {
+						if client == id {
+							log.Printf("Broadcast message to  clients with id %s", client)
 							s <- msg
+							break
 						}
-						log.Printf("Broadcast message to  clients with id %s", current_id)
 					}
 				}
 			}
@@ -192,6 +191,10 @@ func SendOrder(b *Broker, c *gin.Context) {
 		panic(er)
 	}
 	b.Messages <- string(out)
+	// c.JSON(200, gin.H{
+	// 	"message": "order send",
+	// 	"data":    string(out),
+	// })
 
 }
 
@@ -216,5 +219,8 @@ func AcceptOrder(b *Broker, c *gin.Context) {
 		panic(er)
 	}
 	b.Messages <- string(out)
-
+	// c.JSON(200, gin.H{
+	// 	"message": "order accepted",
+	// 	"data":    string(out),
+	// })
 }

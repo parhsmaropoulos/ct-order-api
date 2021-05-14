@@ -67,6 +67,7 @@ export default function CommentsCatalog(props) {
       <Table>
         <TableHead>
           <TableRow>
+            <TableCell align="left">Ημερομηνία</TableCell>
             <TableCell align="left">Όνομα</TableCell>
             <TableCell align="right">Σχόλιο</TableCell>
             <TableCell align="right">Βαθμολογία</TableCell>
@@ -78,7 +79,12 @@ export default function CommentsCatalog(props) {
           {props.comments.map((comment, index) => {
             return (
               <TableRow key={index}>
-                <TableCell align="left">{comment.user_id}</TableCell>
+                <TableCell align="left">
+                  {comment.created_at.slice(0, 10)}{" "}
+                  {comment.created_at.slice(12, 19)}
+                </TableCell>
+
+                <TableCell align="left">{comment.user_name}</TableCell>
                 <TableCell align="right">{comment.text} </TableCell>
                 <TableCell align="right">
                   {comment.rate}

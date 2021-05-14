@@ -4,6 +4,8 @@ import Paper from "@material-ui/core/Paper";
 import { ListItem, ListItemText } from "@material-ui/core";
 import "../../../../css/Pages/adminpage.css";
 
+const orderCategories = ["Εισερχόμενες", "Ετοιμάζονται", "Ολοκληρώθηκαν"];
+
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
@@ -28,6 +30,9 @@ export default function InnerSidebarCatalog(props) {
   const classes = useStyles();
   return (
     <Paper className={classes.root} elevation={3}>
+      <ListItem>
+        <ListItemText primary={"ΚΑΤΗΓΟΡΙΕΣ"} />
+      </ListItem>
       {props.type === "products"
         ? props.categories.map((category, index) => (
             <div
@@ -36,27 +41,34 @@ export default function InnerSidebarCatalog(props) {
                 category.name === props.selectedCategory ? "selected" : ""
               }
             >
-              <ListItem>
-                <ListItemText
-                  onClick={(e) => props.onCategoryChange(category.name)}
-                  primary={category.name}
-                />
+              <ListItem onClick={(e) => props.onCategoryChange(category.name)}>
+                <ListItemText primary={category.name} />
               </ListItem>
             </div>
           ))
-        : props.categories.map((category, index) => (
+        : props.type === "ingredients"
+        ? props.categories.map((category, index) => (
             <div
               key={index}
               className={index === props.selectedCategory ? "selected" : ""}
             >
-              <ListItem>
-                <ListItemText
-                  onClick={(e) => props.onCategoryChange(index)}
-                  primary={category}
-                />
+              <ListItem onClick={(e) => props.onCategoryChange(index)}>
+                <ListItemText primary={category} />
               </ListItem>
             </div>
-          ))}
+          ))
+        : props.type === "orders"
+        ? orderCategories.map((category, index) => (
+            <div
+              key={index}
+              className={category === props.selectedCategory ? "selected" : ""}
+            >
+              <ListItem onClick={(e) => props.onCategoryChange(category)}>
+                <ListItemText primary={category} />
+              </ListItem>
+            </div>
+          ))
+        : null}
     </Paper>
   );
 }

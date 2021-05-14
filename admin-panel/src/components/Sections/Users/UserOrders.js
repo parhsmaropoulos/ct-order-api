@@ -49,6 +49,7 @@ class UserOrders extends Component {
       order_id: this.state.selectedOrder.id,
       reason: "comment_order",
       comment_text: this.state.comment,
+      user_name: this.props.userReducer.user.name,
       rating: {
         rate: parseFloat(this.state.rating),
         user_id: this.props.userReducer.user.id,

@@ -3,11 +3,14 @@ import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import "../../../css/Pages/orderpage.css";
 import { Redirect } from "react-router";
+import { Link } from "react-router-dom";
 import {
   send_order,
   empty_cart,
   order_accepted,
+  clearReducer,
 } from "../../../actions/orders";
+import { getUser } from "../../../actions/user";
 import {
   InputLabel,
   MenuItem,
@@ -19,6 +22,7 @@ import {
   FormControlLabel,
   Checkbox,
   FormGroup,
+  Button,
 } from "@material-ui/core";
 import AddressModal from "../../Modals/AddressModal";
 import ListItem from "@material-ui/core/ListItem";
@@ -32,11 +36,9 @@ const availableTipOptions = [0.5, 1.0, 1.5, 2.0, 5.0, 10.0];
 class PreCompleteOrderPage extends Component {
   constructor(props) {
     super(props);
-    console.log(props);
     this.eventSource = new EventSource(
       `http://localhost:8080/sse/events/${props.match.params.id}`
     );
-
     this.state = {
       id: 0,
       availableAddress: [],
@@ -57,6 +59,7 @@ class PreCompleteOrderPage extends Component {
       phone: "",
       orderStatus: {
         accepted: false,
+        timeToDelivery: 0,
         send: false,
         awaiting: false,
       },
@@ -70,54 +73,29 @@ class PreCompleteOrderPage extends Component {
     this.handleTipsChange = this.handleTipsChange.bind(this);
   }
 
-  static getDerivedStateFromProps(props, state) {
-    // console.log(props);
-    if (sessionStorage.getItem("isAuthenticated") === "false") {
-      if (
-        props.userReducer.user.last_order !== null &&
-        state.hasLoaded === false
-      ) {
-        let newState = state;
-        newState.userDetails.bellName =
-          props.userReducer.user.last_order.bell_name;
-        newState.userDetails.floor = props.userReducer.user.last_order.floor;
-
-        return {
-          userDetails: newState.userDetails,
-          hasLoaded: true,
-          phone: props.userReducer.user.last_order.phone,
-        };
-      }
-      return null;
-    }
-    return null;
-  }
-
   static propTypes = {
     send_order: PropTypes.func.isRequired,
     showErrorSnackbar: PropTypes.func.isRequired,
     empty_cart: PropTypes.func.isRequired,
+    getUser: PropTypes.func.isRequired,
     order_accepted: PropTypes.func.isRequired,
     userReducer: PropTypes.object.isRequired,
     orderReducer: PropTypes.object.isRequired,
+    clearReducer: PropTypes.func.isRequired,
   };
   handleTipsChange(tip) {
     this.setState({ tips: tip });
   }
 
   recieveOrder(response) {
+    // console.log("here");
     let data = JSON.parse(response.data);
-    // if (this.state.commnet !== null) {
-    //   if (data.from === String(this.state.id)) {
-    //     console.log("We did it bitches");
-    //   }
-    // }
     console.log(data);
-    // return <Redirect to="/home"></Redirect>;
-    let orderStatus = this.state.orderStatus;
-    orderStatus.accepted = data.accepted;
-    orderStatus.awaiting = false;
-    this.props.order_accepted();
+    // let orderStatus = this.state.orderStatus;
+    // orderStatus.accepted = data.accepted;
+    // orderStatus.awaiting = false;
+    // orderStatus.timeToDelivery = data.time;
+    this.props.order_accepted(data.time);
   }
 
   handlePaymentChange = (type) => {
@@ -177,26 +155,52 @@ class PreCompleteOrderPage extends Component {
       delivery_type: this.state.deliveryOption,
       pre_discount_price: this.props.orderReducer.totalPrice,
       payment_type: this.state.payment_type,
-      tips: this.state.tips,
+      tips: parseFloat(this.state.tips),
       comments: this.state.comments,
-      address: this.state.selectedAddress,
-      phone: this.state.phone,
-      bell_name: this.state.userDetails.bellName,
-      floor: this.state.userDetails.floor,
+      user_details: {
+        name: this.props.userReducer.user.name,
+        surname: this.props.userReducer.user.surname,
+        address: this.state.selectedAddress,
+        phone: this.state.phone,
+        bell_name: this.state.userDetails.bellName,
+        floor: this.state.userDetails.floor,
+      },
     };
-    if (
-      order.delivery_type === "" ||
-      order.payment_type === "" ||
-      order.address === "" ||
-      order.floor === "" ||
-      order.bell_name === "" ||
-      order.phone === ""
-    ) {
-      this.props.showErrorSnackbar("Please fill all the fields");
-    } else {
+
+    if (this.validateFields(order)) {
       this.props.send_order(order);
+      // console.log(order);
     }
-    // console.log(order);
+  };
+
+  validateFields = (order) => {
+    const mobilePhoneRegex = new RegExp(/^69[0-9]{8}/);
+    const homePhoneRegex = new RegExp(/^21[0-9]{8}/);
+    if (order.delivery_type === "") {
+      this.props.showErrorSnackbar("Please select delivery type");
+      return false;
+    } else if (order.payment_type === "") {
+      this.props.showErrorSnackbar("Please select payment type");
+      return false;
+    } else if (order.user_details.address === "") {
+      this.props.showErrorSnackbar("Please select an adress");
+      return false;
+    } else if (
+      order.user_details.floor === "" ||
+      order.user_details.bell_name === ""
+    ) {
+      this.props.showErrorSnackbar("Please enter floor and bell name");
+      return false;
+    } else if (
+      (mobilePhoneRegex.test(order.user_details.phone) === false &&
+        homePhoneRegex.test(order.user_details.phone) === false) ||
+      order.user_details.length > 10
+    ) {
+      this.props.showErrorSnackbar("Please enter valid phone number");
+      return false;
+    } else {
+      return true;
+    }
   };
 
   onChange = (e) => {
@@ -231,12 +235,31 @@ class PreCompleteOrderPage extends Component {
     });
   };
 
-  componentWillUnmount() {
-    console.log("goign out");
-  }
-
   componentDidMount() {
     this.eventSource.onmessage = (e) => this.recieveOrder(e);
+    console.log(this.props);
+    if (this.props.userReducer.user !== null) {
+      if (this.props.userReducer.user.addresses.length > 0) {
+        this.setState({
+          selectedAddress: this.props.userReducer.user.addresses[0],
+        });
+      }
+      if (this.props.userReducer.user.last_order !== null) {
+        let newDetails = this.state.userDetails;
+        let last = this.props.userReducer.user.last_order;
+        newDetails.bellName = last.user_details.Bell_name;
+        newDetails.floor = last.user_details.Floor;
+        this.setState({
+          userDetails: newDetails,
+          phone: last.user_details.Phone,
+        });
+      }
+    }
+  }
+  componentWillUnmount() {
+    if (this.props.orderReducer.sent && !this.props.orderReducer.pending) {
+      this.props.clearReducer();
+    }
   }
 
   showEditModal = (bool) => {
@@ -251,7 +274,7 @@ class PreCompleteOrderPage extends Component {
     let authenticated =
       sessionStorage.getItem("isAuthenticated") === "true" ? true : false;
     if (!authenticated) {
-      return <Redirect to="/home" />;
+      return <Redirect to="/order" />;
     }
     if (this.state.showAddressModal) {
       addAddressModal = (
@@ -275,6 +298,7 @@ class PreCompleteOrderPage extends Component {
       );
     }
     if (this.props.orderReducer.pending && !this.props.orderReducer.recieved) {
+      console.log("3");
       return (
         <div className="loading-div">
           <CircularProgress disableShrink />{" "}
@@ -282,10 +306,21 @@ class PreCompleteOrderPage extends Component {
       );
     }
     if (this.props.orderReducer.sent && !this.props.orderReducer.pending) {
+      console.log(this.props.orderReducer.timeToDelivery);
       return (
         <div className="loading-div">
           Your order has been{" "}
-          {this.state.orderStatus.accepted ? <p>accepted</p> : <p>declined</p>}
+          {this.props.orderReducer.accepted ? <p>accepted</p> : <p>declined</p>}
+          {this.props.orderReducer.accepted ? (
+            <span>
+              It will be there in {this.props.orderReducer.timeToDelivery}
+            </span>
+          ) : (
+            <span></span>
+          )}
+          <Link to="/home">
+            <Button>OK</Button>
+          </Link>
         </div>
       );
     } else {
@@ -324,6 +359,11 @@ class PreCompleteOrderPage extends Component {
                       labelId="selectAddressLabel"
                       id="selectAddress"
                       name="selectedAddress"
+                      value={
+                        this.props.userReducer.user.addresses.length > 0
+                          ? "0"
+                          : ""
+                      }
                       onChange={this.onAddressChange}
                       required
                     >
@@ -377,10 +417,13 @@ class PreCompleteOrderPage extends Component {
                           id="phone"
                           type="tel"
                           name="phone"
+                          inputProps={{
+                            pattern: "69[0-9]{8}",
+                          }}
                           label="Τηλέφωνο επικοινωνίας"
                           value={this.state.phone}
                           variant="outlined"
-                          placeholder="Τηλέφωνο επικοινωνίας"
+                          placeholder="Τηλέφωνο επικοινωνίας: 69xxxxxxxx"
                           className="pre-complete-input"
                           onChange={this.onChange}
                         />
@@ -532,4 +575,6 @@ export default connect(mapStateToProps, {
   showErrorSnackbar,
   empty_cart,
   order_accepted,
+  clearReducer,
+  getUser,
 })(PreCompleteOrderPage);

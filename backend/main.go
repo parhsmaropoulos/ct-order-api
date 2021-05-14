@@ -128,12 +128,17 @@ func main() {
 		orders.PUT("/update_order", models.UpdateOrder)
 		orders.GET("/:id", models.GetSingleOrder)
 		// orders.DELETE("/delete_order", models.DeleteOrder)
-
+		orders.GET("/today", models.GetTodayOrders)
 		// COMMENTS
 		orders.POST("/post_comment", models.TokenAuthMiddleware(), models.CreateComment)
 
 		// RATINGS
 		orders.POST("/post_rate", models.TokenAuthMiddleware(), models.CreateRate)
+
+		// ADMIN ORDER ACTION
+		orders.PUT("/accept/:id", models.AcceptOrder)
+		orders.PUT("/reject/:id", models.RejectOrder)
+		orders.PUT("/complete/:id", models.CompleteOrder)
 	}
 
 	comments := router.Group("/comments/")

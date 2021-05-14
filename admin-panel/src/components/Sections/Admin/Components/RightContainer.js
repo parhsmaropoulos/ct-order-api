@@ -6,6 +6,8 @@ import InnerSidebarCatalog from "./InnerSidebarCatalog";
 import ProductCatalog from "./ProductCatalog";
 import IngredientsCatalog from "./IngredientsCatalog";
 import CommentsCatalog from "./CommentsCatalog";
+import OrdersCatalog from "../Orders/OrdersCatalog";
+import { orderTabs } from "../Common/tabs";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -42,15 +44,15 @@ export default function RightContainer(props) {
     selectedIngreCat = 0;
   }
   const [selectedCategory, changeCategory] = useState(selectedCat);
-  const [selectedIngredientCategory, changeIngredientCategory] = useState(
-    selectedIngreCat
-  );
+  // const [selectedOrderCategory, changeOrderCategory] = useState(selectedCat);
+  const [selectedIngredientCategory, changeIngredientCategory] =
+    useState(selectedIngreCat);
   return (
-    <Paper className={classes.root} elevation={3}>
+    <Paper className={classes.root} elevation={0}>
       {props.selectedTab === "Προϊόντα" ? (
         <Grid container spacing={2}>
           <Grid item xs={3}>
-            <Paper elevation={3}>Κατηγορίες</Paper>
+            {" "}
             <InnerSidebarCatalog
               categories={props.categories}
               selectedCategory={selectedCategory}
@@ -69,7 +71,6 @@ export default function RightContainer(props) {
       ) : props.selectedTab === "Υλικά" ? (
         <Grid container spacing={2}>
           <Grid item xs={3}>
-            <Paper elevation={3}>Κατηγορίες</Paper>
             <InnerSidebarCatalog
               categories={props.ingredientCategories}
               type="ingredients"
@@ -91,6 +92,23 @@ export default function RightContainer(props) {
           <Grid item className={classes.GridItem}>
             <CommentsCatalog comments={props.comments} />
           </Grid>
+        </Grid>
+      ) : orderTabs.includes(props.selectedTab) ? (
+        // <Grid container spacing={2}>
+        //   <Grid item xs={3}>
+        //     {" "}
+        //     <InnerSidebarCatalog
+        //       type="orders"
+        //       selectedCategory={selectedOrderCategory}
+        //       onCategoryChange={(category) => changeOrderCategory(category)}
+        //     />
+        //   </Grid>
+        // </Grid>
+        <Grid item xs={12}>
+          <OrdersCatalog
+            selectedCategory={props.selectedTab}
+            orders={props.orders}
+          />
         </Grid>
       ) : null}
     </Paper>

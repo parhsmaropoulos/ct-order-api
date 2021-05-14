@@ -12,14 +12,20 @@
 import axios from "axios";
 import { headers } from "../utils/axiosHeaders";
 import {
+  ACCEPT_ORDER,
   ADD_ITEM,
+  CLEAR_REDUCER,
+  COMPLETE_ORDER,
   EMPTY_CART,
+  GET_ORDER,
   ORDER_ACCEPTED,
   REGISTER_FAIL,
+  REJECT_ORDER,
   SEND_ORDER,
   SNACKBAR_ERROR,
   SNACKBAR_INFO,
   SNACKBAR_SUCCESS,
+  TODAY_ORDERS,
   UPDATE_CART,
   UPDATE_ORDER,
 } from "./actions";
@@ -32,15 +38,16 @@ export const send_order = (data) => (dispatch, getState) => {
   axios
     .post("http://localhost:8080/orders/send_order", body, headers)
     .then((res) => {
+      console.log(res);
       SSEdata.id = res.data.order.id;
       SSEdata.order = res.data.order;
       SSEdata.from = res.data.order.user_id;
       SSEdata.user_details = res.data.user_details;
-      // axios
-      //   .post(`http://localhost:8080/sse/sendorder/${SSEdata.from}`, SSEdata)
-      //   .then((res) => {
-      //     // console.log(res);
-      //   });
+      axios
+        .post(`http://localhost:8080/sse/sendorder/${SSEdata.from}`, SSEdata)
+        .then((res) => {
+          // console.log(res);
+        });
       dispatch({
         type: SEND_ORDER,
       });
@@ -116,9 +123,116 @@ export const empty_cart = () => (dispatch) => {
 };
 
 // Empty the order accepted
-export const order_accepted = () => (dispatch) => {
+export const order_accepted = (time) => (dispatch) => {
   console.log("here");
   dispatch({
     type: ORDER_ACCEPTED,
+    time: time,
+  });
+};
+
+// Recieve an order
+export const get_order = (order) => (dispatch) => {
+  dispatch({
+    type: GET_ORDER,
+    new_order: order,
+  });
+};
+
+// Get orders by date
+export const get_today_orders = () => (dispatch) => {
+  axios
+    .get(`http://localhost:8080/orders/today`)
+    .then((res) => {
+      console.log(res);
+      dispatch({
+        type: TODAY_ORDERS,
+        orders: res.data.data,
+      });
+      dispatch({
+        type: SNACKBAR_SUCCESS,
+        message: "Today orders fetched",
+      });
+    })
+    .catch((err) =>
+      dispatch({
+        type: SNACKBAR_ERROR,
+        message: "Today orders fetched error" + err,
+      })
+    );
+};
+
+// Accept an order
+
+export const accept_order = (order, time_input) => (dispatch) => {
+  console.log(order);
+  let data = {
+    id: order.id,
+    accepted: true,
+    time: parseInt(time_input),
+    from: order.user_id,
+  };
+  let data_2 = {
+    delivery_time: parseInt(time_input),
+  };
+  axios
+    .put(`http://localhost:8080/orders/accept/${order.id}`, data_2, headers)
+    .then((res) => {
+      console.log(res);
+      axios.post(`http://localhost:8080/sse/acceptorder`, data).then((res) => {
+        console.log(data);
+        dispatch({
+          type: ACCEPT_ORDER,
+          accepted_id: order.id,
+        });
+        dispatch({
+          type: SNACKBAR_SUCCESS,
+          message: "Order accepted successfuly!",
+        });
+      });
+    })
+    .catch((err) => {
+      console.log(err.response);
+      dispatch({
+        type: SNACKBAR_ERROR,
+        message: err.response,
+      });
+    });
+};
+
+// Complete an order
+
+export const complete_order = (id) => (dispatch) => {
+  axios.put(`http://localhost:8080/orders/complete/${id}`).then((res) => {
+    console.log(id);
+    dispatch({
+      type: COMPLETE_ORDER,
+      completed_id: id,
+    });
+  });
+};
+
+export const reject_order = (order, time_input) => (dispatch) => {
+  let data = {
+    id: order.id,
+    accepted: false,
+    time: parseInt(time_input),
+    from: order.from,
+  };
+  axios.post(`http://localhost:8080/sse/acceptorder`, data).then((res) => {
+    console.log(res);
+    dispatch({
+      type: REJECT_ORDER,
+      accepted_id: order.id,
+    });
+    axios.put(`http://localhost:8080/orders/reject/${order.id}`).then((res) => {
+      console.log(res);
+    });
+  });
+};
+
+export const clearReducer = () => (dispatch) => {
+  dispatch({
+    type: CLEAR_REDUCER,
   });
 };

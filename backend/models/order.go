@@ -53,15 +53,9 @@ type Order struct {
 	Tips                 float64    `json:"tips"`
 	Comments             string     `json:"comments"`
 
-	// user details
-	Address   Address `json:"address"`
-	Phone     string  `json:"phone"`
-	Bell_name string  `json:"bell_name"`
-	Floor     string  `json:"floor"`
-
-	// Comment Comment `json:"comment"`
-	// Rating  Rating `json:"rating"`
-	Rating struct {
+	User_Details  UserDetails `json:"user_details"`
+	Delivery_time int32       `json:"delivery_time"`
+	Rating        struct {
 		Rate    float32            `json:"rate"`
 		User_ID primitive.ObjectID `json:"user_id"`
 	} `json:"rating"`
@@ -93,23 +87,18 @@ func CreateOrder(c *gin.Context) {
 		ID:                 primitive.NewObjectID(),
 		Products:           input.Products,
 		Accepted:           false,
-		Address:            input.Address,
 		Payment_Type:       input.Payment_Type,
 		Pre_Discount_Price: input.Pre_Discount_Price,
 		Delivery_type:      input.Delivery_type,
 		Discounts_ids:      []string{},
-		Discounts:          []Discount{},
-		Phone:              input.Phone,
-		Bell_name:          input.Bell_name,
-		Floor:              input.Floor,
-		Tips:               input.Tips,
-		Created_at:         time.Now(),
-		Comments:           input.Comments,
-		// Comment:            Comment{ID: primitive.NewObjectID()},
-		// Rating:    Rating{ID: primitive.NewObjectID()},
-		User_id:   input.User_id,
-		Canceled:  false,
-		Completed: false,
+		Discounts:          []Discount{}, Tips: input.Tips,
+		Created_at:    time.Now(),
+		Comments:      input.Comments,
+		User_id:       input.User_id,
+		Canceled:      false,
+		Completed:     false,
+		User_Details:  input.User_Details,
+		Delivery_time: input.Delivery_time,
 	}
 
 	if input.Discounts_ids != nil {
@@ -137,7 +126,7 @@ func CreateOrder(c *gin.Context) {
 
 	}
 
-	var user User
+	// var user User
 	user_id, err1 := primitive.ObjectIDFromHex(input.User_id)
 	if err1 != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -147,16 +136,16 @@ func CreateOrder(c *gin.Context) {
 		return
 	}
 	// GET user from token?? TODO
-	Users.FindOne(context.Background(), bson.M{"_id": user_id}).Decode(&user)
+	// Users.FindOne(context.Background(), bson.M{"_id": user_id}).Decode(&user)
 
-	userDetails := UserDetails{
-		Name:      user.Name,
-		Surname:   user.Surname,
-		Phone:     input.Phone,
-		Address:   input.Address,
-		Floor:     input.Floor,
-		Bell_name: input.Bell_name,
-	}
+	// userDetails := UserDetails{
+	// 	Name:      user.Name,
+	// 	Surname:   user.Surname,
+	// 	Phone:     input.Phone,
+	// 	Address:   input.Address,
+	// 	Floor:     input.Floor,
+	// 	Bell_name: input.Bell_name,
+	// }
 
 	// Append Order to User
 	_, err := Users.UpdateOne(
@@ -187,7 +176,7 @@ func CreateOrder(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"message":      "Order has been created!",
 		"order":        order,
-		"user_details": userDetails,
+		"user_details": order.User_Details,
 	})
 }
 
@@ -212,21 +201,6 @@ func GetOrders(c *gin.Context) {
 		"data":    orders,
 	})
 }
-
-// func GetUsersOrder(c *gin.Context) {
-// 	if c.Request.Method != "GET" {
-// 		fmt.Println("Only get here no give!")
-// 		return
-// 	}
-
-// 	id, errs := primitive.ObjectIDFromHex(c.Param("id"))
-// 	if errs != nil {
-// 		c.JSON(http.StatusInternalServerError, gin.H{
-// 			"message": "Server error!",
-// 		})
-// 		return
-// 	}
-// }
 
 func GetSingleOrder(c *gin.Context) {
 	if c.Request.Method != "GET" {
@@ -300,6 +274,7 @@ func UpdateOrder(c *gin.Context) {
 		// Order  Order  `json:"order"`
 		Reason       string `json:"reason"`
 		Comment_Text string `json:"comment_text"`
+		User_name    string `json:"user_name"`
 		Rating       Rating `json:"rating"`
 		Answer       string `json:"answer"`
 	}
@@ -330,7 +305,7 @@ func UpdateOrder(c *gin.Context) {
 	case "accept_order":
 		er = order.AcceptOrder(order_id_hex)
 	case "comment_order":
-		er = order.CommentOrder(order_id_hex, input.Comment_Text, input.Rating)
+		er = order.CommentOrder(order_id_hex, input.Comment_Text, input.Rating, input.User_name)
 	case "cancel_order":
 		er = order.CancelOrder(order_id_hex)
 	case "rate_order":
@@ -383,7 +358,7 @@ func (order Order) AcceptOrder(id primitive.ObjectID) error {
 	return nil
 }
 
-func (order Order) CommentOrder(id primitive.ObjectID, text string, rate Rating) error {
+func (order Order) CommentOrder(id primitive.ObjectID, text string, rate Rating, user_name string) error {
 
 	user_id_hex, errs := primitive.ObjectIDFromHex(rate.User_id)
 	if errs != nil {
@@ -395,56 +370,14 @@ func (order Order) CommentOrder(id primitive.ObjectID, text string, rate Rating)
 		Answer:     "",
 		Approved:   false,
 		User_id:    user_id_hex,
+		User_name:  user_name,
 		Order_id:   id,
 		Rate:       rate.Rate,
-		Created_at: time.Now(),
+		Created_at: time.Now().Local(),
 	}
 	Comments.InsertOne(context.Background(), comment)
 
 	_, err := Users.UpdateOne(context.Background(), bson.M{"_id": comment.User_id}, bson.M{"$push": bson.M{"comments": comment}})
-	// TODO need this as return?
-	// _, err := Orders.UpdateOne(
-	// 	context.Background(),
-	// 	bson.M{"_id": id},
-	// 	bson.M{
-	// 		"$set": bson.M{
-	// 			"rating": bson.M{
-	// 				"rate":    rate.Rate,
-	// 				"user_id": rate.User_id,
-	// 			},
-	// 			"comment": bson.M{
-	// 				"comment_text":   text,
-	// 				"comment_answer": order.Comment.Answer,
-	// 				"approved":       order.Comment.Approved,
-	// 			},
-	// 		},
-	// 	},
-
-	// 	options.Update(),
-	// )
-
-	// _, err = Users.UpdateOne(
-	// 	context.Background(),
-	// 	bson.M{"_id": rate.User_id, "orders._id": id},
-	// 	bson.M{
-	// 		"$set": bson.M{
-	// 			"orders.$[order]": bson.M{
-	// 				"rating": bson.M{
-	// 					"rate":    rate.Rate,
-	// 					"user_id": rate.User_id,
-	// 				},
-	// 				"comment": bson.M{
-	// 					"comment_text": text,
-	// 				},
-	// 			},
-	// 		},
-	// 	},
-	// 	options.Update().SetArrayFilters(options.ArrayFilters{
-	// 		Filters: []interface{}{bson.M{
-	// 			"order._id": id,
-	// 		}},
-	// 	}),
-	// )
 
 	if err != nil {
 		return err
@@ -547,4 +480,139 @@ func (order Order) AnswerComment(id primitive.ObjectID, text string) error {
 	}
 
 	return nil
+}
+
+func AcceptOrder(c *gin.Context) {
+	if c.Request.Method != "PUT" {
+		fmt.Println("Only get here nothing else!")
+		return
+	}
+
+	var input struct {
+		Delivery_time int32 `json:"delivery_time"`
+	}
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "message": err})
+		return
+	}
+
+	id, err := primitive.ObjectIDFromHex(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": "order acceptance error",
+			"error":   err,
+		})
+	}
+
+	_, err = Orders.UpdateOne(context.Background(), bson.M{"_id": id}, bson.M{"$set": bson.M{"accepted": true, "delivery_time": input.Delivery_time}})
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": "order acceptance error",
+			"error":   err,
+		})
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "order accepted",
+	})
+}
+
+func RejectOrder(c *gin.Context) {
+	if c.Request.Method != "PUT" {
+		fmt.Println("Only get here nothing else!")
+		return
+	}
+	id, err := primitive.ObjectIDFromHex(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": "order rejection error",
+			"error":   err,
+		})
+	}
+
+	_, err = Orders.UpdateOne(context.Background(), bson.M{"_id": id}, bson.M{"$set": bson.M{"canceled": true}})
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": "order rejection error",
+			"error":   err,
+		})
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "order rejected",
+	})
+}
+
+func CompleteOrder(c *gin.Context) {
+	if c.Request.Method != "PUT" {
+		fmt.Println("Only get here nothing else!")
+		return
+	}
+	id, err := primitive.ObjectIDFromHex(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": "order completetion error",
+			"error":   err,
+		})
+	}
+
+	_, err = Orders.UpdateOne(context.Background(), bson.M{"_id": id}, bson.M{"$set": bson.M{"completed": true}})
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": "order completetion error",
+			"error":   err,
+		})
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "order completed",
+	})
+}
+
+// func getOrdersByTimeSpan
+
+func GetTodayOrders(c *gin.Context) {
+	if c.Request.Method != "GET" {
+		fmt.Println("Only get here nothing else!")
+		return
+	}
+	date := time.Now().Local()
+	// date.Local().AddDate(0, 0, 1)
+
+	startDay := time.Date(date.Year(), date.Month(), date.Day(), 0, 0, 0, 0, time.UTC)
+	endDay := time.Date(date.Year(), date.Month(), date.Day(), 23, 59, 59, 0, time.UTC)
+
+	// start, err := time.Parse("2006-01-02T00:00:00Z", startDay)
+	// end, err := time.Parse("2006-01-02T00:00:00Z", endDay)
+
+	filter := bson.M{
+		"created_at": bson.M{
+			"$gte": startDay,
+			"$lte": endDay,
+		},
+	}
+	orders := []Order{}
+
+	cursor, err := Orders.Find(context.Background(), filter)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": "error on order fetch",
+			"error":   err,
+		})
+	}
+
+	if err = cursor.All(context.Background(), &orders); err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": "error on order fetch",
+			"error":   err,
+		})
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Orders found",
+		"data":    orders,
+		"start":   startDay,
+		"end":     endDay,
+		"filter":  filter,
+	})
 }

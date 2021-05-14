@@ -22,6 +22,7 @@ type Comment struct {
 	Approved   bool               `json:"approved"`
 	Answered   bool               `json:"answered"`
 	User_id    primitive.ObjectID `json:"user_id"`
+	User_name  string             `json:"user_name"`
 	Order_id   primitive.ObjectID `json:"order_id"`
 	Rate       float32            `json:"rate"`
 	Created_at time.Time          `json:"created_at"`
@@ -40,12 +41,13 @@ func CreateComment(c *gin.Context) {
 	}
 
 	comment := Comment{
-		ID:       primitive.NewObjectID(),
-		Text:     input.Text,
-		Answer:   "",
-		Answered: false,
-		User_id:  input.User_id,
-		Approved: false,
+		ID:        primitive.NewObjectID(),
+		Text:      input.Text,
+		Answer:    "",
+		Answered:  false,
+		User_id:   input.User_id,
+		Approved:  false,
+		User_name: input.User_name,
 	}
 
 	_, err1 := Comments.InsertOne(context.Background(), comment)

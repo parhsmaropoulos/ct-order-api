@@ -80,9 +80,14 @@ export const UPDATE_CHOICE = "UPDATE_CHOICE";
 
 // ORDERS
 export const SEND_ORDER = "SEND_ORDER";
+export const GET_ORDER = "GET_ORDER";
 export const ACCEPT_ORDER = "ACCEPT_ORDER";
+export const REJECT_ORDER = "REJECT_ORDER";
+export const COMPLETE_ORDER = "COMPLETE_ORDER";
 export const ORDER_ACCEPTED = "ORDER_ACCEPTED";
 export const ORDER_DECLINED = "ORDER_DECLINED";
+export const TODAY_ORDERS = "TODAY_ORDERS";
+export const CLEAR_REDUCER = "CLEAR_REDUCER";
 
 // CART-CURRENT ORDER
 export const ADD_ITEM = "ADD_ITEM";

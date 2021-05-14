@@ -2,7 +2,6 @@ import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Paper from "@material-ui/core/Paper";
 import {
-  List,
   Switch,
   Table,
   TableBody,
@@ -12,10 +11,6 @@ import {
 } from "@material-ui/core";
 import { update_item } from "../../../../actions/items";
 import { useDispatch } from "react-redux";
-
-function changeAvailability(item) {
-  update_item(item.id, item, "change_availability");
-}
 
 const useStyles = makeStyles((theme) => ({
   root: {

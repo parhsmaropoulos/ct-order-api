@@ -5,6 +5,7 @@ import {
   ADD_ITEM,
   UPDATE_ORDER,
   UPDATE_CART,
+  CLEAR_REDUCER,
   EMPTY_CART,
 } from "../actions/actions";
 
@@ -14,6 +15,7 @@ const defaultState = {
   pending: false,
   accepted: false,
   recieved: false,
+  timeToDelivery: 0,
   products: [],
   totalPrice: 0,
 };
@@ -33,7 +35,18 @@ const orderReducer = (state = defaultState, action) => {
         sent: true,
         accepted: true,
         recieved: true,
+        timeToDelivery: action.time,
         pending: false,
+      };
+    case CLEAR_REDUCER:
+      return {
+        order: {},
+        sent: false,
+        pending: false,
+        accepted: false,
+        recieved: false,
+        products: [],
+        totalPrice: 0,
       };
     case ORDER_DECLINED:
       return {

@@ -8,12 +8,14 @@ import {
   get_choices,
   get_ingredients,
 } from "../../../actions/items";
+
 import axios from "axios";
 import PropTypes from "prop-types";
-import SimplePaper from "./Components/Sidebar";
+import Sidebar from "./Components/Sidebar";
 import { tabs } from "./Common/tabs";
 import RightContainer from "./Components/RightContainer";
 import { get_comments } from "../../../actions/comments";
+import { get_order, get_today_orders } from "../../../actions/orders";
 
 class AdminMainPage extends Component {
   constructor(props) {
@@ -33,16 +35,19 @@ class AdminMainPage extends Component {
 
   static propTypes = {
     get_items: PropTypes.func.isRequired,
+    get_order: PropTypes.func.isRequired,
     get_categories: PropTypes.func.isRequired,
+    get_today_orders: PropTypes.func.isRequired,
     get_choices: PropTypes.func.isRequired,
     get_ingredients: PropTypes.func.isRequired,
     get_comments: PropTypes.func.isRequired,
     orderReducer: PropTypes.object.isRequired,
     adminReducer: PropTypes.object.isRequired,
+    productReducer: PropTypes.object.isRequired,
   };
 
   changeTab = (tab) => {
-    console.log(tab);
+    // console.log(tab);
     this.setState({ selected_tab: tab });
   };
 
@@ -53,8 +58,9 @@ class AdminMainPage extends Component {
   recieveOrder(order) {
     let data = JSON.parse(order.data);
     console.log(data);
+    this.props.get_order(data);
     this.setState({
-      orders: [...this.state.orders, data],
+      selectedTab: "Εισερχόμενες",
     });
   }
 
@@ -87,9 +93,10 @@ class AdminMainPage extends Component {
   }
 
   componentDidMount() {
-    console.log(this.state);
-
     this.eventSource.onmessage = (e) => this.recieveOrder(e);
+  }
+  componentWillUnmount() {
+    console.log("im getting outta here");
   }
   static propTypes = {};
   render() {
@@ -98,6 +105,9 @@ class AdminMainPage extends Component {
       this.props.get_choices();
       this.props.get_ingredients();
       this.props.get_categories();
+      if (this.props.adminReducer.orders_loaded_today === false) {
+        this.props.get_today_orders();
+      }
       if (this.props.adminReducer.loaded === false) {
         this.props.get_comments();
       }
@@ -111,7 +121,7 @@ class AdminMainPage extends Component {
       <Container className="adminPanel">
         <Grid container spacing={2}>
           <Grid item xs={2} className="leftColMenu">
-            <SimplePaper
+            <Sidebar
               tabs={tabs}
               selectedTab={this.state.selected_tab}
               onSelectChange={(selected_tab) => this.changeTab(selected_tab)}
@@ -125,12 +135,12 @@ class AdminMainPage extends Component {
               }
               products={this.props.productReducer.products}
               comments={this.props.adminReducer.comments}
+              orders={this.props.adminReducer.orders}
               categories={this.props.productReducer.categories}
               selectedTab={this.state.selected_tab}
             />
           </Grid>
         </Grid>
-        {/* <ChatHistory chatHistory={this.state.chatHistory} /> */}
       </Container>
     );
   }
@@ -139,6 +149,7 @@ class AdminMainPage extends Component {
 const mapStateToProps = (state) => ({
   productReducer: state.productReducer,
   adminReducer: state.adminReducer,
+  orderReducer: state.orderReducer,
 });
 
 export default connect(mapStateToProps, {
@@ -147,4 +158,6 @@ export default connect(mapStateToProps, {
   get_choices,
   get_ingredients,
   get_comments,
+  get_order,
+  get_today_orders,
 })(AdminMainPage);
