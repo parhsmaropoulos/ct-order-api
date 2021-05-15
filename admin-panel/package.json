@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "proxy": "http://localhost:8080",
   "private": true,
+  "homepage": "https://parhsmaropoulos.github.io",
   "dependencies": {
     "@material-ui/core": "^4.11.3",
     "@material-ui/icons": "^4.11.2",
@@ -13,10 +14,11 @@
     "axios": "^0.21.1",
     "bootstrap": "^4.5.3",
     "fontsource-roboto": "^4.0.0",
+    "gh-pages": "^3.1.0",
     "google-map-react": "^2.1.9",
     "i18next": "^20.2.2",
     "jwt-decode": "^3.1.2",
-    "lodash": "^4.17.20",
+    "lodash": "^4.17.21",
     "material-ui": "^0.20.2",
     "material-ui-search-bar": "^1.0.0",
     "react": "^17.0.1",
@@ -51,6 +53,8 @@
     "web-vitals": "^0.2.4"
   },
   "scripts": {
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
