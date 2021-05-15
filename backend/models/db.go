@@ -56,6 +56,10 @@ func Init() {
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 
 	Client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://localhost:27017"))
+	// For local
+	// mongodb://localhost:27017
+	// For mongo atlas
+	// mongodb+srv://parismaro:<password>@projects.cde0a.mongodb.net/myFirstDatabase?retryWrites=true&w=majority
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -81,7 +81,7 @@ func main() {
 	users := router.Group("/user/")
 	{
 		users.POST("/register", models.CreateProfile)
-		users.PUT("/update", models.UpdateUser)
+		users.PUT("/update", models.TokenAuthMiddleware(), models.UpdateUser)
 		users.POST("/subscribe", models.SubscribeUser)
 		users.PUT("/unsubscribe/:id", models.UnSubscribeUser)
 		users.POST("/login", models.Login)
@@ -124,21 +124,27 @@ func main() {
 	orders := router.Group("/orders/")
 	{
 		// ORDERS
-		orders.POST("/send_order", models.CreateOrder)
-		orders.PUT("/update_order", models.UpdateOrder)
-		orders.GET("/:id", models.GetSingleOrder)
+		orders.POST("/send_order", models.TokenAuthMiddleware(), models.CreateOrder)
 		// orders.DELETE("/delete_order", models.DeleteOrder)
-		orders.GET("/today", models.GetTodayOrders)
 		// COMMENTS
 		orders.POST("/post_comment", models.TokenAuthMiddleware(), models.CreateComment)
 
 		// RATINGS
 		orders.POST("/post_rate", models.TokenAuthMiddleware(), models.CreateRate)
 
+	}
+	admin := router.Group("/admin/")
+	{
 		// ADMIN ORDER ACTION
-		orders.PUT("/accept/:id", models.AcceptOrder)
-		orders.PUT("/reject/:id", models.RejectOrder)
-		orders.PUT("/complete/:id", models.CompleteOrder)
+		admin.PUT("/accept/:id", models.AcceptOrder)
+		admin.PUT("/reject/:id", models.RejectOrder)
+		admin.PUT("/complete/:id", models.CompleteOrder)
+
+		// Fetch orders
+		admin.PUT("/update_order", models.UpdateOrder)
+		admin.GET("/:id", models.GetSingleOrder)
+		admin.GET("/today", models.GetTodayOrders)
+
 	}
 
 	comments := router.Group("/comments/")

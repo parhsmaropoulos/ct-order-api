@@ -8,6 +8,7 @@ import IngredientsCatalog from "./IngredientsCatalog";
 import CommentsCatalog from "./CommentsCatalog";
 import OrdersCatalog from "../Orders/OrdersCatalog";
 import { orderTabs } from "../Common/tabs";
+import PrintComponent from "../Common/PrintComponent";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -93,6 +94,8 @@ export default function RightContainer(props) {
             <CommentsCatalog comments={props.comments} />
           </Grid>
         </Grid>
+      ) : props.selectedTab === "Print" ? (
+        <PrintComponent />
       ) : orderTabs.includes(props.selectedTab) ? (
         // <Grid container spacing={2}>
         //   <Grid item xs={3}>

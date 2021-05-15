@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   Button,
@@ -18,6 +18,8 @@ import {
   complete_order,
   reject_order,
 } from "../../../../actions/orders";
+import ReactToPrint from "react-to-print";
+import PrintComponent from "../Common/PrintComponent";
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
@@ -87,6 +89,8 @@ export default function OrderUserDetailsRow(props) {
   const classes = useStyles();
   const dispatch = useDispatch();
   const [time, changeTime] = useState(15);
+
+  const componentRef = useRef();
   const setTime = (event) => {
     changeTime(event.target.value);
   };
@@ -147,7 +151,15 @@ export default function OrderUserDetailsRow(props) {
       </Grid>
       <Grid item xs={3}>
         <Paper elevation={0} className={classes.printPaper}>
-          <Button className={classes.printButton}>Print</Button>
+          <ReactToPrint
+            trigger={() => (
+              <Button className={classes.printButton}>print it</Button>
+            )}
+            content={() => componentRef.current}
+          />
+          <div style={{ display: "none" }}>
+            <PrintComponent order={props.order} ref={componentRef} />
+          </div>
         </Paper>
         {props.type === "Εισερχόμενες" ? (
           <Paper elevation={0} className={classes.buttonsPaper}>

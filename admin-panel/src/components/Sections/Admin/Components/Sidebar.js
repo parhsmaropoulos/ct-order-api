@@ -29,8 +29,10 @@ const useStyles = makeStyles((theme) => ({
   },
   listTitle: {
     fontSize: "25px",
+    fontWeight: "100",
   },
   listText: {
+    cursor: "pointer",
     marginLeft: "5",
   },
   arrowButtonGrid: {
@@ -49,7 +51,7 @@ export default function Sidebar(props) {
         <Grid item xs={12}>
           <List className={classes.list}>
             <ListItem className={classes.listTitle}>
-              <ListItemText primary={"Παραγγελίες"} />
+              <ListItemText>Παραγγελίες</ListItemText>
             </ListItem>
             {orderTabs.map((tab, index) => {
               let style;
@@ -62,8 +64,8 @@ export default function Sidebar(props) {
                   className={style}
                   onClick={() => props.onSelectChange(tab)}
                 >
-                  <ListItem>
-                    <ListItemText className={classes.listText} primary={tab} />
+                  <ListItem className={classes.listText}>
+                    <ListItemText primary={tab} />
                   </ListItem>
                 </div>
               );

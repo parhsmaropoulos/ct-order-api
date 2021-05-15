@@ -78,14 +78,16 @@ const adminReducer = (state = defaultState, action) => {
       let newAcceptedOrders = state.orders;
       for (i in newAcceptedOrders.pending_orders) {
         if (newAcceptedOrders.pending_orders[i].id === action.accepted_id) {
+          newAcceptedOrders.pending_orders[i].delivery_time = action.time;
           newAcceptedOrders.accepted_orders.push(
             newAcceptedOrders.pending_orders[i]
           );
         }
       }
-      newAcceptedOrders.pending_orders = newAcceptedOrders.pending_orders.filter(
-        (order) => order.id !== action.accepted_id
-      );
+      newAcceptedOrders.pending_orders =
+        newAcceptedOrders.pending_orders.filter(
+          (order) => order.id !== action.accepted_id
+        );
 
       return {
         ...state,
@@ -103,9 +105,10 @@ const adminReducer = (state = defaultState, action) => {
           );
         }
       }
-      newCompletedOrders.accepted_orders = newCompletedOrders.accepted_orders.filter(
-        (order) => order.id !== action.completed_id
-      );
+      newCompletedOrders.accepted_orders =
+        newCompletedOrders.accepted_orders.filter(
+          (order) => order.id !== action.completed_id
+        );
       return {
         ...state,
         orders: newCompletedOrders,

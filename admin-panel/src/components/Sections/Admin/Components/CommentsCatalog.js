@@ -25,6 +25,8 @@ import {
   reject_comment,
 } from "../../../../actions/comments";
 import { useDispatch } from "react-redux";
+// import ReactToPrint from "react-to-print";
+// import PrintComponent from "../Common/PrintComponent";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -59,6 +61,7 @@ export default function CommentsCatalog(props) {
     setID(id);
   };
 
+  // let componentRef = useRef(PrintComponent);
   const handleClose = () => {
     setOpen(false);
   };
@@ -162,6 +165,11 @@ export default function CommentsCatalog(props) {
           </Button>
         </DialogActions>
       </Dialog>
+      {/* <ReactToPrint
+        trigger={() => <button>print it</button>}
+        content={() => componentRef}
+      />
+      <PrintComponent ref={(el) => (componentRef = el)} /> */}
     </Paper>
   );
 }

@@ -60,7 +60,12 @@ export default function OrderProductsRow(props) {
                   className={classes.leftText}
                 />
                 <ListItemText
-                  primary={product.quantity + " X " + product.totalPrice + "€"}
+                  primary={
+                    product.quantity +
+                    " X " +
+                    product.totalPrice / product.quantity +
+                    "€"
+                  }
                   className={classes.rightText}
                 />
               </ListItem>

@@ -60,7 +60,7 @@ export const approve_comment = (id) => (dispatch) => {
 // Reject Comment
 export const reject_comment = (id) => (dispatch) => {
   axios
-    .post(`http://localhost:8080/comments/reject/${id}`, null, headers)
+    .post(`http://localhost:8080/admin/reject/${id}`, null, headers)
     .then((res) => {
       console.log(res);
       dispatch({

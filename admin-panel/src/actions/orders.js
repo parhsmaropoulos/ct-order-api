@@ -35,8 +35,15 @@ import { returnErrors } from "./messages";
 export const send_order = (data) => (dispatch, getState) => {
   const body = data;
   let SSEdata = { id: null, order: null, from: null, user_details: null };
+  const token = sessionStorage.getItem("token");
+  const config = {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  };
   axios
-    .post("http://localhost:8080/orders/send_order", body, headers)
+    .post("http://localhost:8080/orders/send_order", body, config)
     .then((res) => {
       console.log(res);
       SSEdata.id = res.data.order.id;
@@ -69,7 +76,7 @@ export const send_order = (data) => (dispatch, getState) => {
 export const update_order = (data) => (dispatch) => {
   const body = data;
   axios
-    .put("http://localhost:8080/orders/update_order", body, headers)
+    .put("http://localhost:8080/admin/update_order", body, headers)
     .then((res) => {
       // console.log(res);
       dispatch({
@@ -142,7 +149,7 @@ export const get_order = (order) => (dispatch) => {
 // Get orders by date
 export const get_today_orders = () => (dispatch) => {
   axios
-    .get(`http://localhost:8080/orders/today`)
+    .get(`http://localhost:8080/admin/today`)
     .then((res) => {
       console.log(res);
       dispatch({
@@ -176,7 +183,7 @@ export const accept_order = (order, time_input) => (dispatch) => {
     delivery_time: parseInt(time_input),
   };
   axios
-    .put(`http://localhost:8080/orders/accept/${order.id}`, data_2, headers)
+    .put(`http://localhost:8080/admin/accept/${order.id}`, data_2, headers)
     .then((res) => {
       console.log(res);
       axios.post(`http://localhost:8080/sse/acceptorder`, data).then((res) => {
@@ -184,6 +191,7 @@ export const accept_order = (order, time_input) => (dispatch) => {
         dispatch({
           type: ACCEPT_ORDER,
           accepted_id: order.id,
+          time: time_input,
         });
         dispatch({
           type: SNACKBAR_SUCCESS,
@@ -203,7 +211,7 @@ export const accept_order = (order, time_input) => (dispatch) => {
 // Complete an order
 
 export const complete_order = (id) => (dispatch) => {
-  axios.put(`http://localhost:8080/orders/complete/${id}`).then((res) => {
+  axios.put(`http://localhost:8080/admin/complete/${id}`).then((res) => {
     console.log(id);
     dispatch({
       type: COMPLETE_ORDER,
@@ -225,7 +233,7 @@ export const reject_order = (order, time_input) => (dispatch) => {
       type: REJECT_ORDER,
       accepted_id: order.id,
     });
-    axios.put(`http://localhost:8080/orders/reject/${order.id}`).then((res) => {
+    axios.put(`http://localhost:8080/admin/reject/${order.id}`).then((res) => {
       console.log(res);
     });
   });
