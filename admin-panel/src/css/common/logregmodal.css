@@ -43,3 +43,18 @@
   align-items: center;
   justify-content: center;
 }
+
+.log-reg-modal {
+  text-align: center;
+  margin-top: 5%;
+  height: 70%;
+  min-height: 60%;
+  margin-right: 20%;
+  margin-left: 20%;
+  overflow-y: auto;
+}
+
+.modalHeader {
+  margin-left: 5;
+  margin-right: 5;
+}

@@ -1,13 +1,18 @@
 import React, { Component } from "react";
-import { Button, Col, Container, Row, Modal, Tab, Tabs } from "react-bootstrap";
+import { Button, Tab, Tabs } from "react-bootstrap";
 import { Facebook, Google } from "react-bootstrap-icons";
 import { connect } from "react-redux";
 import "../../css/common/logregmodal.css";
 import { login, register } from "../../actions/user";
 import { returnErrors } from "../../actions/messages";
 import PropTypes from "prop-types";
-import ClipLoader from "react-spinners/ClipLoader";
-import { TextField } from "@material-ui/core";
+import {
+  CircularProgress,
+  Grid,
+  Modal,
+  Paper,
+  TextField,
+} from "@material-ui/core";
 import { showErrorSnackbar } from "../../actions/snackbar";
 
 class LogRegModal extends Component {
@@ -85,169 +90,170 @@ class LogRegModal extends Component {
   };
   render() {
     let errorModal;
-    if (!this.props.show) {
-      return null;
+    if (this.props.userReducer.LoadisLoadingng) {
+      return (
+        <div>
+          <div className="loading-div">
+            <CircularProgress disableShrink />{" "}
+          </div>
+        </div>
+      );
     }
     if (sessionStorage.getItem("isAuthenticated") === "true") {
       return null;
     }
     return (
       <Modal
-        show={true}
+        open={this.props.show}
         autoFocus={true}
-        scrollable={true}
-        animation={false}
-        onHide={(e) => {
+        onClose={(e) => {
           this.onClose(e);
         }}
-        id="logregModal"
+        // id="logregModal"
+        className="log-reg-modal"
       >
-        <Modal.Header className="modalHeader">
-          <Container fluid>
-            <Row>
-              <Col></Col>
-              <Col xs={6} md={6} className="headerTitle">
-                {this.state.selectedTab === "login" ? (
-                  <p>Είσοδος Coffee Twist</p>
-                ) : (
-                  <p>Εγγραφή στο Coffee Twist</p>
-                )}
-              </Col>
-              <Col className="closeButtonCol">
-                <Button
-                  variant="secondary"
-                  onClick={(e) => {
-                    this.onClose(e);
-                  }}
-                >
-                  X
-                </Button>
-              </Col>
-            </Row>
-          </Container>
-        </Modal.Header>
-        <Modal.Body className="modalBody">
-          <Container fluid>
-            <Tabs
-              activeKey={this.state.selectedTab}
-              onSelect={(k) => this.onChangeTab(k)}
-              className="modalBodyTabs"
-            >
-              <Tab eventKey="login" title="Login">
-                <div className="loginButtons">
-                  <Button variant="outline-secondary">
-                    Log in with facebook <Facebook />
-                  </Button>
-                  <br />
-                  <Button variant="outline-secondary">
-                    {/* Log in with gmail <Gmail className="gmailLogo" /> */}
-                    Log in with gmail <Google />
-                  </Button>
-                </div>
-                <div>
-                  <p>Κείμενο για είσοδο/ εγγραφή ή λινκ</p>
-                </div>
-                <hr />
-                <form onSubmit={this.onSubmit}>
-                  <TextField
-                    name="email"
-                    id="log_email"
-                    label="Email"
-                    type="email"
-                    autoComplete="section-login username"
-                    placeholder="input@example.com"
-                    onChange={this.onChange}
-                    variant="outlined"
-                    style={{ width: "100%", margin: "0.5%" }}
-                  />
-                  <TextField
-                    name="password"
-                    id="log_password"
-                    label="Password"
-                    type="password"
-                    autoComplete="section-login password"
-                    placeholder="Password"
-                    onChange={this.onChange}
-                    style={{ width: "100%", margin: "0.5%" }}
-                    variant="outlined"
-                  />
+        <Paper className="inner-paper">
+          <Grid container className="modalHeader">
+            <Grid item xs={4}></Grid>
+            <Grid item xs={4} className="headerTitle">
+              {this.state.selectedTab === "login" ? (
+                <p>Είσοδος Coffee Twist</p>
+              ) : (
+                <p>Εγγραφή στο Coffee Twist</p>
+              )}
+            </Grid>
+            <Grid xs={4} item className="closeButtonCol">
+              <Button
+                variant="secondary"
+                onClick={(e) => {
+                  this.onClose(e);
+                }}
+              >
+                X
+              </Button>
+            </Grid>
+          </Grid>
+          <Grid container className="modalBody">
+            <Grid item xs={1}></Grid>
+            <Grid item xs={10}>
+              <Tabs
+                activeKey={this.state.selectedTab}
+                onSelect={(k) => this.onChangeTab(k)}
+                className="modalBodyTabs"
+              >
+                <Tab eventKey="login" title="Login">
                   <div className="loginButtons">
-                    <Button type="submit" variant="outline-primary">
-                      Σύνδεση
+                    <Button variant="outline-secondary">
+                      Log in with facebook <Facebook />
+                    </Button>
+                    <br />
+                    <Button variant="outline-secondary">
+                      {/* Log in with gmail <Gmail className="gmailLogo" /> */}
+                      Log in with gmail <Google />
                     </Button>
                   </div>
-                </form>
-              </Tab>
-              <Tab eventKey="register" title="Register">
-                <div className="loginButtons">
-                  <Button variant="outline-secondary">
-                    Register with facebook <Facebook />
-                  </Button>
-                  <br />
-                  <Button variant="outline-secondary">
-                    {/* Log in with gmail <Gmail className="gmailLogo" /> */}
-                    Register with gmail <Google />
-                  </Button>
-                </div>
-                <div>
-                  <p>Κείμενο για είσοδο/ εγγραφή ή λινκ</p>
-                </div>
-                <hr />
-                <form onSubmit={this.onSubmitRegister}>
-                  <TextField
-                    name="email"
-                    id="reg_email"
-                    label="Email"
-                    type="email"
-                    placeholder="input@example.com"
-                    onChange={this.onChange}
-                    variant="outlined"
-                    style={{ width: "100%", margin: "0.5%" }}
-                  />
-                  <TextField
-                    name="reg_password"
-                    id="reg_pass"
-                    label="Enter Password"
-                    type="password"
-                    autoComplete="section-login new-password"
-                    placeholder="Password"
-                    onChange={this.onChange}
-                    style={{ width: "100%", margin: "0.5%" }}
-                    variant="outlined"
-                  />
-                  <TextField
-                    name="reg_password2"
-                    id="reg_pass_2"
-                    label="Repeat Password"
-                    type="password"
-                    autoComplete="section-login new-password2"
-                    placeholder=" Repeat Password"
-                    onChange={this.onChange}
-                    style={{ width: "100%", margin: "0.5%" }}
-                    variant="outlined"
-                  />
+                  <div>
+                    <p>Κείμενο για είσοδο/ εγγραφή ή λινκ</p>
+                  </div>
+                  <hr />
+                  <form onSubmit={this.onSubmit}>
+                    <TextField
+                      name="email"
+                      id="log_email"
+                      label="Email"
+                      type="email"
+                      autoComplete="section-login username"
+                      placeholder="input@example.com"
+                      onChange={this.onChange}
+                      variant="outlined"
+                      style={{ width: "100%", margin: "0.5%" }}
+                    />
+                    <TextField
+                      name="password"
+                      id="log_password"
+                      label="Password"
+                      type="password"
+                      autoComplete="section-login password"
+                      placeholder="Password"
+                      onChange={this.onChange}
+                      style={{ width: "100%", margin: "0.5%" }}
+                      variant="outlined"
+                    />
+                    <div className="loginButtons">
+                      <Button type="submit" variant="outline-primary">
+                        Σύνδεση
+                      </Button>
+                    </div>
+                  </form>
+                </Tab>
+                <Tab eventKey="register" title="Register">
                   <div className="loginButtons">
-                    <Button
-                      type="submit"
-                      variant="outline-primary"
-                      id="registerButton"
-                    >
-                      Εγγραφή
+                    <Button variant="outline-secondary">
+                      Register with facebook <Facebook />
+                    </Button>
+                    <br />
+                    <Button variant="outline-secondary">
+                      {/* Log in with gmail <Gmail className="gmailLogo" /> */}
+                      Register with gmail <Google />
                     </Button>
                   </div>
-                </form>
-              </Tab>
-            </Tabs>
-          </Container>
-        </Modal.Body>
-        <Modal.Footer id="modalFooter">
-          <p>Συμφωνία με όρους/πολιτική/προυποθέσεις</p>
-        </Modal.Footer>
-        <ClipLoader
-          color={"#ffffff"}
-          loading={this.props.userReducer.isLoading}
-        />
-        {errorModal}
+                  <div>
+                    <p>Κείμενο για είσοδο/ εγγραφή ή λινκ</p>
+                  </div>
+                  <hr />
+                  <form onSubmit={this.onSubmitRegister}>
+                    <TextField
+                      name="email"
+                      id="reg_email"
+                      label="Email"
+                      type="email"
+                      placeholder="input@example.com"
+                      onChange={this.onChange}
+                      variant="outlined"
+                      style={{ width: "100%", margin: "0.5%" }}
+                    />
+                    <TextField
+                      name="reg_password"
+                      id="reg_pass"
+                      label="Enter Password"
+                      type="password"
+                      autoComplete="section-login new-password"
+                      placeholder="Password"
+                      onChange={this.onChange}
+                      style={{ width: "100%", margin: "0.5%" }}
+                      variant="outlined"
+                    />
+                    <TextField
+                      name="reg_password2"
+                      id="reg_pass_2"
+                      label="Repeat Password"
+                      type="password"
+                      autoComplete="section-login new-password2"
+                      placeholder=" Repeat Password"
+                      onChange={this.onChange}
+                      style={{ width: "100%", margin: "0.5%" }}
+                      variant="outlined"
+                    />
+                    <div className="loginButtons">
+                      <Button
+                        type="submit"
+                        variant="outline-primary"
+                        id="registerButton"
+                      >
+                        Εγγραφή
+                      </Button>
+                    </div>
+                  </form>
+                </Tab>
+              </Tabs>
+            </Grid>
+            <Grid item xs={1}></Grid>
+          </Grid>
+          <Grid id="modalFooter" eleveation={0}>
+            <p>Συμφωνία με όρους/πολιτική/προυποθέσεις</p>
+          </Grid>
+          {errorModal}
+        </Paper>
       </Modal>
     );
   }

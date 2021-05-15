@@ -1,8 +1,11 @@
 import React, { Component } from "react";
-import { Button, Col, Container, Form, Modal, Row } from "react-bootstrap";
+import { Form } from "react-bootstrap";
 import "../../css/Pages/orderpage.css";
+import "../../css/common/logregmodal.css";
 import "../../css/Layout/general.css";
 import { connect } from "react-redux";
+import AddIcon from "@material-ui/icons/Add";
+import RemoveIcon from "@material-ui/icons/Remove";
 import PropTypes from "prop-types";
 import {
   Checkbox,
@@ -11,6 +14,12 @@ import {
   ListItemIcon,
   ListItemText,
   Typography,
+  Modal,
+  Grid,
+  Button,
+  Paper,
+  IconButton,
+  Divider,
 } from "@material-ui/core";
 
 class OrderItemModal extends Component {
@@ -208,323 +217,375 @@ class OrderItemModal extends Component {
 
   render() {
     let text = "";
-    // console.log(this.props.item);
-    if (!this.props.show) {
-      return null;
+    if (this.props.update) {
+      // console.log("here to update");
+      text = "Ενημέρωση";
     } else {
-      if (this.props.update) {
-        // console.log("here to update");
-        text = "Ενημέρωση";
-      } else {
-        // console.log("here to add");
-        text = "Προσθήκη";
-      }
+      // console.log("here to add");
+      text = "Προσθήκη";
     }
     return (
       <Modal
-        show={true}
-        autoFocus={true}
-        scrollable={true}
-        onHide={(e) => {
+        open={this.props.show}
+        onClose={(e) => {
           this.onClose(e);
         }}
-        // id="orderItemModal"
-        id="alertModal"
+        className="log-reg-modal"
       >
-        <Modal.Header className="alertModalHeader">
-          <Container fluid>
-            <Row>
-              <Col className="modalHeaderTitle">
-                {this.props.item.name}
-                <br />
-                {/* {this.props.item.description} */}
-              </Col>
-              <Col></Col>
-              <Col className="closeButtonCol">
-                {/* {item_.price} € */}
-                {this.props.update
-                  ? this.state.extraPrice + this.props.updateItem.item.price
-                  : this.state.extraPrice + this.props.item.price}{" "}
-                €
-                <Button
-                  variant="secondary"
-                  onClick={(e) => {
-                    this.onClose(e);
-                  }}
-                >
-                  X
-                </Button>
-              </Col>
-            </Row>
-          </Container>
-        </Modal.Header>
-        <Modal.Body className="modalBody">
-          {/* <Container fluid> */}
-          <div className="alertModalMessageDiv">
-            <Form>
-              <Form.Group>
-                {this.props.item.choices.map((choice, indx) => {
-                  return (
-                    <div key={indx}>
-                      <p className="modalChoiceName">
-                        {choice.name}
-                        {choice.required ? <span>*</span> : <span></span>}
-                      </p>
-                      <div className="orderItemModalChoiceDiv" key={indx}>
-                        {choice.options ? (
-                          choice.options.map((option, index) => {
-                            // if (this.props.update) {
-                            let show = false;
-                            for (var i in this.props.updateItem.options) {
-                              let update_option =
-                                this.props.updateItem.options[i];
-                              if (
-                                update_option.name === choice.name &&
-                                update_option.choice === option.name
-                              ) {
-                                show = true;
-                              }
-                            }
-                            if (this.props.update && show) {
-                              return (
-                                <div className="form-check" key={index}>
-                                  <input
-                                    className="form-check-input"
-                                    type="radio"
-                                    name={`${choice.name}`}
-                                    value={`${option.name}`}
-                                    id={`${option.name}${index}`}
-                                    onClick={() =>
-                                      this.onChangeChoice(choice.name, option)
-                                    }
-                                    defaultChecked
-                                  />
-                                  <label
-                                    className="form-check-label"
-                                    htmlFor={`${option.name}${index}`}
-                                  >
-                                    {option.name}
-                                  </label>
-                                  <span className="form-check-price">
-                                    {option.price} €
-                                  </span>
-                                </div>
-                              );
-                              // }
-                            } else {
-                              return (
-                                <div className="form-check" key={index}>
-                                  <input
-                                    className="form-check-input"
-                                    type="radio"
-                                    name={`${choice.name}`}
-                                    value={`${option.name}`}
-                                    id={`${option.name}${index}`}
-                                    onClick={() =>
-                                      this.onChangeChoice(choice.name, option)
-                                    }
-                                  />
-                                  <label
-                                    className="form-check-label"
-                                    htmlFor={`${option.name}${index}`}
-                                  >
-                                    {option.name}
-                                  </label>
-                                  <span className="form-check-price">
-                                    {option.price} €
-                                  </span>
-                                </div>
-                              );
-                            }
-                          })
-                        ) : (
-                          <span></span>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </Form.Group>
-              <Form.Group controlId="ingrdients">
-                {this.props.item.custom === true &&
-                this.props.item.extra_ingredients !== undefined ? (
-                  <List
-                    className="create-item-ingredient-list"
-                    id="ingredient-list"
-                  >
-                    {this.state.item_available_ingredients.map(
-                      (ingredientCategory, index) => {
-                        return (
-                          <div key={index}>
-                            <p className="modalChoiceName">
-                              {`${ingredientCategory[0].category}`}
-                            </p>
-                            <div
-                              className="orderItemModalIngredientsDiv"
-                              key={index}
-                            >
-                              {ingredientCategory.map((ingredient, index) => {
-                                const labelId = `ingredient-item-${ingredient.name}`;
-                                if (ingredient.available) {
-                                  return (
-                                    <ListItem
-                                      key={index}
-                                      role={undefined}
-                                      dense
-                                      className="item-modal-ingredient-li"
-                                      // style={{ maxWidth: "50%", minWidth: "50%" }}
-                                      button
-                                      onClick={() =>
-                                        this.handleToggle(ingredient)
-                                      }
-                                    >
-                                      <ListItemIcon style={{ width: "100%" }}>
-                                        <Checkbox
-                                          edge="start"
-                                          checked={
-                                            this.state.extra_ingredients.indexOf(
-                                              ingredient.name
-                                            ) !== -1
-                                          }
-                                          tabIndex={-1}
-                                          disableRipple
-                                          inputProps={{
-                                            "aria-labelledby": labelId,
-                                          }}
-                                        />
-                                        <ListItemText
-                                          id={labelId}
-                                          primary={
-                                            <Typography
-                                              type="body2"
-                                              style={{
-                                                color: "black",
-                                                textAlgin: "center",
-                                              }}
-                                            >
-                                              {ingredient.name}
-                                            </Typography>
-                                          }
-                                        />
-                                        <ListItemText
-                                          id={labelId}
-                                          primary={
-                                            <Typography
-                                              type="subtitle1"
-                                              style={{
-                                                color: "black",
-                                                textAlign: "right",
-                                              }}
-                                            >
-                                              {ingredient.price} €
-                                            </Typography>
-                                          }
-                                        />
-                                      </ListItemIcon>
-                                    </ListItem>
-                                  );
-                                } else {
-                                  return (
-                                    <ListItem
-                                      key={index}
-                                      role={undefined}
-                                      dense
-                                      disabled
-                                      className="item-modal-ingredient-li"
-                                      // style={{ maxWidth: "50%", minWidth: "50%" }}
-                                      button
-                                      onClick={() =>
-                                        this.handleToggle(ingredient)
-                                      }
-                                    >
-                                      <ListItemIcon style={{ width: "100%" }}>
-                                        <ListItemText
-                                          id={labelId}
-                                          primary={
-                                            <Typography
-                                              type="body2"
-                                              style={{
-                                                color: "black",
-                                                textAlgin: "center",
-                                              }}
-                                            >
-                                              {ingredient.name}
-                                            </Typography>
-                                          }
-                                        />
-                                        <ListItemText
-                                          id={labelId}
-                                          primary={
-                                            <Typography
-                                              type="subtitle1"
-                                              style={{
-                                                color: "black",
-                                                textAlign: "right",
-                                              }}
-                                            >
-                                              {ingredient.price} €
-                                            </Typography>
-                                          }
-                                        />
-                                      </ListItemIcon>
-                                    </ListItem>
-                                  );
+        <Paper elevation={0}>
+          <Grid container>
+            <Grid xs={10} item>
+              {this.props.item.name}
+              <br />
+              {/* {this.props.item.description} */}
+            </Grid>
+            {/* <Grid item></Grid> */}
+            <Grid item xs={2} className="closeButtonCol">
+              {/* {item_.price} € */}
+              {this.props.update
+                ? this.state.extraPrice + this.props.updateItem.item.price
+                : this.state.extraPrice + this.props.item.price}{" "}
+              €
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={(e) => {
+                  this.onClose(e);
+                }}
+              >
+                X
+              </Button>
+            </Grid>
+          </Grid>
+          <Divider />
+          <Grid container>
+            <Grid item xs={1}></Grid>
+            <Grid item xs={10}>
+              <Form>
+                <Form.Group>
+                  {this.props.item.choices.map((choice, indx) => {
+                    return (
+                      <Paper elevation={0} key={indx}>
+                        <Typography className="modalChoiceName">
+                          {choice.name}
+                          {choice.required ? <span>*</span> : <span></span>}
+                        </Typography>
+                        <Paper
+                          elevation={0}
+                          className="orderItemModalChoiceDiv"
+                          key={indx}
+                        >
+                          {choice.options ? (
+                            choice.options.map((option, index) => {
+                              // if (this.props.update) {
+                              let show = false;
+                              for (var i in this.props.updateItem.options) {
+                                let update_option =
+                                  this.props.updateItem.options[i];
+                                if (
+                                  update_option.name === choice.name &&
+                                  update_option.choice === option.name
+                                ) {
+                                  show = true;
                                 }
-                              })}
-                            </div>
-                          </div>
-                        );
-                      }
-                    )}
-                  </List>
-                ) : (
-                  <span></span>
-                )}
-              </Form.Group>
-              <Form.Group>
-                <Form.Label className="modalChoiceName">Comments</Form.Label>
-                <Form.Control
-                  as="textarea"
-                  name="comment"
-                  label="Leave a comment"
-                  placeholder="Leave a comment"
-                  value={this.state.comment}
-                  onChange={this.onChange}
-                />
-              </Form.Group>
-            </Form>
-          </div>
-          {/* </Container> */}
-        </Modal.Body>
-        <Modal.Footer id="modalFooter">
-          <Row className="modalFooterRow">
-            <Col>
-              <Row>
-                <button
+                              }
+                              if (this.props.update && show) {
+                                return (
+                                  <Paper className="form-check" key={index}>
+                                    <Grid direction="row" container>
+                                      <Grid item xs={1}>
+                                        <input
+                                          className="form-check-input"
+                                          type="radio"
+                                          name={`${choice.name}`}
+                                          value={`${option.name}`}
+                                          id={`${option.name}${index}`}
+                                          onClick={() =>
+                                            this.onChangeChoice(
+                                              choice.name,
+                                              option
+                                            )
+                                          }
+                                          defaultChecked
+                                        />
+                                      </Grid>
+                                      <Grid item xs={9}>
+                                        <label
+                                          className="form-check-label"
+                                          htmlFor={`${option.name}${index}`}
+                                        >
+                                          {option.name}
+                                        </label>
+                                      </Grid>
+                                      <Grid item xs={2}>
+                                        <span className="form-check-price">
+                                          {option.price} €
+                                        </span>
+                                      </Grid>
+                                    </Grid>
+                                    {/* <input
+                                      className="form-check-input"
+                                      type="radio"
+                                      name={`${choice.name}`}
+                                      value={`${option.name}`}
+                                      id={`${option.name}${index}`}
+                                      onClick={() =>
+                                        this.onChangeChoice(choice.name, option)
+                                      }
+                                      defaultChecked
+                                    />
+                                    <label
+                                      className="form-check-label"
+                                      htmlFor={`${option.name}${index}`}
+                                    >
+                                      {option.name}
+                                    </label>
+                                    <span className="form-check-price">
+                                      {option.price} €
+                                    </span> */}
+                                  </Paper>
+                                );
+                                // }
+                              } else {
+                                return (
+                                  <Paper className="form-check" key={index}>
+                                    <Grid container>
+                                      <Grid item xs={1}>
+                                        <input
+                                          className="form-check-input"
+                                          type="radio"
+                                          name={`${choice.name}`}
+                                          value={`${option.name}`}
+                                          id={`${option.name}${index}`}
+                                          onClick={() =>
+                                            this.onChangeChoice(
+                                              choice.name,
+                                              option
+                                            )
+                                          }
+                                        />
+                                      </Grid>
+                                      <Grid item xs={9}>
+                                        <label
+                                          className="form-check-label"
+                                          htmlFor={`${option.name}${index}`}
+                                        >
+                                          {option.name}
+                                        </label>
+                                      </Grid>
+                                      <Grid item xs={2}>
+                                        {" "}
+                                        <span className="form-check-price">
+                                          {option.price} €
+                                        </span>
+                                      </Grid>
+                                    </Grid>
+                                  </Paper>
+                                );
+                              }
+                            })
+                          ) : (
+                            <span></span>
+                          )}
+                        </Paper>
+                      </Paper>
+                    );
+                  })}
+                </Form.Group>
+                <Form.Group controlId="ingrdients">
+                  {this.props.item.custom === true &&
+                  this.props.item.extra_ingredients !== undefined ? (
+                    <List
+                      className="create-item-ingredient-list"
+                      id="ingredient-list"
+                    >
+                      {this.state.item_available_ingredients.map(
+                        (ingredientCategory, index) => {
+                          return (
+                            <Paper elevation={0} key={index}>
+                              <p className="modalChoiceName">
+                                {`${ingredientCategory[0].category}`}
+                              </p>
+                              <Paper
+                                elevation={0}
+                                className="orderItemModalIngredientsDiv"
+                                key={index}
+                              >
+                                {ingredientCategory.map((ingredient, index) => {
+                                  const labelId = `ingredient-item-${ingredient.name}`;
+                                  if (ingredient.available) {
+                                    return (
+                                      <ListItem
+                                        key={index}
+                                        role={undefined}
+                                        dense
+                                        className="item-modal-ingredient-li"
+                                        // style={{ maxWidth: "50%", minWidth: "50%" }}
+                                        button
+                                        onClick={() =>
+                                          this.handleToggle(ingredient)
+                                        }
+                                      >
+                                        <ListItemIcon style={{ width: "100%" }}>
+                                          <Checkbox
+                                            edge="start"
+                                            checked={
+                                              this.state.extra_ingredients.indexOf(
+                                                ingredient.name
+                                              ) !== -1
+                                            }
+                                            tabIndex={-1}
+                                            disableRipple
+                                            inputProps={{
+                                              "aria-labelledby": labelId,
+                                            }}
+                                          />
+                                          <ListItemText
+                                            id={labelId}
+                                            primary={
+                                              <Typography
+                                                type="body2"
+                                                style={{
+                                                  color: "black",
+                                                  textAlgin: "center",
+                                                }}
+                                              >
+                                                {ingredient.name}
+                                              </Typography>
+                                            }
+                                          />
+                                          <ListItemText
+                                            id={labelId}
+                                            primary={
+                                              <Typography
+                                                type="subtitle1"
+                                                style={{
+                                                  color: "black",
+                                                  textAlign: "right",
+                                                }}
+                                              >
+                                                {ingredient.price} €
+                                              </Typography>
+                                            }
+                                          />
+                                        </ListItemIcon>
+                                      </ListItem>
+                                    );
+                                  } else {
+                                    return (
+                                      <ListItem
+                                        key={index}
+                                        role={undefined}
+                                        dense
+                                        disabled
+                                        className="item-modal-ingredient-li"
+                                        // style={{ maxWidth: "50%", minWidth: "50%" }}
+                                        button
+                                        onClick={() =>
+                                          this.handleToggle(ingredient)
+                                        }
+                                      >
+                                        <ListItemIcon style={{ width: "100%" }}>
+                                          <ListItemText
+                                            id={labelId}
+                                            primary={
+                                              <Typography
+                                                type="body2"
+                                                style={{
+                                                  color: "black",
+                                                  textAlgin: "center",
+                                                }}
+                                              >
+                                                {ingredient.name}
+                                              </Typography>
+                                            }
+                                          />
+                                          <ListItemText
+                                            id={labelId}
+                                            primary={
+                                              <Typography
+                                                type="subtitle1"
+                                                style={{
+                                                  color: "black",
+                                                  textAlign: "right",
+                                                }}
+                                              >
+                                                {ingredient.price} €
+                                              </Typography>
+                                            }
+                                          />
+                                        </ListItemIcon>
+                                      </ListItem>
+                                    );
+                                  }
+                                })}
+                              </Paper>
+                            </Paper>
+                          );
+                        }
+                      )}
+                    </List>
+                  ) : (
+                    <span></span>
+                  )}
+                </Form.Group>
+                <Form.Group>
+                  <Form.Label className="modalChoiceName">Comments</Form.Label>
+                  <Form.Control
+                    as="textarea"
+                    name="comment"
+                    label="Leave a comment"
+                    placeholder="Leave a comment"
+                    value={this.state.comment}
+                    onChange={this.onChange}
+                  />
+                </Form.Group>
+              </Form>
+            </Grid>
+            <Grid item xs={1}></Grid>
+          </Grid>
+          <Divider />
+          <Grid container style={{ marginTop: "2" }}>
+            <Grid item xs={1}></Grid>
+            <Grid item xs={3}>
+              <Grid container>
+                <IconButton
                   // variant="outline-danger"
                   className="minPlusButton"
+                  color="primary"
+                  variant="contained"
+                  aria-label="remove"
                   onClick={() => this.changeQuantity(false)}
                 >
-                  -
-                </button>
-                <p className="minPlusText">{this.state.quantity}</p>
-                <button
+                  <RemoveIcon fontSize="small" />
+                </IconButton>
+                <span>{this.state.quantity}</span>
+                <IconButton
                   // variant="outline-success"
                   className="minPlusButton"
+                  color="primary"
+                  aria-label="add"
+                  // size="small"
+                  // variant="contained"
                   onClick={() => this.changeQuantity(true)}
                 >
-                  +
-                </button>
-              </Row>
-            </Col>
-            <Col>
-              <Button onClick={this.onAdd} className="modalFooterButton">
+                  <AddIcon fontSize="small" />
+                </IconButton>
+              </Grid>
+            </Grid>
+            <Grid item xs={4}>
+              <Button
+                color="primary"
+                variant="contained"
+                onClick={this.onAdd}
+                className="modalFooterButton"
+              >
                 {text}
               </Button>
-            </Col>
-            <Col></Col>
-          </Row>
-        </Modal.Footer>
+            </Grid>
+            <Grid xs={4} item></Grid>
+          </Grid>
+        </Paper>
       </Modal>
     );
   }

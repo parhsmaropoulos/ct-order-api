@@ -1,11 +1,13 @@
 import React, { Component } from "react";
-import { Button, Card, Col, ListGroup, Row } from "react-bootstrap";
+import { Card, Col, ListGroup, Row } from "react-bootstrap";
 import { connect } from "react-redux";
 import "../../../css/Pages/orderpage.css";
 import OrderItemModal from "../../Modals/OrderItemModal";
 import PropTypes from "prop-types";
 import { Redirect } from "react-router";
 import { update_cart } from "../../../actions/orders";
+import AddIcon from "@material-ui/icons/Add";
+import RemoveIcon from "@material-ui/icons/Remove";
 import {
   GetAsyncCategories,
   GetAsyncItems,
@@ -13,10 +15,18 @@ import {
   get_categories,
   get_ingredients,
 } from "../../../actions/items";
+import ClearIcon from "@material-ui/icons/Clear";
 import { showInfoSnackbar } from "../../../actions/snackbar";
 // import AlertModal from "../../MainPanel/Pages/Alert/AlertModal";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { CircularProgress, TextField, Typography } from "@material-ui/core";
+import {
+  Button,
+  CircularProgress,
+  Grid,
+  IconButton,
+  TextField,
+  Typography,
+} from "@material-ui/core";
 // import { Link } from "react-router-dom";
 
 var _ = require("lodash");
@@ -505,30 +515,39 @@ class OrderMainPage extends Component {
                                   <Card.Footer
                                     style={{ backgroundColor: "white" }}
                                   >
-                                    <Row className="footerItem">
-                                      <button
-                                        // variant="outline-danger"
-                                        className="minPlusButton"
-                                        onClick={() =>
-                                          this.changeQuantity(false, index)
-                                        }
-                                      >
-                                        -
-                                      </button>
-                                      <p className="minPlusText">
-                                        {order_item.quantity}
-                                      </p>
-                                      <button
-                                        className="minPlusButton"
-                                        onClick={() =>
-                                          this.changeQuantity(true, index)
-                                        }
-                                      >
-                                        +
-                                      </button>
-                                      <div className="removeButtonCol">
-                                        <button
+                                    <Grid direction="row" container>
+                                      <Grid item justify="flex-start" xs={9}>
+                                        <IconButton
+                                          className="minPlusButton"
+                                          color="primary"
+                                          variant="contained"
+                                          aria-label="remove"
+                                          onClick={() =>
+                                            this.changeQuantity(false, index)
+                                          }
+                                        >
+                                          <RemoveIcon fontSize="small" />
+                                        </IconButton>
+                                        <span>{order_item.quantity}</span>
+                                        <IconButton
+                                          className="minPlusButton"
+                                          color="primary"
+                                          variant="contained"
+                                          aria-label="add"
+                                          onClick={() =>
+                                            this.changeQuantity(true, index)
+                                          }
+                                        >
+                                          <AddIcon fontSize="small" />
+                                        </IconButton>
+                                      </Grid>
+                                      <Grid item xs={3}>
+                                        {/* <div className="removeButtonCol"> */}
+                                        <IconButton
                                           className="removeButton minPlusButton"
+                                          color="secondary"
+                                          variant="contained"
+                                          aria-label="remove"
                                           onClick={() =>
                                             this.removeFromCart(
                                               index,
@@ -536,10 +555,11 @@ class OrderMainPage extends Component {
                                             )
                                           }
                                         >
-                                          x
-                                        </button>
-                                      </div>
-                                    </Row>
+                                          <ClearIcon fontSize="small" />
+                                        </IconButton>
+                                        {/* </div> */}
+                                      </Grid>
+                                    </Grid>
                                   </Card.Footer>
                                 </Card>
                               </ListGroup.Item>
