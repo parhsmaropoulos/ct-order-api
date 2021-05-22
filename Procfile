@@ -1,1 +1,1 @@
-web: bin/coffeetwist
+web: backend\bin\coffeetwist-backend.exe

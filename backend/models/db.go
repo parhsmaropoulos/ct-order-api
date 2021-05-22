@@ -2,11 +2,13 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"os"
 	"time"
 
 	"github.com/go-redis/redis"
+	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -50,31 +52,49 @@ var Subscribes *mongo.Collection
 // Redis_client is the pointer to the redis db.
 var Redis_client *redis.Client
 
+func goDotEnvVariable(key string) string {
+	//load .env file
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatalf("Error loading env file")
+	}
+	return os.Getenv(key)
+}
+
 // Initialize the db connection
 func Init() {
 	// Start a mongo db session
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 
-	Client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://localhost:27017"))
-	// For local
-	// mongodb://localhost:27017
-	// For mongo atlas
-	// mongodb+srv://parismaro:<password>@projects.cde0a.mongodb.net/myFirstDatabase?retryWrites=true&w=majority
+	dbUrl := ""
+	// Initialize redis
+	if goDotEnvVariable("STATE") == "local" {
+		dbUrl = "mongodb://localhost:27017"
+	} else {
+		dbUrl = goDotEnvVariable("CONNECTION_URL")
+	}
+
+	Client, err := mongo.Connect(ctx, options.Client().ApplyURI(dbUrl))
 	if err != nil {
 		log.Fatal(err)
 	}
-
+	addrs := ""
+	pass := ""
 	// Initialize redis
-	//Initializing redis
-	dsn := os.Getenv("REDIS_DSN")
-	if len(dsn) == 0 {
-		dsn = "localhost:6379"
+	if goDotEnvVariable("STATE") == "local" {
+		addrs = "localhost:6379"
+	} else {
+		addrs = goDotEnvVariable("REDIS_URL")
+		pass = goDotEnvVariable("REDIS_PASSWORD")
 	}
+
 	Redis_client = redis.NewClient(&redis.Options{
-		Addr: dsn, //redis port
+		Addr:     addrs,
+		Password: pass,
 	})
 	_, err = Redis_client.Ping().Result()
 	if err != nil {
+		fmt.Println(err)
 		panic(err)
 	}
 
