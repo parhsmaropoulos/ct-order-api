@@ -2,12 +2,10 @@ package models
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"os"
 	"time"
 
-	"github.com/go-redis/redis"
 	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -50,7 +48,7 @@ var Images *mongo.Database
 var Subscribes *mongo.Collection
 
 // Redis_client is the pointer to the redis db.
-var Redis_client *redis.Client
+// var Redis_client *redis.Client
 
 func goDotEnvVariable(key string) string {
 	//load .env file
@@ -67,7 +65,7 @@ func Init() {
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 
 	dbUrl := ""
-	// Initialize redis
+	// Initialize mongo db
 	if goDotEnvVariable("STATE") == "local" {
 		dbUrl = "mongodb://localhost:27017"
 	} else {
@@ -78,25 +76,25 @@ func Init() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	addrs := ""
-	pass := ""
+	// addrs := ""
+	// pass := ""
 	// Initialize redis
-	if goDotEnvVariable("STATE") == "local" {
-		addrs = "localhost:6379"
-	} else {
-		addrs = goDotEnvVariable("REDIS_URL")
-		pass = goDotEnvVariable("REDIS_PASSWORD")
-	}
+	// if goDotEnvVariable("STATE") == "local" {
+	// 	addrs = "localhost:6379"
+	// } else {
+	// 	addrs = goDotEnvVariable("REDIS_URL")
+	// 	pass = goDotEnvVariable("REDIS_PASSWORD")
+	// }
 
-	Redis_client = redis.NewClient(&redis.Options{
-		Addr:     addrs,
-		Password: pass,
-	})
-	_, err = Redis_client.Ping().Result()
-	if err != nil {
-		fmt.Println(err)
-		panic(err)
-	}
+	// Redis_client = redis.NewClient(&redis.Options{
+	// 	Addr:     addrs,
+	// 	Password: pass,
+	// })
+	// _, err = Redis_client.Ping().Result()
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	panic(err)
+	// }
 
 	Users = Client.Database("CoffeeTwist").Collection("Users")
 	Subscribes = Client.Database("CoffeeTwist").Collection("Subscribes")

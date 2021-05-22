@@ -181,7 +181,7 @@ func main() {
 	if goDotEnvVariable("STATE") == "local" {
 		port = "localhost:8080"
 	} else {
-		port = goDotEnvVariable("PORT")
+		port = ":" + goDotEnvVariable("PORT")
 	}
 	router.Run(port)
 }

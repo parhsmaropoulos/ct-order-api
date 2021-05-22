@@ -12,6 +12,7 @@
 import axios from "axios";
 import jwt from "jwt-decode";
 import { headers } from "../utils/axiosHeaders";
+import { live_url } from "../utils/util";
 import {
   EMPTY_CART,
   GET_USER,
@@ -186,17 +187,12 @@ export const getUser = (id) => (dispatch) => {
 // REGISTER USER
 export const register = (data) => (dispatch) => {
   // Headers
-  const config = {
-    headers: {
-      "Content-Type": "application/json",
-    },
-  };
 
   // Request Body
   // const body = JSON.stringify({ username, email, password1, password2 });
   const body = data;
   axios
-    .post("http://localhost:8080/user/register", body, config)
+    .post(live_url + "user/register", body, headers)
     .then((res) => {
       console.log(res);
       dispatch({

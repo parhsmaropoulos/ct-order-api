@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
@@ -20,16 +19,16 @@ func PostImage(c *gin.Context) {
 	}
 	c.Header("Access-Control-Allow-Origin", "*")
 	// AUTH CHECK
-	tokenAuth, err := ExtractTokenMetadata(c.Request)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, "unauthorized")
-		return
-	}
-	_, err = FetchAuth(tokenAuth)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, "unauthorized")
-		return
-	}
+	// tokenAuth, err := ExtractTokenMetadata(c.Request)
+	// if err != nil {
+	// 	c.JSON(http.StatusUnauthorized, "unauthorized")
+	// 	return
+	// }
+	// _, err = FetchAuth(tokenAuth)
+	// if err != nil {
+	// 	c.JSON(http.StatusUnauthorized, "unauthorized")
+	// 	return
+	// }
 	// Parse input
 	c.Request.ParseMultipartForm(10 << 20)
 	// Retrieve file
@@ -78,23 +77,23 @@ func GetImage(c *gin.Context) {
 		return
 	}
 	c.Header("Access-Control-Allow-Origin", "*")
-	// AUTH CHECK
-	tokenAuth, err := ExtractTokenMetadata(c.Request)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, "unauthorized")
-		return
-	}
 	fileName := c.PostForm("name")
-	_, err = FetchAuth(tokenAuth)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, "unauthorized")
-		return
-	}
+	// AUTH CHECK
+	// tokenAuth, err := ExtractTokenMetadata(c.Request)
+	// if err != nil {
+	// 	c.JSON(http.StatusUnauthorized, "unauthorized")
+	// 	return
+	// }
+	// _, err = FetchAuth(tokenAuth)
+	// if err != nil {
+	// 	c.JSON(http.StatusUnauthorized, "unauthorized")
+	// 	return
+	// }
 
 	fsFiles := Images.Collection("fs.files")
 	var results bson.M
 
-	err = fsFiles.FindOne(context.Background(), bson.M{}).Decode(&results)
+	err := fsFiles.FindOne(context.Background(), bson.M{}).Decode(&results)
 	if err != nil {
 		log.Fatal(err)
 	}

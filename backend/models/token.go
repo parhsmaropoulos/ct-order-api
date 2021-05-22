@@ -5,12 +5,13 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"strconv"
 	"strings"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"github.com/shaj13/go-guardian/auth"
+	"github.com/shaj13/go-guardian/store"
 	"github.com/twinj/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -24,6 +25,9 @@ type TokenDetails struct {
 	AtExpires    int64
 	RtExpires    int64
 }
+
+var authenticator auth.Authenticator
+var cache store.Cache
 
 func CreateToken(userid primitive.ObjectID, user User) (*TokenDetails, error) {
 	td := &TokenDetails{}
@@ -61,23 +65,23 @@ func CreateToken(userid primitive.ObjectID, user User) (*TokenDetails, error) {
 	return td, nil
 }
 
-func CreateAuth(userid primitive.ObjectID, td *TokenDetails) error {
-	at := time.Unix(td.AtExpires, 0) //converting Unix to UTC(to Time object)
-	rt := time.Unix(td.RtExpires, 0)
-	now := time.Now()
+// func CreateAuth(userid primitive.ObjectID, td *TokenDetails) error {
+// 	at := time.Unix(td.AtExpires, 0) //converting Unix to UTC(to Time object)
+// 	rt := time.Unix(td.RtExpires, 0)
+// 	now := time.Now()
 
-	enc_id := userid.Hex()
+// 	enc_id := userid.Hex()
 
-	errAccess := Redis_client.Set(td.AccessUuid, enc_id, at.Sub(now)).Err()
-	if errAccess != nil {
-		return errAccess
-	}
-	errRefresh := Redis_client.Set(td.RefreshUuid, enc_id, rt.Sub(now)).Err()
-	if errRefresh != nil {
-		return errRefresh
-	}
-	return nil
-}
+// 	errAccess := Redis_client.Set(td.AccessUuid, enc_id, at.Sub(now)).Err()
+// 	if errAccess != nil {
+// 		return errAccess
+// 	}
+// 	errRefresh := Redis_client.Set(td.RefreshUuid, enc_id, rt.Sub(now)).Err()
+// 	if errRefresh != nil {
+// 		return errRefresh
+// 	}
+// 	return nil
+// }
 
 func ExtractToken(r *http.Request) string {
 	bearToken := r.Header.Get("Authorization")
@@ -153,22 +157,22 @@ func ExtractTokenMetadata(r *http.Request) (*AccessDetails, error) {
 	return nil, err
 }
 
-func FetchAuth(authD *AccessDetails) (uint64, error) {
-	userid, err := Redis_client.Get(authD.AccessUuid).Result()
-	if err != nil {
-		return 0, err
-	}
-	userID, _ := strconv.ParseUint(userid, 10, 64)
-	return userID, nil
-}
+// func FetchAuth(authD *AccessDetails) (uint64, error) {
+// 	userid, err := Redis_client.Get(authD.AccessUuid).Result()
+// 	if err != nil {
+// 		return 0, err
+// 	}
+// 	userID, _ := strconv.ParseUint(userid, 10, 64)
+// 	return userID, nil
+// }
 
-func DeleteAuth(givenId string) (int64, error) {
-	deleted, err := Redis_client.Del(givenId).Result()
-	if err != nil {
-		return 0, err
-	}
-	return deleted, nil
-}
+// func DeleteAuth(givenId string) (int64, error) {
+// 	deleted, err := Redis_client.Del(givenId).Result()
+// 	if err != nil {
+// 		return 0, err
+// 	}
+// 	return deleted, nil
+// }
 
 func TokenAuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -215,7 +219,8 @@ func Refresh(c *gin.Context) {
 	//Since token is valid, get the uuid:
 	claims, ok := token.Claims.(jwt.MapClaims) //the token claims should conform to MapClaims
 	if ok && token.Valid {
-		refreshUuid, ok := claims["refresh_uuid"].(string) //convert the interface to string
+		// refreshUuid
+		_, ok := claims["refresh_uuid"].(string) //convert the interface to string
 		if !ok {
 			c.JSON(http.StatusUnprocessableEntity, err)
 			return
@@ -226,12 +231,12 @@ func Refresh(c *gin.Context) {
 			c.JSON(http.StatusUnprocessableEntity, "Error occurred")
 			return
 		}
-		//Delete the previous Refresh Token
-		deleted, delErr := DeleteAuth(refreshUuid)
-		if delErr != nil || deleted == 0 { //if any goes wrong
-			c.JSON(http.StatusUnauthorized, "unauthorized")
-			return
-		}
+		// //Delete the previous Refresh Token
+		// deleted, delErr := DeleteAuth(refreshUuid)
+		// if delErr != nil || deleted == 0 { //if any goes wrong
+		// 	c.JSON(http.StatusUnauthorized, "unauthorized")
+		// 	return
+		// }
 		// Get the user object
 		var user User
 		Users.FindOne(context.Background(), bson.M{"_id": userId}).Decode(&user)
@@ -241,12 +246,12 @@ func Refresh(c *gin.Context) {
 			c.JSON(http.StatusForbidden, createErr.Error())
 			return
 		}
-		//save the tokens metadata to redis
-		saveErr := CreateAuth(userId, ts)
-		if saveErr != nil {
-			c.JSON(http.StatusForbidden, saveErr.Error())
-			return
-		}
+		// //save the tokens metadata to redis
+		// saveErr := CreateAuth(userId, ts)
+		// if saveErr != nil {
+		// 	c.JSON(http.StatusForbidden, saveErr.Error())
+		// 	return
+		// }
 		tokens := map[string]string{
 			"access_token":  ts.AccessToken,
 			"refresh_token": ts.RefreshToken,
@@ -256,3 +261,58 @@ func Refresh(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, "refresh expired")
 	}
 }
+
+// ******************************** GO GUARDIAN AUTH ***************************************** //
+// func setupGoGuardian() {
+// 	authenticator = auth.New()
+// 	cache = store.NewFIFO(context.Background(), time.Minute*10)
+
+// 	basicStrategy := basic.New(validateUser, cache)
+// 	tokenStrategy := bearer.New(verifyToken, cache)
+
+// 	authenticator.EnableStrategy(basic.StrategyKey, basicStrategy)
+// 	authenticator.EnableStrategy(bearer.CachedStrategyKey, tokenStrategy)
+// }
+
+// func validateUser(ctx context.Context, r *http.Request, userName, password string) (auth.Info, error) {
+// 	// here connect to db or any other service to fetch user and validate it.
+// 	if userName == "medium" && password == "medium" {
+// 		return auth.NewDefaultUser("medium", "1", nil, nil), nil
+// 	}
+
+// 	return nil, fmt.Errorf("Invalid credentials")
+// }
+
+// func middleware(next http.Handler) http.HandlerFunc {
+// 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+// 		log.Println("Executing Auth Middleware")
+// 		user, err := authenticator.Authenticate(r)
+// 		if err != nil {
+// 			code := http.StatusUnauthorized
+// 			http.Error(w, http.StatusText(code), code)
+// 			return
+// 		}
+// 		log.Printf("User %s Authenticated\n", user.UserName())
+// 		next.ServeHTTP(w, r)
+// 	})
+// }
+
+// func verifyToken(ctx context.Context, r *http.Request, tokenString string) (auth.Info, error) {
+// 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+// 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+// 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+// 		}
+// 		return []byte("secret"), nil
+// 	})
+
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+// 		user := auth.NewDefaultUser(claims["sub"].(string), "", nil, nil)
+// 		return user, nil
+// 	}
+
+// 	return nil, fmt.Errorf("Invaled token")
+// }

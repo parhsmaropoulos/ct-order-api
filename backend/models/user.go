@@ -295,10 +295,10 @@ func Login(c *gin.Context) {
 		c.JSON(http.StatusUnprocessableEntity, err)
 		return
 	}
-	saveErr := CreateAuth(user.ID, ts)
-	if saveErr != nil {
-		c.JSON(http.StatusUnprocessableEntity, saveErr)
-	}
+	// saveErr := CreateAuth(user.ID, ts)
+	// if saveErr != nil {
+	// 	c.JSON(http.StatusUnprocessableEntity, saveErr)
+	// }
 	tokens := map[string]string{
 		"access_token":  ts.AccessToken,
 		"refresh_token": ts.RefreshToken,
@@ -307,16 +307,17 @@ func Login(c *gin.Context) {
 }
 
 func Logout(c *gin.Context) {
-	au, err := ExtractTokenMetadata(c.Request)
+	// au
+	_, err := ExtractTokenMetadata(c.Request)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, "unauthorized")
 		return
 	}
-	deleted, delErr := DeleteAuth(au.AccessUuid)
-	if delErr != nil || deleted == 0 { //if anything goes wrong
-		c.JSON(http.StatusUnauthorized, "unauthorized")
-		return
-	}
+	// deleted, delErr := DeleteAuth(au.AccessUuid)
+	// if delErr != nil || deleted == 0 { //if anything goes wrong
+	// 	c.JSON(http.StatusUnauthorized, "unauthorized")
+	// 	return
+	// }
 	c.JSON(http.StatusOK, "Successfully logged out")
 }
 

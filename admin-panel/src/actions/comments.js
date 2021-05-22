@@ -1,5 +1,6 @@
 import axios from "axios";
 import { headers } from "../utils/axiosHeaders";
+import { live_url } from "../utils/util";
 import {
   APPROVE_COMMENT,
   GET_COMMENTS,
@@ -12,7 +13,7 @@ import {
 // GET ALL COMMENTS
 export const get_comments = () => (dispatch) => {
   axios
-    .get("http://localhost:8080/comments/all")
+    .get(live_url + "comments/all")
     .then((res) => {
       // console.log(res);
       dispatch({
@@ -36,7 +37,7 @@ export const get_comments = () => (dispatch) => {
 // Approve Comment
 export const approve_comment = (id) => (dispatch) => {
   axios
-    .post(`http://localhost:8080/comments/approve/${id}`, null, headers)
+    .post(`${live_url}comments/approve/${id}`, null, headers)
     .then((res) => {
       console.log(res);
       dispatch({
