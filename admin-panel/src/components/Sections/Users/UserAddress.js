@@ -1,16 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import {
-  Button,
-  Col,
-  Container,
-  Modal,
-  Nav,
-  Navbar,
-  Row,
-  Table,
-} from "react-bootstrap";
+import { Button, Modal, Table } from "react-bootstrap";
 import { Link, Redirect } from "react-router-dom";
 import "../../../css/Pages/accountpage.css";
 import { PencilFill } from "react-bootstrap-icons";
@@ -18,7 +9,20 @@ import EditAddressModal from "../../Modals/EditAddressModal";
 import { getUser, updateUser } from "../../../actions/user";
 import AddressModal from "../../Modals/AddressModal";
 import { MdRemoveCircle } from "react-icons/md";
-import { CircularProgress } from "@material-ui/core";
+import { CircularProgress, Grid, Container } from "@material-ui/core";
+
+// const columns = [
+//   {
+//     field: "#",
+//     headerName: "#",
+//     width: 70,
+//   },
+//   { field: "Διευθηνση", headerName: "Διευθηνση" },
+//   { field: "Αριθμός", headerName: "Αριθμός" },
+//   { field: "Περιοχή", headerName: "Περιοχή" },
+//   { field: "Τ.Κ.", headerName: "Τ.Κ." },
+//   { field: "Actions", headerName: "Actions" },
+// ];
 
 class UserAdress extends Component {
   constructor(props) {
@@ -165,34 +169,39 @@ class UserAdress extends Component {
     } else {
       return (
         <Container className="accountMainPage">
-          <Row className="headerRow">
-            <Navbar className="user-nav-bar">
-              <Nav className="mr-auto">
-                <Link className="nav-text" to="/account">
-                  Ο λογαριασμός μου
-                </Link>
-                <Link className="nav-text" to="/account/orders">
-                  Οι παραγγελίες μου
-                </Link>
-                <Link
-                  className="nav-text nav-text-activated"
-                  to="/account/addresses"
-                >
-                  Διευθύνσεις
-                </Link>
-                <Link className="nav-text" to="/account/ratings">
-                  Βαθμολογίες
-                </Link>
-              </Nav>
-            </Navbar>
-          </Row>
-          <Col className="userAddressCol bodyCol">
-            <div className="roundedContainer">
+          <Grid xs={8} spacing={3} container>
+            <Grid item lg={3} md={3} sm={6}>
+              <Link className="nav-text " to="/account">
+                Ο λογαριασμός μου
+              </Link>
+            </Grid>
+            <Grid item lg={3} md={3} sm={6}>
+              <Link className="nav-text" to="/account/orders">
+                Οι παραγγελίες μου
+              </Link>
+            </Grid>
+            <Grid item lg={2} md={2} sm={6}>
+              <Link
+                className="nav-text  nav-text-activated"
+                to="/account/addresses"
+              >
+                Διευθύνσεις
+              </Link>
+            </Grid>
+
+            <Grid item lg={2} md={2} sm={6}>
+              <Link className="nav-text" to="/account/ratings">
+                Βαθμολογίες
+              </Link>
+            </Grid>
+          </Grid>
+          <Grid contaier style={{ marginTop: 10 }}>
+            <Grid container className="roundedContainer">
               <div className="userAddressColHeader">
                 <div className="title">Οι διευθήνσεις σου</div>
                 <span></span>
               </div>
-              <div className="userAddressColBody">
+              <div className="userAddressColBody table-responsive-sm">
                 {this.props.userReducer.user.addresses.length > 0 ? (
                   <Table striped bordered hover>
                     <thead>
@@ -240,15 +249,15 @@ class UserAdress extends Component {
                   <div>Δεν εχεις καταχωρήσει κάποια διεύθηνση ακόμα</div>
                 )}
               </div>
-            </div>
-          </Col>
+            </Grid>
+          </Grid>
           <div className="addAddressDiv">
-            <button
+            <Button
               className="addAddressButton"
               onClick={() => this.selectAddressModal(true)}
             >
               +
-            </button>
+            </Button>
           </div>
           {removeAddressdialog}
           {editAddressModal}

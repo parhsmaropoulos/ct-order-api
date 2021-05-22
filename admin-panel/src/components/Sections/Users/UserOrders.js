@@ -1,15 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import {
-  Button,
-  Col,
-  Container,
-  Modal,
-  Nav,
-  Navbar,
-  Row,
-} from "react-bootstrap";
+import { Button, Col, Modal, Row } from "react-bootstrap";
 import { Link, Redirect } from "react-router-dom";
 import "../../../css/Pages/accountpage.css";
 import { update_order } from "../../../actions/orders";
@@ -19,7 +11,7 @@ import StarBorderIcon from "@material-ui/icons/StarBorder";
 import Rating from "@material-ui/lab/Rating";
 import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
-import { CircularProgress } from "@material-ui/core";
+import { CircularProgress, Grid, Container } from "@material-ui/core";
 
 class UserOrders extends Component {
   constructor(props) {
@@ -148,27 +140,32 @@ class UserOrders extends Component {
     } else {
       return (
         <Container className="accountMainPage">
-          <Row className="headerRow">
-            <Navbar className="user-nav-bar">
-              <Nav className="mr-auto">
-                <Link className="nav-text" to="/account">
-                  Ο λογαριασμός μου
-                </Link>
-                <Link
-                  className="nav-text nav-text-activated"
-                  to="/account/orders"
-                >
-                  Οι παραγγελίες μου
-                </Link>
-                <Link className="nav-text" to="/account/addresses">
-                  Διευθύνσεις
-                </Link>
-                <Link className="nav-text" to="/account/ratings">
-                  Βαθμολογίες
-                </Link>
-              </Nav>
-            </Navbar>
-          </Row>
+          <Grid xs={8} spacing={3} container>
+            <Grid item lg={3} md={3} sm={6}>
+              <Link className="nav-text" to="/account">
+                Ο λογαριασμός μου
+              </Link>
+            </Grid>
+            <Grid item lg={3} md={3} sm={6}>
+              <Link
+                className="nav-text  nav-text-activated"
+                to="/account/orders"
+              >
+                Οι παραγγελίες μου
+              </Link>
+            </Grid>
+            <Grid item lg={2} md={2} sm={6}>
+              <Link className="nav-text" to="/account/addresses">
+                Διευθύνσεις
+              </Link>
+            </Grid>
+
+            <Grid item lg={2} md={2} sm={6}>
+              <Link className="nav-text" to="/account/ratings">
+                Βαθμολογίες
+              </Link>
+            </Grid>
+          </Grid>
           <Col className="userOrdersCol bodyCol">
             <div className="roundedContainer">
               <div className="userOrdersColHeader">

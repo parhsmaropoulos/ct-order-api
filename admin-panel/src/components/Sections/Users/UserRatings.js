@@ -1,9 +1,10 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import { Container, Nav, Navbar, Row } from "react-bootstrap";
+import { Row } from "react-bootstrap";
 import { Link, Redirect } from "react-router-dom";
 import "../../../css/Pages/accountpage.css";
+import { Container, Grid } from "@material-ui/core";
 class UserRatings extends Component {
   static propTypes = {
     userReducer: PropTypes.object.isRequired,
@@ -22,25 +23,32 @@ class UserRatings extends Component {
       return (
         <Container className="accountMainPage">
           <Row className="headerRow">
-            <Navbar className="user-nav-bar">
-              <Nav className="mr-auto">
+            <Grid xs={8} spacing={3} container>
+              <Grid item lg={3} md={3} sm={6}>
                 <Link className="nav-text" to="/account">
                   Ο λογαριασμός μου
                 </Link>
+              </Grid>
+              <Grid item lg={3} md={3} sm={6}>
                 <Link className="nav-text" to="/account/orders">
                   Οι παραγγελίες μου
                 </Link>
+              </Grid>
+              <Grid item lg={2} md={2} sm={6}>
                 <Link className="nav-text" to="/account/addresses">
                   Διευθύνσεις
                 </Link>
+              </Grid>
+
+              <Grid item lg={2} md={2} sm={6}>
                 <Link
-                  className="nav-text nav-text-activated"
+                  className="nav-text  nav-text-activated"
                   to="/account/ratings"
                 >
                   Βαθμολογίες
                 </Link>
-              </Nav>
-            </Navbar>
+              </Grid>
+            </Grid>
           </Row>
           <Row className="userRatingsRow bodyRow"></Row>
         </Container>

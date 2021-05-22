@@ -1,18 +1,11 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import {
-  Button,
-  Col,
-  Container,
-  Form,
-  Nav,
-  Navbar,
-  Row,
-} from "react-bootstrap";
+import { Button, Col, Form, Row } from "react-bootstrap";
 import { Link, Redirect } from "react-router-dom";
 import "../../../css/Pages/accountpage.css";
 import { updateUser, getUser } from "../../../actions/user";
+import { Grid, Container } from "@material-ui/core";
 
 class MainPage extends Component {
   constructor(props) {
@@ -91,24 +84,29 @@ class MainPage extends Component {
     } else {
       return (
         <Container className="accountMainPage">
-          <Row className="headerRow">
-            <Navbar className="user-nav-bar">
-              <Nav className="mr-auto">
-                <Link className="nav-text nav-text-activated" to="/account">
-                  Ο λογαριασμός μου
-                </Link>
-                <Link className="nav-text" to="/account/orders">
-                  Οι παραγγελίες μου
-                </Link>
-                <Link className="nav-text" to="/account/addresses">
-                  Διευθύνσεις
-                </Link>
-                <Link className="nav-text" to="/account/ratings">
-                  Βαθμολογίες
-                </Link>
-              </Nav>
-            </Navbar>
-          </Row>
+          <Grid xs={8} spacing={3} container>
+            <Grid item lg={3} md={3} sm={6}>
+              <Link className="nav-text nav-text-activated" to="/account">
+                Ο λογαριασμός μου
+              </Link>
+            </Grid>
+            <Grid item lg={3} md={3} sm={6}>
+              <Link className="nav-text" to="/account/orders">
+                Οι παραγγελίες μου
+              </Link>
+            </Grid>
+            <Grid item lg={2} md={2} sm={6}>
+              <Link className="nav-text" to="/account/addresses">
+                Διευθύνσεις
+              </Link>
+            </Grid>
+
+            <Grid item lg={2} md={2} sm={6}>
+              <Link className="nav-text" to="/account/ratings">
+                Βαθμολογίες
+              </Link>
+            </Grid>
+          </Grid>
           <Row className="userProfileRow bodyRow">
             <div className="roundedContainer userProfileContainer">
               <h4> Change your values</h4>

@@ -48,7 +48,7 @@ class OrderItemModal extends Component {
 
   componentDidMount() {
     if (this.props.update) {
-      console.log(this.props);
+      // console.log(this.props);
       this.setState({
         options: this.props.updateItem.options,
         quantity: this.props.updateItem.quantity,
@@ -72,7 +72,7 @@ class OrderItemModal extends Component {
     const newChecked = [...this.state.extra_ingredients];
     let newPrice = this.state.extraPrice;
 
-    console.log(ingredient.name);
+    // console.log(ingredient.name);
     if (currentIndex === -1) {
       newChecked.push(ingredient.name);
       newPrice += ingredient.price;
@@ -234,18 +234,20 @@ class OrderItemModal extends Component {
       >
         <Paper elevation={0}>
           <Grid container>
-            <Grid xs={10} item>
-              {this.props.item.name}
-              <br />
-              {/* {this.props.item.description} */}
+            <Grid item lg={9} md={9} sm={6} xs={6}>
+              <Typography>{this.props.item.name}</Typography>
             </Grid>
             {/* <Grid item></Grid> */}
-            <Grid item xs={2} className="closeButtonCol">
+            <Grid item lg={1} md={1} sm={3} xs={3}>
               {/* {item_.price} € */}
-              {this.props.update
-                ? this.state.extraPrice + this.props.updateItem.item.price
-                : this.state.extraPrice + this.props.item.price}{" "}
-              €
+              <Typography>
+                {this.props.update
+                  ? this.state.extraPrice + this.props.updateItem.item.price
+                  : this.state.extraPrice + this.props.item.price}{" "}
+                €
+              </Typography>
+            </Grid>
+            <Grid item lg={2} md={2} sm={3} xs={3}>
               <Button
                 variant="contained"
                 color="secondary"
@@ -291,7 +293,15 @@ class OrderItemModal extends Component {
                               }
                               if (this.props.update && show) {
                                 return (
-                                  <Paper className="form-check" key={index}>
+                                  <Grid
+                                    item
+                                    lg={6}
+                                    md={6}
+                                    sm={12}
+                                    xs={12}
+                                    className="form-check"
+                                    key={index}
+                                  >
                                     <Grid direction="row" container>
                                       <Grid item xs={1}>
                                         <input
@@ -323,32 +333,20 @@ class OrderItemModal extends Component {
                                         </span>
                                       </Grid>
                                     </Grid>
-                                    {/* <input
-                                      className="form-check-input"
-                                      type="radio"
-                                      name={`${choice.name}`}
-                                      value={`${option.name}`}
-                                      id={`${option.name}${index}`}
-                                      onClick={() =>
-                                        this.onChangeChoice(choice.name, option)
-                                      }
-                                      defaultChecked
-                                    />
-                                    <label
-                                      className="form-check-label"
-                                      htmlFor={`${option.name}${index}`}
-                                    >
-                                      {option.name}
-                                    </label>
-                                    <span className="form-check-price">
-                                      {option.price} €
-                                    </span> */}
-                                  </Paper>
+                                  </Grid>
                                 );
                                 // }
                               } else {
                                 return (
-                                  <Paper className="form-check" key={index}>
+                                  <Grid
+                                    item
+                                    lg={6}
+                                    md={6}
+                                    sm={12}
+                                    xs={12}
+                                    className="form-check"
+                                    key={index}
+                                  >
                                     <Grid container>
                                       <Grid item xs={1}>
                                         <input
@@ -365,7 +363,7 @@ class OrderItemModal extends Component {
                                           }
                                         />
                                       </Grid>
-                                      <Grid item xs={9}>
+                                      <Grid item xs={8}>
                                         <label
                                           className="form-check-label"
                                           htmlFor={`${option.name}${index}`}
@@ -373,14 +371,14 @@ class OrderItemModal extends Component {
                                           {option.name}
                                         </label>
                                       </Grid>
-                                      <Grid item xs={2}>
+                                      <Grid item xs={3}>
                                         {" "}
                                         <span className="form-check-price">
                                           {option.price} €
                                         </span>
                                       </Grid>
                                     </Grid>
-                                  </Paper>
+                                  </Grid>
                                 );
                               }
                             })
@@ -415,107 +413,114 @@ class OrderItemModal extends Component {
                                   const labelId = `ingredient-item-${ingredient.name}`;
                                   if (ingredient.available) {
                                     return (
-                                      <ListItem
-                                        key={index}
-                                        role={undefined}
-                                        dense
-                                        className="item-modal-ingredient-li"
-                                        // style={{ maxWidth: "50%", minWidth: "50%" }}
-                                        button
-                                        onClick={() =>
-                                          this.handleToggle(ingredient)
-                                        }
-                                      >
-                                        <ListItemIcon style={{ width: "100%" }}>
-                                          <Checkbox
-                                            edge="start"
-                                            checked={
-                                              this.state.extra_ingredients.indexOf(
-                                                ingredient.name
-                                              ) !== -1
-                                            }
-                                            tabIndex={-1}
-                                            disableRipple
-                                            inputProps={{
-                                              "aria-labelledby": labelId,
-                                            }}
-                                          />
-                                          <ListItemText
-                                            id={labelId}
-                                            primary={
-                                              <Typography
-                                                type="body2"
-                                                style={{
-                                                  color: "black",
-                                                  textAlgin: "center",
-                                                }}
-                                              >
-                                                {ingredient.name}
-                                              </Typography>
-                                            }
-                                          />
-                                          <ListItemText
-                                            id={labelId}
-                                            primary={
-                                              <Typography
-                                                type="subtitle1"
-                                                style={{
-                                                  color: "black",
-                                                  textAlign: "right",
-                                                }}
-                                              >
-                                                {ingredient.price} €
-                                              </Typography>
-                                            }
-                                          />
-                                        </ListItemIcon>
-                                      </ListItem>
+                                      <Grid item xs={12} sm={12} md={6} lg={6}>
+                                        <ListItem
+                                          key={index}
+                                          role={undefined}
+                                          dense
+                                          // className="item-modal-ingredient-li"
+                                          button
+                                          onClick={() =>
+                                            this.handleToggle(ingredient)
+                                          }
+                                        >
+                                          <ListItemIcon
+                                            style={{ width: "100%" }}
+                                          >
+                                            <Checkbox
+                                              edge="start"
+                                              checked={
+                                                this.state.extra_ingredients.indexOf(
+                                                  ingredient.name
+                                                ) !== -1
+                                              }
+                                              tabIndex={-1}
+                                              disableRipple
+                                              inputProps={{
+                                                "aria-labelledby": labelId,
+                                              }}
+                                            />
+                                            <ListItemText
+                                              id={labelId}
+                                              primary={
+                                                <Typography
+                                                  type="body2"
+                                                  style={{
+                                                    color: "black",
+                                                    textAlgin: "left",
+                                                  }}
+                                                >
+                                                  {ingredient.name}
+                                                </Typography>
+                                              }
+                                            />
+                                            <ListItemText
+                                              id={labelId}
+                                              primary={
+                                                <Typography
+                                                  type="subtitle1"
+                                                  style={{
+                                                    color: "black",
+                                                    textAlign: "right",
+                                                  }}
+                                                >
+                                                  {ingredient.price}€
+                                                </Typography>
+                                              }
+                                            />
+                                          </ListItemIcon>
+                                        </ListItem>
+                                      </Grid>
                                     );
                                   } else {
                                     return (
-                                      <ListItem
-                                        key={index}
-                                        role={undefined}
-                                        dense
-                                        disabled
-                                        className="item-modal-ingredient-li"
-                                        // style={{ maxWidth: "50%", minWidth: "50%" }}
-                                        button
-                                        onClick={() =>
-                                          this.handleToggle(ingredient)
-                                        }
-                                      >
-                                        <ListItemIcon style={{ width: "100%" }}>
-                                          <ListItemText
-                                            id={labelId}
-                                            primary={
-                                              <Typography
-                                                type="body2"
-                                                style={{
-                                                  color: "black",
-                                                  textAlgin: "center",
-                                                }}
-                                              >
-                                                {ingredient.name}
-                                              </Typography>
-                                            }
-                                          />
-                                          <ListItemText
-                                            id={labelId}
-                                            primary={
-                                              <Typography
-                                                type="subtitle1"
-                                                style={{
-                                                  color: "black",
-                                                  textAlign: "right",
-                                                }}
-                                              >
-                                                {ingredient.price} €
-                                              </Typography>
-                                            }
-                                          />
-                                        </ListItemIcon>
-                                      </ListItem>
+                                      <Grid item xs={12} sm={12} md={6} lg={6}>
+                                        <ListItem
+                                          key={index}
+                                          role={undefined}
+                                          dense
+                                          disabled
+                                          // className="item-modal-ingredient-li"
+                                          // style={{ maxWidth: "50%", minWidth: "50%" }}
+                                          button
+                                          onClick={() =>
+                                            this.handleToggle(ingredient)
+                                          }
+                                        >
+                                          <ListItemIcon
+                                            style={{ width: "100%" }}
+                                          >
+                                            <ListItemText
+                                              id={labelId}
+                                              primary={
+                                                <Typography
+                                                  type="body2"
+                                                  style={{
+                                                    color: "black",
+                                                    textAlgin: "center",
+                                                  }}
+                                                >
+                                                  {ingredient.name}
+                                                </Typography>
+                                              }
+                                            />
+                                            <ListItemText
+                                              id={labelId}
+                                              primary={
+                                                <Typography
+                                                  type="subtitle1"
+                                                  style={{
+                                                    color: "black",
+                                                    textAlign: "right",
+                                                  }}
+                                                >
+                                                  {ingredient.price} €
+                                                </Typography>
+                                              }
+                                            />
+                                          </ListItemIcon>
+                                        </ListItem>
+                                      </Grid>
                                     );
                                   }
                                 })}
@@ -546,34 +551,40 @@ class OrderItemModal extends Component {
           </Grid>
           <Divider />
           <Grid container style={{ marginTop: "2" }}>
-            <Grid item xs={1}></Grid>
-            <Grid item xs={3}>
+            <Grid item lg={1} md={1} sm={12}></Grid>
+            <Grid item lg={3} md={3} sm={12} xs={12}>
               <Grid container>
-                <IconButton
-                  // variant="outline-danger"
-                  className="minPlusButton"
-                  color="primary"
-                  variant="contained"
-                  aria-label="remove"
-                  onClick={() => this.changeQuantity(false)}
-                >
-                  <RemoveIcon fontSize="small" />
-                </IconButton>
-                <span>{this.state.quantity}</span>
-                <IconButton
-                  // variant="outline-success"
-                  className="minPlusButton"
-                  color="primary"
-                  aria-label="add"
-                  // size="small"
-                  // variant="contained"
-                  onClick={() => this.changeQuantity(true)}
-                >
-                  <AddIcon fontSize="small" />
-                </IconButton>
+                <Grid item xs={4}>
+                  <IconButton
+                    // variant="outline-danger"
+                    className="minPlusButton"
+                    color="primary"
+                    variant="contained"
+                    aria-label="remove"
+                    onClick={() => this.changeQuantity(false)}
+                  >
+                    <RemoveIcon fontSize="small" />
+                  </IconButton>
+                </Grid>
+                <Grid item xs={4}>
+                  <span>{this.state.quantity}</span>
+                </Grid>
+                <Grid item xs={4}>
+                  <IconButton
+                    // variant="outline-success"
+                    className="minPlusButton"
+                    color="primary"
+                    aria-label="add"
+                    // size="small"
+                    // variant="contained"
+                    onClick={() => this.changeQuantity(true)}
+                  >
+                    <AddIcon fontSize="small" />
+                  </IconButton>
+                </Grid>
               </Grid>
             </Grid>
-            <Grid item xs={4}>
+            <Grid item lg={4} md={4} sm={12} xs={12}>
               <Button
                 color="primary"
                 variant="contained"

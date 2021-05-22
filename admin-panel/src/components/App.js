@@ -40,7 +40,7 @@ import LogRegModal from "./Modals/LogRegModal";
 // import { Provider as AlertProvider } from "react-alert";
 // import AlertTemplate from "react-alert-template-basic";
 
-import { Container } from "react-bootstrap";
+// import { Container } from "react-bootstrap";
 import UserOrders from "./Sections/Users/UserOrders";
 import UserAddress from "./Sections/Users/UserAddress";
 import UserRatings from "./Sections/Users/UserRatings";
@@ -54,7 +54,7 @@ import NotFound from "./Layout/NotFound";
 import SingleChoicePage from "./Sections/View/Choices/SingleChoicePage";
 import TextPage from "./Sections/Common/TextPage";
 import AllComents from "./Sections/Admin/Comments/AllComents";
-
+import { Container } from "@material-ui/core";
 // const alertOptions = {
 //   timeout: 3000,
 //   position: "top center",
@@ -95,7 +95,7 @@ class App extends Component {
         <Header onClose={this.showModal} />
         <LogRegModal onClose={this.showModal} show={this.state.showModal} />
         {/* <AlertsOverlay /> */}
-        <Container fluid id="Panel">
+        <Container id="Panel">
           <Switch>
             {/* {routes.map((route, i) => (
                   <RouteWithSubRoutes key={i} {...route} />

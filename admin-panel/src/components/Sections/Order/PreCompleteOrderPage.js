@@ -524,13 +524,15 @@ class PreCompleteOrderPage extends Component {
                 <div className="pre-order-col-subdiv">
                   <span>Σύνολο: {this.props.orderReducer.totalPrice} €</span>
                   <br />
-                  <button
+                  <Button
                     className="complete-order-button"
+                    variant="contained"
+                    color="primary"
                     type="submit"
                     onClick={this.sendOrder}
                   >
                     Αποστολή{" "}
-                  </button>
+                  </Button>
                 </div>
                 <div className="pre-order-col-subdiv">
                   <List className="pre-order-item-list">

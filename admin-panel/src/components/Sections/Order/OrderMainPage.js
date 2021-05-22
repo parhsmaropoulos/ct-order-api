@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Card, Col, ListGroup, Row } from "react-bootstrap";
+import { Card, Col, ListGroup, Row, ThemeProvider } from "react-bootstrap";
 import { connect } from "react-redux";
 import "../../../css/Pages/orderpage.css";
 import OrderItemModal from "../../Modals/OrderItemModal";
@@ -22,14 +22,26 @@ import Autocomplete from "@material-ui/lab/Autocomplete";
 import {
   Button,
   CircularProgress,
+  Container,
+  createMuiTheme,
   Grid,
+  Hidden,
   IconButton,
   TextField,
   Typography,
 } from "@material-ui/core";
+import { orange } from "@material-ui/core/colors";
 // import { Link } from "react-router-dom";
 
 var _ = require("lodash");
+
+const customTheme = createMuiTheme({
+  palette: {
+    primary: {
+      main: orange[500],
+    },
+  },
+});
 
 class OrderMainPage extends Component {
   constructor(props) {
@@ -94,7 +106,7 @@ class OrderMainPage extends Component {
   };
 
   updateCart = (item, quantity, index) => {
-    console.log(item, quantity);
+    // console.log(item, quantity);
     const order_item = {
       item: item.item,
       options: item.options,
@@ -234,7 +246,7 @@ class OrderMainPage extends Component {
             selectedCategory: product.category,
           },
           () => {
-            console.log(this.state.selectedCategory);
+            // console.log(this.state.selectedCategory);
           }
         );
     }
@@ -303,52 +315,62 @@ class OrderMainPage extends Component {
       );
     } else {
       return (
-        <div id="orderMainPageContainer">
-          {alertModal}
-          <Row className="orderMainPageRow">
-            <Col className="categoriesListCol">
-              <div className="categoriesList">
-                <ListGroup className="categoriesListGroup">
-                  {this.props.categories.map((categ, index) => {
-                    let selected = false;
-                    if (this.state.selectedCategory === categ.name) {
-                      selected = true;
-                    }
-                    return (
-                      <ListGroup.Item
-                        key={index}
-                        onClick={() => this.changeCategory(categ.name)}
-                        active={selected}
-                      >
-                        {categ.name}
-                      </ListGroup.Item>
-                    );
-                  })}
-                </ListGroup>
-              </div>
-            </Col>
-            <Col className="productList" xs={4} md={6}>
-              <div className="search-bar-custom">
+        // <div id="orderMainPageContainer">
+        <Container>
+          <ThemeProvider theme={customTheme}>
+            <Grid spacing={1} container style={{ minHeight: "70vh" }}>
+              {alertModal}
+              {/* <Row className="orderMainPageRow"> */}
+              {/* ############## CATEGORIES ################## */}
+              <Hidden mdDown>
+                <Grid item lg={3} className="categoriesListCol">
+                  <div className="categoriesList">
+                    <ListGroup className="categoriesListGroup">
+                      {this.props.categories.map((categ, index) => {
+                        let selected = false;
+                        if (this.state.selectedCategory === categ.name) {
+                          selected = true;
+                        }
+                        return (
+                          <ListGroup.Item
+                            key={index}
+                            onClick={() => this.changeCategory(categ.name)}
+                            active={selected}
+                          >
+                            {categ.name}
+                          </ListGroup.Item>
+                        );
+                      })}
+                    </ListGroup>
+                  </div>
+                </Grid>
+              </Hidden>
+              {/* ################### PRODUCTS ############### */}
+              <Grid
+                item
+                lg={6}
+                md={12}
+                sm={12}
+                style={{ width: "100%" }}
+                className="productList"
+              >
                 {/* <SearchBar /> */}
                 <Autocomplete
                   id="search-product"
                   options={this.props.products}
                   getOptionLabel={(option) => option.name}
-                  disableClearable
+                  // disableClearables={false}
                   autoComplete
                   onClose={(e) => this.showSearchResults(e)}
                   renderOption={(option, index) => (
                     <Typography
                       noWrap
-                      onClick={(e) => console.log(e)}
+                      // onClick={(e) => console.log(e)}
                       key={index}
                     >
                       {option.name}
                     </Typography>
                   )}
-                  // <NavLink to={`/search/${option.name}`}>
-                  //   {option.name}
-                  // </NavLink>
                   renderInput={(params) => (
                     <TextField
                       {...params}
@@ -358,248 +380,278 @@ class OrderMainPage extends Component {
                     />
                   )}
                 />
-              </div>
-              <ListGroup variant="flush">
-                {this.props.products.map((item, index) => {
-                  if (item.category === this.state.selectedCategory) {
-                    if (item.available === false) {
-                      return (
-                        <ListGroup.Item key={index} disabled id={item.name}>
-                          <Card border="light">
-                            <Row className="itemCardRow">
-                              {item.image === "" ? (
-                                <Col sm={4} className="itemCardImageCol"></Col>
-                              ) : (
-                                <Col sm={4} className="itemCardImageCol">
-                                  <Card.Img
-                                    // src={`http:://localhost:8080/assets/images/${item.image}`}
-                                    src={`http://localhost:8080/assets/images/${item.image}`}
-                                    className="itemCardImage"
-                                  ></Card.Img>{" "}
-                                </Col>
-                              )}
-                              <Col sm={8}>
-                                <Card.Body>
-                                  <Card.Title className="item-unavailable">
-                                    {item.name}
-                                  </Card.Title>
-                                  <Card.Subtitle className="text-muted">
-                                    {/* {item.description} */}
-                                    {item.ingredients &&
-                                    item.ingredients.length > 0
-                                      ? item.ingredients.join()
-                                      : item.description}
-                                  </Card.Subtitle>
-                                  <Card.Text>{item.price} €</Card.Text>
-                                </Card.Body>
-                              </Col>
-                            </Row>
-                          </Card>
-                        </ListGroup.Item>
-                      );
-                    } else {
-                      return (
-                        <ListGroup.Item
-                          key={index}
-                          onClick={() => this.showModal(item, false, false, 0)}
-                          id={item.name}
-                        >
-                          <Card border="light">
-                            <Row className="itemCardRow">
-                              {item.image === "" ? (
-                                <Col sm={4} className="itemCardImageCol"></Col>
-                              ) : (
-                                <Col sm={4} className="itemCardImageCol">
-                                  <Card.Img
-                                    src={`http://localhost:8080/assets/images/${item.image}`}
-                                    className="itemCardImage"
-                                  ></Card.Img>{" "}
-                                </Col>
-                              )}
-                              <Col sm={8}>
-                                <Card.Body>
-                                  <Card.Title>{item.name}</Card.Title>
-                                  <Card.Subtitle className="text-muted">
-                                    {item.ingredients &&
-                                    item.ingredients.length > 0
-                                      ? item.ingredients.join()
-                                      : item.description}
-                                  </Card.Subtitle>
-                                  <Card.Text>{item.price} €</Card.Text>
-                                </Card.Body>
-                              </Col>
-                            </Row>
-                          </Card>
-                        </ListGroup.Item>
-                      );
-                    }
-                  } else {
-                    return <span key={index}></span>;
-                  }
-                })}
-              </ListGroup>
-            </Col>
-            {modal}
-            <Col className="cart">
-              <div className="stickyCard">
-                <Card>
-                  <Card.Body className="cardBody">
-                    <Card.Title>Το καλάθι σου</Card.Title>
-                    <div className="cartList">
-                      {this.state.cart.length > 0 ? (
-                        <ListGroup>
-                          {this.state.cart.map((order_item, index) => {
-                            // console.log(order_item);
-                            return (
-                              <ListGroup.Item key={index} className="cardItem">
-                                <Card border="light">
-                                  <Card.Header
-                                    style={{ backgroundColor: "white" }}
-                                  >
-                                    <Row className="headerItem">
-                                      <div
-                                        onClick={() =>
-                                          this.showModal(
-                                            order_item,
-                                            true,
-                                            false,
-                                            index
-                                          )
-                                        }
-                                        className="cartItemName"
-                                      >
-                                        {order_item.item.name}
-                                      </div>
-                                      <div className="cartItemPrice">
-                                        {order_item.totalPrice /
-                                          order_item.quantity}{" "}
-                                        €
-                                      </div>
-                                    </Row>
-                                  </Card.Header>
+                <ListGroup variant="flush">
+                  {this.props.products.map((item, index) => {
+                    if (item.category === this.state.selectedCategory) {
+                      if (item.available === false) {
+                        return (
+                          <ListGroup.Item key={index} disabled id={item.name}>
+                            <Card border="light">
+                              <Row className="itemCardRow">
+                                {item.image === "" ? (
+                                  <Col
+                                    sm={4}
+                                    className="itemCardImageCol"
+                                  ></Col>
+                                ) : (
+                                  <Col sm={4} className="itemCardImageCol">
+                                    <Card.Img
+                                      // src={`http:://localhost:8080/assets/images/${item.image}`}
+                                      src={`http://localhost:8080/assets/images/${item.image}`}
+                                      className="itemCardImage"
+                                    ></Card.Img>{" "}
+                                  </Col>
+                                )}
+                                <Col sm={8}>
                                   <Card.Body>
-                                    <Row className="bodyItem">
-                                      {order_item.optionAnswers.length > 0 ? (
-                                        <div className="cartItemOptions">
-                                          <p>
-                                            {order_item.optionAnswers.join() +
-                                              `,${order_item.comment}`}
-                                          </p>
-                                        </div>
-                                      ) : (
-                                        <div className="cartItemOptions">
-                                          {order_item.comment}
-                                        </div>
-                                      )}
-                                      <ul className="ingredientCartList">
-                                        {order_item.extra_ingredients.length >
-                                        0 ? (
-                                          order_item.extra_ingredients.map(
-                                            (ingredient, index) => {
-                                              return (
-                                                <li
-                                                  key={index}
-                                                  style={{ textAlign: "left" }}
-                                                >
-                                                  + {ingredient}
-                                                </li>
-                                              );
-                                            }
-                                          )
-                                        ) : (
-                                          <span></span>
-                                        )}
-                                      </ul>
-                                    </Row>
+                                    <Card.Title className="item-unavailable">
+                                      {item.name}
+                                    </Card.Title>
+                                    <Card.Subtitle className="text-muted">
+                                      {/* {item.description} */}
+                                      {item.ingredients &&
+                                      item.ingredients.length > 0
+                                        ? item.ingredients.join()
+                                        : item.description}
+                                    </Card.Subtitle>
+                                    <Card.Text>{item.price} €</Card.Text>
                                   </Card.Body>
-                                  <Card.Footer
-                                    style={{ backgroundColor: "white" }}
-                                  >
-                                    <Grid direction="row" container>
-                                      <Grid item justify="flex-start" xs={9}>
-                                        <IconButton
-                                          className="minPlusButton"
-                                          color="primary"
-                                          variant="contained"
-                                          aria-label="remove"
+                                </Col>
+                              </Row>
+                            </Card>
+                          </ListGroup.Item>
+                        );
+                      } else {
+                        return (
+                          <ListGroup.Item
+                            key={index}
+                            onClick={() =>
+                              this.showModal(item, false, false, 0)
+                            }
+                            id={item.name}
+                          >
+                            <Card border="light">
+                              <Row className="itemCardRow">
+                                <Hidden mdDown>
+                                  {item.image === "" ? (
+                                    <Col
+                                      sm={4}
+                                      className="itemCardImageCol"
+                                    ></Col>
+                                  ) : (
+                                    <Col sm={4} className="itemCardImageCol">
+                                      <Card.Img
+                                        src={`http://localhost:8080/assets/images/${item.image}`}
+                                        className="itemCardImage"
+                                      ></Card.Img>{" "}
+                                    </Col>
+                                  )}
+                                </Hidden>
+                                <Col sm={8}>
+                                  <Card.Body>
+                                    <Card.Title>{item.name}</Card.Title>
+                                    <Card.Subtitle className="text-muted">
+                                      {item.ingredients &&
+                                      item.ingredients.length > 0
+                                        ? item.ingredients.join()
+                                        : item.description}
+                                    </Card.Subtitle>
+                                    <Card.Text>{item.price} €</Card.Text>
+                                  </Card.Body>
+                                </Col>
+                              </Row>
+                            </Card>
+                          </ListGroup.Item>
+                        );
+                      }
+                    } else {
+                      return <span key={index}></span>;
+                    }
+                  })}
+                </ListGroup>
+              </Grid>
+              {modal}
+              {/* ################### CART ############### */}
+
+              <Grid
+                item
+                lg={3}
+                md={12}
+                sm={12}
+                style={{ width: "100%" }}
+                className="cart"
+              >
+                <div className="stickyCard">
+                  <Card>
+                    <Card.Body className="cardBody">
+                      <Card.Title>Το καλάθι σου</Card.Title>
+                      <div className="cartList">
+                        {this.state.cart.length > 0 ? (
+                          <ListGroup>
+                            {this.state.cart.map((order_item, index) => {
+                              // console.log(order_item);
+                              return (
+                                <ListGroup.Item
+                                  key={index}
+                                  className="cardItem"
+                                >
+                                  <Card border="light">
+                                    <Card.Header
+                                      style={{ backgroundColor: "white" }}
+                                    >
+                                      <Row className="headerItem">
+                                        <div
                                           onClick={() =>
-                                            this.changeQuantity(false, index)
-                                          }
-                                        >
-                                          <RemoveIcon fontSize="small" />
-                                        </IconButton>
-                                        <span>{order_item.quantity}</span>
-                                        <IconButton
-                                          className="minPlusButton"
-                                          color="primary"
-                                          variant="contained"
-                                          aria-label="add"
-                                          onClick={() =>
-                                            this.changeQuantity(true, index)
-                                          }
-                                        >
-                                          <AddIcon fontSize="small" />
-                                        </IconButton>
-                                      </Grid>
-                                      <Grid item xs={3}>
-                                        {/* <div className="removeButtonCol"> */}
-                                        <IconButton
-                                          className="removeButton minPlusButton"
-                                          color="secondary"
-                                          variant="contained"
-                                          aria-label="remove"
-                                          onClick={() =>
-                                            this.removeFromCart(
-                                              index,
-                                              order_item
+                                            this.showModal(
+                                              order_item,
+                                              true,
+                                              false,
+                                              index
                                             )
                                           }
+                                          className="cartItemName"
                                         >
-                                          <ClearIcon fontSize="small" />
-                                        </IconButton>
-                                        {/* </div> */}
+                                          {order_item.item.name}
+                                        </div>
+                                        <div className="cartItemPrice">
+                                          {order_item.totalPrice /
+                                            order_item.quantity}{" "}
+                                          €
+                                        </div>
+                                      </Row>
+                                    </Card.Header>
+                                    <Card.Body>
+                                      <Row className="bodyItem">
+                                        {order_item.optionAnswers.length > 0 ? (
+                                          <div className="cartItemOptions">
+                                            <p>
+                                              {order_item.optionAnswers.join() +
+                                                `,${order_item.comment}`}
+                                            </p>
+                                          </div>
+                                        ) : (
+                                          <div className="cartItemOptions">
+                                            {order_item.comment}
+                                          </div>
+                                        )}
+                                        <ul className="ingredientCartList">
+                                          {order_item.extra_ingredients.length >
+                                          0 ? (
+                                            order_item.extra_ingredients.map(
+                                              (ingredient, index) => {
+                                                return (
+                                                  <li
+                                                    key={index}
+                                                    style={{
+                                                      textAlign: "left",
+                                                    }}
+                                                  >
+                                                    + {ingredient}
+                                                  </li>
+                                                );
+                                              }
+                                            )
+                                          ) : (
+                                            <span></span>
+                                          )}
+                                        </ul>
+                                      </Row>
+                                    </Card.Body>
+                                    <Card.Footer
+                                      style={{ backgroundColor: "white" }}
+                                    >
+                                      <Grid direction="row" container>
+                                        <Grid item xs={9}>
+                                          <IconButton
+                                            className="minPlusButton"
+                                            color="primary"
+                                            variant="contained"
+                                            aria-label="remove"
+                                            onClick={() =>
+                                              this.changeQuantity(false, index)
+                                            }
+                                          >
+                                            <RemoveIcon fontSize="small" />
+                                          </IconButton>
+                                          <span>{order_item.quantity}</span>
+                                          <IconButton
+                                            className="minPlusButton"
+                                            color="primary"
+                                            variant="contained"
+                                            aria-label="add"
+                                            onClick={() =>
+                                              this.changeQuantity(true, index)
+                                            }
+                                          >
+                                            <AddIcon fontSize="small" />
+                                          </IconButton>
+                                        </Grid>
+                                        <Grid item xs={3}>
+                                          {/* <div className="removeButtonCol"> */}
+                                          <IconButton
+                                            className="removeButton minPlusButton"
+                                            color="secondary"
+                                            variant="contained"
+                                            aria-label="remove"
+                                            onClick={() =>
+                                              this.removeFromCart(
+                                                index,
+                                                order_item
+                                              )
+                                            }
+                                          >
+                                            <ClearIcon fontSize="small" />
+                                          </IconButton>
+                                          {/* </div> */}
+                                        </Grid>
                                       </Grid>
-                                    </Grid>
-                                  </Card.Footer>
-                                </Card>
-                              </ListGroup.Item>
-                            );
-                          })}
-                        </ListGroup>
-                      ) : (
-                        <Card.Text>Το καλάθι είναι άδειο</Card.Text>
-                      )}
-                    </div>
-                    <hr />
-                    <Row>
-                      <Col>
-                        <Card.Text>Σύνολο</Card.Text>
-                      </Col>
-                      <Col>
-                        <Card.Text> {this.state.totalPrice} €</Card.Text>
-                      </Col>
-                    </Row>
-                    <Button
-                      variant="primary"
-                      className="cartButton"
-                      onClick={this.continueOrder}
-                    >
-                      Συνέχεια
-                      {/* <Link to="/order/pre_complete">Συνέχεια</Link> */}
-                    </Button>
-                    <br />
-                    <Card.Text
-                      style={{ textDecoration: "underline", cursor: "pointer" }}
-                      onClick={this.clearCart}
-                    >
-                      Άδειασμα
-                    </Card.Text>
-                  </Card.Body>
-                </Card>
-              </div>
-            </Col>
-          </Row>
-        </div>
+                                    </Card.Footer>
+                                  </Card>
+                                </ListGroup.Item>
+                              );
+                            })}
+                          </ListGroup>
+                        ) : (
+                          <Card.Text>Το καλάθι είναι άδειο</Card.Text>
+                        )}
+                      </div>
+                      <hr />
+                      <Row>
+                        <Col>
+                          <Card.Text>Σύνολο</Card.Text>
+                        </Col>
+                        <Col>
+                          <Card.Text> {this.state.totalPrice} €</Card.Text>
+                        </Col>
+                      </Row>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        className="cartButton"
+                        onClick={this.continueOrder}
+                      >
+                        Συνέχεια
+                        {/* <Link to="/order/pre_complete">Συνέχεια</Link> */}
+                      </Button>
+                      <br />
+                      <Card.Text
+                        style={{
+                          textDecoration: "underline",
+                          cursor: "pointer",
+                        }}
+                        onClick={this.clearCart}
+                      >
+                        Άδειασμα
+                      </Card.Text>
+                    </Card.Body>
+                  </Card>
+                </div>
+              </Grid>
+              {/* </Row> */}
+              {/* </div> */}
+            </Grid>
+          </ThemeProvider>
+        </Container>
       );
     }
   }

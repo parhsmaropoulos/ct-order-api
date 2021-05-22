@@ -252,7 +252,7 @@
   display: flex;
   flex-flow: column;
   margin: 1px;
-  border: 1px solid black;
+  /* border: 1px solid black; */
 }
 .form-row {
   flex: 1;
@@ -282,13 +282,13 @@
 
 .pre-order-user-details {
   /* height: auto; */
-  background-color: cadetblue;
+  /* background-color: cadetblue; */
   flex: 1.5;
 }
 
 .pre-order-payment-details {
   /* height: auto; */
-  background-color: chartreuse;
+  /* background-color: chartreuse; */
 }
 
 .search-bar-custom {
@@ -314,6 +314,7 @@
   max-height: 50vh;
   overflow-y: auto;
   border: 1px solid black;
+  border-radius: 0.6rem;
   color: black;
 }
 

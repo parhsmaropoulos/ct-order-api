@@ -4,14 +4,14 @@
  */
 
 import React, { Component } from "react";
-import { Col, Container, Row, Image } from "react-bootstrap";
+import { Image } from "react-bootstrap";
 import { connect } from "react-redux";
 import "../../css/Layout/footer.css";
 import logo from "../../assets/Images/transparent-logo.png";
 import { ArrowRightCircle } from "react-bootstrap-icons";
 import { SocialIcon } from "react-social-icons";
 import PropTypes from "prop-types";
-import { FormHelperText, TextField } from "@material-ui/core";
+import { FormHelperText, Grid, TextField } from "@material-ui/core";
 import { subscribe } from "../../actions/user";
 import { Link } from "react-router-dom";
 
@@ -50,7 +50,8 @@ class Footer extends Component {
    */
 
   onSubscribe = () => {
-    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    const re =
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     if (re.test(this.state.newsletterEmail)) {
       document.getElementById("inputNewsLetterHelperText").style.display =
         "none";
@@ -72,107 +73,106 @@ class Footer extends Component {
 
   render() {
     return (
-      <Container fluid={true} className="footerContainer">
+      <Grid container style={{ flexGrow: 1 }} className="footerRow">
         {/* 
             ########################## Upper Row ################################
           */}
-        <Row id="footerRow">
-          {/* 
+        {/* 
             ########################## Logo Column ################################
           */}
-          <Col className="logoCol">
-            <Image src={logo} className="headerLogo" />
-            <Row>
-              <Col>
-                <SocialIcon
-                  style={{ height: 40, width: 40 }}
-                  url="https://www.facebook.com/coffeetwistt"
-                />
-              </Col>
-              <Col>
-                <SocialIcon
-                  style={{ height: 40, width: 40 }}
-                  url="https://instagram.com/coffee_twist_"
-                />
-              </Col>
-            </Row>
-          </Col>
-          {/* 
+        <Grid item lg={1} md={false} sm={false}></Grid>
+        <Grid item lg={2} md={3} sm={12}>
+          <Image src={logo} className="headerLogo" />
+          <br />
+          <SocialIcon
+            style={{ height: 40, width: 40, marginRight: 10 }}
+            url="https://www.facebook.com/coffeetwistt"
+          />
+          <SocialIcon
+            style={{ height: 40, width: 40, marginLeft: 20 }}
+            url="https://instagram.com/coffee_twist_"
+          />
+        </Grid>
+        {/* 
             ########################## News Letter Column ################################
           */}
-          <Col>
-            <div className="newsLetter">
-              <div className="newsLetterTitle">Εγγραφή Newsletter </div>
-              <div className="newsLetterInput">
-                <TextField
-                  type="email"
-                  name="newsletterEmail"
-                  id="inputNewsLetter"
-                  placeholder="Πληκτρολογήστε το email σας εδώ."
-                  onChange={this.onChange}
-                  helperText=""
-                />{" "}
-                <FormHelperText
-                  style={{ display: "none", textAlign: "center", color: "red" }}
-                  id="inputNewsLetterHelperText"
-                >
-                  Wrong email
-                </FormHelperText>
-                <ArrowRightCircle onClick={this.onSubscribe} />
-              </div>
+        <Grid item lg={3} md={3} sm={12}>
+          <div className="newsLetter">
+            <div className="newsLetterTitle">Εγγραφή Newsletter </div>
+            <div className="newsLetterInput">
+              <TextField
+                type="email"
+                name="newsletterEmail"
+                id="inputNewsLetter"
+                placeholder="Πληκτρολογήστε το email σας εδώ."
+                onChange={this.onChange}
+                helperText=""
+              />{" "}
+              <FormHelperText
+                style={{
+                  display: "none",
+                  textAlign: "center",
+                  color: "red",
+                }}
+                id="inputNewsLetterHelperText"
+              >
+                Wrong email
+              </FormHelperText>
+              <ArrowRightCircle onClick={this.onSubscribe} />
             </div>
-          </Col>
-          {/* 
+          </div>
+        </Grid>
+        {/* 
             ########################## First Menu Column ################################
           */}
-          <Col className="menu1Col">
-            <ul>
-              <Link to="/document/oroi_xrisis">
-                <li>Όροι χρήσης</li>
-              </Link>
-              <Link to="/document/epikoinwnia">
-                <li>Επικοινωνία</li>
-              </Link>
-              <Link to="/document/how_it_works">
-                <li>Πως λειτουργεί</li>
-              </Link>
-              <Link to="/document/who_we_are">
-                <li>Ποιοί Είμαστε</li>
-              </Link>
-            </ul>
-          </Col>
-          {/* 
+        <Grid item lg={3} md={3} sm={12}>
+          <ul>
+            <Link to="/document/oroi_xrisis">
+              <li>Όροι χρήσης</li>
+            </Link>
+            <Link to="/document/epikoinwnia">
+              <li>Επικοινωνία</li>
+            </Link>
+            <Link to="/document/how_it_works">
+              <li>Πως λειτουργεί</li>
+            </Link>
+            <Link to="/document/who_we_are">
+              <li>Ποιοί Είμαστε</li>
+            </Link>
+          </ul>
+        </Grid>
+        {/* 
             ########################## Second Menu Column ################################
           */}
-          <Col className="menu2Col">
-            <ul>
-              <Link to="/document/protection">
-                <li>Πολιτική Προστασίας</li>
-              </Link>
-              <Link to="/document/coockies">
-                <li>Πολιτική cookies</li>
-              </Link>
-              <Link to="/document/ratings">
-                <li>Πολιτική Αξιολόγησης</li>
-              </Link>
-              <Link to="/document/privacy_policy">
-                <li>Πολιτική Απορρήτου</li>
-              </Link>
-            </ul>
-          </Col>
-        </Row>
+        <Grid item lg={3} md={3} sm={12}>
+          <ul>
+            <Link to="/document/protection">
+              <li>Πολιτική Προστασίας</li>
+            </Link>
+            <Link to="/document/coockies">
+              <li>Πολιτική cookies</li>
+            </Link>
+            <Link to="/document/ratings">
+              <li>Πολιτική Αξιολόγησης</li>
+            </Link>
+            <Link to="/document/privacy_policy">
+              <li>Πολιτική Απορρήτου</li>
+            </Link>
+          </ul>
+        </Grid>
+
         {/* 
             ########################## Bottom Row ################################
           */}
-        <Row className="subFooterRow">
+        <Grid item xs={12} className="subFooterRow">
           <div className="subFooterContent">
             <p className="subFooterText">
               (c) 2021 coffeetwist Με επιφύλαξη όλων των δικαιωμάτων.Όροι
               χρήσης, πολιτική ιδιωτικού απορρήτου.
             </p>
           </div>
-        </Row>
-      </Container>
+        </Grid>
+      </Grid>
     );
   }
 }

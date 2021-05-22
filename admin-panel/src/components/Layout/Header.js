@@ -3,16 +3,7 @@
  */
 
 import React, { Component } from "react";
-import {
-  Col,
-  Container,
-  Dropdown,
-  Image,
-  Nav,
-  Navbar,
-  NavDropdown,
-  Row,
-} from "react-bootstrap";
+import { Image, Nav, Navbar } from "react-bootstrap";
 import { PersonCircle } from "react-bootstrap-icons";
 import { connect } from "react-redux";
 import { logout, refreshToken } from "../../actions/user";
@@ -20,16 +11,28 @@ import PropTypes from "prop-types";
 import "../../css/Layout/header.css";
 import logo from "../../assets/Images/transparent-logo.png";
 import { Link } from "react-router-dom";
+import {
+  Button,
+  ClickAwayListener,
+  Grid,
+  Grow,
+  MenuItem,
+  MenuList,
+  Paper,
+  Popper,
+} from "@material-ui/core";
 
 class Header extends Component {
   constructor(props) {
     super(props);
+    this.myRef = React.createRef();
     this.state = {
       selectedLangeuage: "EN",
       searchText: "",
       focus: false,
       isAuthenticated: "",
       results: [],
+      open: false,
     };
   }
 
@@ -52,6 +55,17 @@ class Header extends Component {
     this.props.logout();
   }
 
+  handleToggle = () => {
+    this.setState({ open: !this.state.open });
+  };
+
+  handleClose = (event) => {
+    if (this.myRef.current && this.myRef.current.contains(event.target)) {
+      return;
+    }
+    this.setState({ open: false });
+  };
+
   render() {
     let autheticated = sessionStorage.getItem("isAuthenticated");
     if (autheticated === "true") {
@@ -63,21 +77,22 @@ class Header extends Component {
       this.props.refreshToken(this.props.refresh_token);
     }
     return (
-      <Container fluid className="headerContainer">
-        <Col>
+      <Grid container>
+        <Grid item xs={1}></Grid>
+        <Grid item xs={2}>
           <Link to="/home">
             <Image src={logo} className="headerLogo" />
           </Link>
-        </Col>
-        <Col xs={6} md={6}>
+        </Grid>
+        <Grid item xs={6} md={6}>
           {/* <SearchBar /> */}
-        </Col>
-        <Col>
+        </Grid>
+        <Grid item xs={2}>
           <Navbar>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
               <Nav className="mr-auto">
-                <NavDropdown
+                {/* <NavDropdown
                   title={this.state.selectedLangeuage}
                   id="basic-nav-dropdown"
                 >
@@ -87,10 +102,69 @@ class Header extends Component {
                   <NavDropdown.Item onSelect={() => this.onChangeLang("EN")}>
                     EN
                   </NavDropdown.Item>
-                </NavDropdown>
+                </NavDropdown> */}
                 {autheticated ? (
-                  <Row style={{ marginLeft: 10 }}>
-                    <Dropdown>
+                  <Grid item xs={3}>
+                    <Button
+                      color="primary"
+                      ref={this.myRef}
+                      aria-controls={
+                        this.state.open ? "menu-list-grow" : undefined
+                      }
+                      aria-haspopup="true"
+                      onClick={this.handleToggle}
+                    >
+                      <PersonCircle />
+                      Profile
+                    </Button>
+                    <Popper
+                      open={this.state.open}
+                      anchorEl={this.myRef.current}
+                      role={undefined}
+                      transition
+                      disablePortal
+                    >
+                      {({ TransitionProps, placement }) => (
+                        <Grow
+                          {...TransitionProps}
+                          style={{
+                            transformOrigin:
+                              placement === "bottom"
+                                ? "center top"
+                                : "center bottom",
+                          }}
+                        >
+                          <Paper>
+                            <ClickAwayListener onClickAway={this.handleClose}>
+                              <MenuList
+                                autoFocusItem={this.state.open}
+                                style={{ zIndex: 10 }}
+                                id="menu-list-grow"
+                              >
+                                <MenuItem onClick={this.handleClose}>
+                                  <Link to="/account">My profile</Link>
+                                </MenuItem>
+                                <MenuItem onClick={this.handleClose}>
+                                  <Link to="/account/orders">My orders</Link>
+                                </MenuItem>
+                                <MenuItem onClick={this.handleClose}>
+                                  <Link to="/account/ratings">My ratings</Link>
+                                </MenuItem>
+                                <MenuItem onClick={this.handleClose}>
+                                  <Link
+                                    to="/home"
+                                    onClick={() => this.logOut()}
+                                  >
+                                    Logout
+                                  </Link>
+                                </MenuItem>
+                              </MenuList>
+                            </ClickAwayListener>
+                          </Paper>
+                        </Grow>
+                      )}
+                    </Popper>
+                    {/* <Dropdown>
                       <Dropdown.Toggle variant="success" id="dropdown-basic">
                         <PersonCircle />
                         Profile
@@ -117,8 +191,8 @@ class Header extends Component {
                           </li>
                         </ul>
                       </Dropdown.Menu>
-                    </Dropdown>
-                  </Row>
+                    </Dropdown> */}
+                  </Grid>
                 ) : (
                   // <Row style={{ marginLeft: 10 }}>
                   <Nav.Link
@@ -132,8 +206,9 @@ class Header extends Component {
               </Nav>
             </Navbar.Collapse>
           </Navbar>
-        </Col>
-      </Container>
+        </Grid>
+        <Grid item xs={1}></Grid>
+      </Grid>
     );
   }
 }
