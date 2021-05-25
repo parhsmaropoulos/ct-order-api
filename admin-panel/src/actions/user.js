@@ -12,7 +12,7 @@
 import axios from "axios";
 import jwt from "jwt-decode";
 import { headers } from "../utils/axiosHeaders";
-import { local_url } from "../utils/util";
+import { current_url, local_url } from "../utils/util";
 import {
   ADMIN_LOADING,
   ADMIN_LOGIN_SUCCESS,
@@ -51,7 +51,7 @@ export const login = (email, password) => (dispatch) => {
   };
 
   axios
-    .post("http://localhost:8080/user/login", data, config)
+    .post(current_url + "user/login", data, config)
     .then((res) => {
       // Decode token
       const token = jwt(res.data.access_token);
@@ -101,7 +101,7 @@ export const admin_login = (email, password) => (dispatch) => {
   };
 
   axios
-    .post("http://localhost:8080/admin/login", data, headers)
+    .post(current_url + "admin/login", data, headers)
     .then((res) => {
       // console.log(data.user);
       // Decode token
@@ -146,7 +146,7 @@ export const refreshToken = (token) => (dispatch) => {
   };
   console.log(data);
   axios
-    .post("http://localhost:8080/token/refresh", data, headers)
+    .post(current_url + "token/refresh", data, headers)
     .then((res) => {
       // Decode token
       const token = jwt(res.data.access_token);
@@ -191,7 +191,7 @@ export const updateUser = (data) => (dispatch) => {
   };
   const body = data;
   axios
-    .put("http://localhost:8080/user/update", body, config)
+    .put(current_url + "user/update", body, config)
     .then((res) => {
       // console.log(res);
       dispatch({
@@ -223,7 +223,7 @@ export const getUser = (id) => (dispatch) => {
   };
 
   axios
-    .get(`http://localhost:8080/user/${id}`, config)
+    .get(`${current_url}user/${id}`, config)
     .then((res) => {
       // console.log(res);
       dispatch({
@@ -247,7 +247,7 @@ export const register = (data) => (dispatch) => {
   // const body = JSON.stringify({ username, email, password1, password2 });
   const body = data;
   axios
-    .post(local_url + "user/register", body, headers)
+    .post(current_url + "user/register", body, headers)
     .then((res) => {
       console.log(res);
       dispatch({
@@ -283,7 +283,7 @@ export const logout = () => (dispatch, getState) => {
     },
   };
   axios
-    .post("http://localhost:8080/user/logout", null, config)
+    .post(current_url + "user/logout", null, config)
     .then((res) => {
       dispatch({
         type: EMPTY_CART,
@@ -310,7 +310,7 @@ export const subscribe = (data) => (dispatch) => {
   // Request Body
   const body = data;
   axios
-    .post("http://localhost:8080/user/subscribe", body, config)
+    .post(current_url + "user/subscribe", body, config)
     .then((res) => {
       console.log(res);
       dispatch({
@@ -341,7 +341,7 @@ export const unsubscribe = (id) => (dispatch) => {
     },
   };
   axios
-    .put(`http://localhost:8080/user/subscribe/${id}`, config)
+    .put(`${current_url}user/subscribe/${id}`, config)
     .then((res) => {
       console.log(res);
       dispatch({

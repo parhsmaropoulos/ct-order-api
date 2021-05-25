@@ -1,6 +1,6 @@
 import axios from "axios";
 import { headers } from "../utils/axiosHeaders";
-import { local_url } from "../utils/util";
+import { current_url, local_url } from "../utils/util";
 import {
   APPROVE_COMMENT,
   GET_COMMENTS,
@@ -13,7 +13,7 @@ import {
 // GET ALL COMMENTS
 export const get_comments = () => (dispatch) => {
   axios
-    .get(local_url + "comments/all")
+    .get(current_url + "comments/all")
     .then((res) => {
       // console.log(res);
       dispatch({
@@ -37,7 +37,7 @@ export const get_comments = () => (dispatch) => {
 // Approve Comment
 export const approve_comment = (id) => (dispatch) => {
   axios
-    .post(`${local_url}comments/approve/${id}`, null, headers)
+    .post(`${current_url}comments/approve/${id}`, null, headers)
     .then((res) => {
       console.log(res);
       dispatch({
@@ -61,7 +61,7 @@ export const approve_comment = (id) => (dispatch) => {
 // Reject Comment
 export const reject_comment = (id) => (dispatch) => {
   axios
-    .post(`http://localhost:8080/admin/reject/${id}`, null, headers)
+    .post(`${current_url}admin/reject/${id}`, null, headers)
     .then((res) => {
       console.log(res);
       dispatch({
@@ -85,7 +85,7 @@ export const reject_comment = (id) => (dispatch) => {
 // Answer Comment
 export const answer_comment = (id, data) => (dispatch) => {
   axios
-    .post(`http://localhost:8080/comments/answer/${id}`, data, headers)
+    .post(`${current_url}comments/answer/${id}`, data, headers)
     .then((res) => {
       console.log(res);
       dispatch({

@@ -11,6 +11,7 @@
 
 import axios from "axios";
 import { headers } from "../utils/axiosHeaders";
+import { current_url } from "../utils/util";
 import {
   ACCEPT_ORDER,
   ADD_ITEM,
@@ -43,7 +44,7 @@ export const send_order = (data) => (dispatch, getState) => {
     },
   };
   axios
-    .post("http://localhost:8080/orders/send_order", body, config)
+    .post(current_url + "orders/send_order", body, config)
     .then((res) => {
       console.log(res);
       SSEdata.id = res.data.order.id;
@@ -51,7 +52,7 @@ export const send_order = (data) => (dispatch, getState) => {
       SSEdata.from = res.data.order.user_id;
       SSEdata.user_details = res.data.user_details;
       axios
-        .post(`http://localhost:8080/sse/sendorder/${SSEdata.from}`, SSEdata)
+        .post(current_url + `sse/sendorder/${SSEdata.from}`, SSEdata)
         .then((res) => {
           // console.log(res);
         });
@@ -76,7 +77,7 @@ export const send_order = (data) => (dispatch, getState) => {
 export const update_order = (data) => (dispatch) => {
   const body = data;
   axios
-    .put("http://localhost:8080/admin/update_order", body, headers)
+    .put(current_url + "admin/update_order", body, headers)
     .then((res) => {
       // console.log(res);
       dispatch({
@@ -149,7 +150,7 @@ export const get_order = (order) => (dispatch) => {
 // Get orders by date
 export const get_today_orders = () => (dispatch) => {
   axios
-    .get(`http://localhost:8080/admin/today`)
+    .get(`${current_url}admin/today`)
     .then((res) => {
       console.log(res);
       dispatch({
@@ -183,10 +184,10 @@ export const accept_order = (order, time_input) => (dispatch) => {
     delivery_time: parseInt(time_input),
   };
   axios
-    .put(`http://localhost:8080/admin/accept/${order.id}`, data_2, headers)
+    .put(`${current_url}admin/accept/${order.id}`, data_2, headers)
     .then((res) => {
       console.log(res);
-      axios.post(`http://localhost:8080/sse/acceptorder`, data).then((res) => {
+      axios.post(`${current_url}sse/acceptorder`, data).then((res) => {
         console.log(data);
         dispatch({
           type: ACCEPT_ORDER,
@@ -211,7 +212,7 @@ export const accept_order = (order, time_input) => (dispatch) => {
 // Complete an order
 
 export const complete_order = (id) => (dispatch) => {
-  axios.put(`http://localhost:8080/admin/complete/${id}`).then((res) => {
+  axios.put(`${current_url}admin/complete/${id}`).then((res) => {
     console.log(id);
     dispatch({
       type: COMPLETE_ORDER,
@@ -227,13 +228,13 @@ export const reject_order = (order, time_input) => (dispatch) => {
     time: parseInt(time_input),
     from: order.from,
   };
-  axios.post(`http://localhost:8080/sse/acceptorder`, data).then((res) => {
+  axios.post(`${current_url}sse/acceptorder`, data).then((res) => {
     console.log(res);
     dispatch({
       type: REJECT_ORDER,
       accepted_id: order.id,
     });
-    axios.put(`http://localhost:8080/admin/reject/${order.id}`).then((res) => {
+    axios.put(`${current_url}admin/reject/${order.id}`).then((res) => {
       console.log(res);
     });
   });

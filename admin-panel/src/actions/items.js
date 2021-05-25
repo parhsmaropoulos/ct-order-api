@@ -11,6 +11,7 @@
 
 import axios from "axios";
 import { headers } from "../utils/axiosHeaders";
+import { current_url } from "../utils/util";
 import {
   CREATE_CATEGORY,
   CREATE_CHOICE,
@@ -39,7 +40,7 @@ import { returnErrors } from "./messages";
 // GET ALL ITEMS
 export const get_items = () => (dispatch) => {
   axios
-    .get("http://localhost:8080/products/all")
+    .get(current_url + "products/all")
     .then((res) => {
       // console.log(res);
       dispatch({
@@ -72,7 +73,7 @@ export const create_product = (data, image) => (dispatch) => {
   };
 
   axios
-    .post("http://localhost:8080/products/create_product", body, headers)
+    .post(current_url + "products/create_product", body, headers)
     .then((res) => {
       dispatch({
         type: CREATE_ITEM,
@@ -105,7 +106,7 @@ export const update_item = (id, product, reason) => (dispatch) => {
   };
   console.log(body);
   axios
-    .put(`http://localhost:8080/products/update`, body, headers)
+    .put(current_url + `products/update`, body, headers)
     .then((res) => {
       console.log(res.data);
       dispatch({
@@ -134,7 +135,7 @@ export const update_item = (id, product, reason) => (dispatch) => {
 // GET ALL CATEGORIES
 export const get_categories = () => (dispatch) => {
   axios
-    .get("http://localhost:8080/product_category/all")
+    .get(current_url + "product_category/all")
     .then((res) => {
       dispatch({
         type: GET_CATEGORIES,
@@ -165,7 +166,7 @@ export const create_category = (data, image) => (dispatch) => {
   };
   axios
     .post(
-      "http://localhost:8080/product_category/create_product_category",
+      current_url + "product_category/create_product_category",
       body,
       headers
     )
@@ -195,7 +196,7 @@ export const create_category = (data, image) => (dispatch) => {
 // GET ALL INGREDIENTS
 export const get_ingredients = () => (dispatch) => {
   axios
-    .get("http://localhost:8080/products/ingredients")
+    .get(current_url + "products/ingredients")
     .then((res) => {
       dispatch({
         type: GET_INGREDIENTS,
@@ -221,11 +222,7 @@ export const get_ingredients = () => (dispatch) => {
 export const create_ingredient = (data) => (dispatch) => {
   const body = data;
   axios
-    .post(
-      "http://localhost:8080/products/create_product_ingredient",
-      body,
-      headers
-    )
+    .post(current_url + "products/create_product_ingredient", body, headers)
     .then((res) => {
       dispatch({
         type: CREATE_INGREDIENT,
@@ -254,7 +251,7 @@ export const update_ingredient = (id, ingredient, reason) => (dispatch) => {
     reason: reason,
   };
   axios
-    .put("http://localhost:8080/products/update_ingredient", body, headers)
+    .put(current_url + "products/update_ingredient", body, headers)
     .then((res) => {
       console.log(res);
       dispatch({
@@ -282,7 +279,7 @@ export const update_ingredient = (id, ingredient, reason) => (dispatch) => {
 // GET ALL CHOICES
 export const get_choices = () => (dispatch) => {
   axios
-    .get("http://localhost:8080/products/choices")
+    .get(current_url + "products/choices")
     .then((res) => {
       // console.log(res);
       dispatch({
@@ -308,7 +305,7 @@ export const get_choices = () => (dispatch) => {
 export const create_choice = (data) => (dispatch) => {
   const body = data;
   axios
-    .post("http://localhost:8080/products/create_product_choice", body, headers)
+    .post(current_url + "products/create_product_choice", body, headers)
     .then((res) => {
       dispatch({
         type: CREATE_CHOICE,
@@ -336,7 +333,7 @@ export const update_choice = (id, choice) => (dispatch) => {
     choice: choice,
   };
   axios
-    .put(`http://localhost:8080/products/update_choice`, body, headers)
+    .put(`${current_url}products/update_choice`, body, headers)
     .then((res) => {
       dispatch({
         type: UPDATE_CHOICE,
@@ -368,7 +365,7 @@ export const delete_item = (id, type) => (dispatch) => {
     case "product":
       console.log("here");
       axios
-        .delete(`http://localhost:8080/products/product/${id}`, headers)
+        .delete(`${current_url}products/product/${id}`, headers)
         .then((res) => {
           dispatch({
             type: DELETE_PRODUCT,
@@ -391,7 +388,7 @@ export const delete_item = (id, type) => (dispatch) => {
     case "category":
       console.log("here");
       axios
-        .delete(`http://localhost:8080/product_category/delete/${id}`, headers)
+        .delete(`${current_url}product_category/delete/${id}`, headers)
         .then((res) => {
           dispatch({
             type: DELETE_CATEGORY,
@@ -413,7 +410,7 @@ export const delete_item = (id, type) => (dispatch) => {
       return;
     case "ingredient":
       axios
-        .delete(`http://localhost:8080/products/ingredient/${id}`, headers)
+        .delete(`${current_url}products/ingredient/${id}`, headers)
         .then((res) => {
           dispatch({
             type: DELETE_INGREDIENT,
@@ -436,7 +433,7 @@ export const delete_item = (id, type) => (dispatch) => {
     case "choice":
       console.log("here");
       axios
-        .delete(`http://localhost:8080/products/choice/${id}`, headers)
+        .delete(`${current_url}products/choice/${id}`, headers)
         .then((res) => {
           dispatch({
             type: DELETE_CHOICE,
@@ -465,7 +462,7 @@ export const delete_item = (id, type) => (dispatch) => {
 
 export const GetAsyncItems = async () => {
   try {
-    const resp = await axios.get("http://localhost:8080/products/all");
+    const resp = await axios.get(current_url + "products/all");
     return resp.data;
   } catch (err) {
     console.log(err);
@@ -475,9 +472,7 @@ export const GetAsyncItems = async () => {
 
 export const GetAsyncCategories = async () => {
   try {
-    const resp = await axios.get(
-      "http://localhost:8080/product_categories/all"
-    );
+    const resp = await axios.get(current_url + "product_categories/all");
     return resp.data;
   } catch (err) {
     console.log(err);
