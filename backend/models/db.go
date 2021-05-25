@@ -67,7 +67,8 @@ func Init() {
 	dbUrl := ""
 	// Initialize mongo db
 	if goDotEnvVariable("STATE") == "local" {
-		dbUrl = "mongodb://localhost:27017"
+		// dbUrl = goDotEnvVariable("CONNECTION_URL")
+		dbUrl = "mongodb://127.0.0.1:27017"
 	} else {
 		dbUrl = goDotEnvVariable("CONNECTION_URL")
 	}

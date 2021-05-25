@@ -4,6 +4,8 @@ import "../css/App/App.css";
 // import "../css/Panel/Sidebar.css";
 
 // Routing
+import PrivateRoute from "./Sections/Common/PrivateRoute";
+import AdminRoute from "./Sections/Common/AdminRoute";
 import {
   Route,
   // BrowserRouter as Router,
@@ -46,7 +48,6 @@ import UserAddress from "./Sections/Users/UserAddress";
 import UserRatings from "./Sections/Users/UserRatings";
 import AdminMainPage from "./Sections/Admin/AdminMainPage";
 import SingleIngredientPage from "./Sections/View/Ingredients/SingleIngredientPage";
-import PrivateRoute from "./Sections/Common/PrivateRoute";
 import SuccessSnackbar from "./Logging/SnackBars/SuccessSnackbar";
 import InfoSnackbar from "./Logging/SnackBars/InfoSnackbar";
 import ErrorSnackbar from "./Logging/SnackBars/ErrorSnackbar";
@@ -55,6 +56,7 @@ import SingleChoicePage from "./Sections/View/Choices/SingleChoicePage";
 import TextPage from "./Sections/Common/TextPage";
 import AllComents from "./Sections/Admin/Comments/AllComents";
 import { Container } from "@material-ui/core";
+import AdminLogInPage from "./Sections/Admin/AdminLogInPage";
 // const alertOptions = {
 //   timeout: 3000,
 //   position: "top center",
@@ -112,19 +114,23 @@ class App extends Component {
             <Route path="/pre_complete/:id" component={PreCompleteOrderPage} />
             <Route path="/search/:string" component={OrderMainPage} />
             {/* ADMIN ROUTES */}
-            <Route path="/admin" component={AdminMainPage} />
+            <Route path="/admin_login" component={AdminLogInPage} />
+            <AdminRoute path="/admin" component={AdminMainPage} />
             {/* <Route path="/orders" component={OrdersPage} /> */}
             {/* <Route path="/users" component={UsersPage} /> */}
 
-            <Route path="/single_item" component={SingleItemPage} />
-            <Route path="/single_ingredient" component={SingleIngredientPage} />
-            <Route path="/single_choice" component={SingleChoicePage} />
-            <Route path="/document/:type" component={TextPage} />
-            <Route path="/comments" component={AllComents} />
+            <AdminRoute path="/single_item" component={SingleItemPage} />
+            <AdminRoute
+              path="/single_ingredient"
+              component={SingleIngredientPage}
+            />
+            <AdminRoute path="/single_choice" component={SingleChoicePage} />
+            <AdminRoute path="/document/:type" component={TextPage} />
+            <AdminRoute path="/comments" component={AllComents} />
+            <AdminRoute path="/stats/:id" component={StatsPage} />
+            <AdminRoute path="/create_item" component={CreatePage} />
+            <AdminRoute path="/all_users" component={AllUsersPage} />
             {/* PRIVATE ROUTES */}
-            <PrivateRoute path="/stats/:id" component={StatsPage} />
-            <PrivateRoute path="/create_item" component={CreatePage} />
-            <PrivateRoute path="/all_users" component={AllUsersPage} />
             {/* <Route path="/order_menu" component={OrderMenuPage} /> */}
             <PrivateRoute exact path="/account" component={MainPage} />
             <PrivateRoute exact path="/account/orders" component={UserOrders} />

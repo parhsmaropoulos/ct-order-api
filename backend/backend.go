@@ -147,6 +147,9 @@ func main() {
 	}
 	admin := router.Group("/admin/")
 	{
+		// Auth actions
+		admin.POST("/login", models.AdminLogin)
+		// admin.POST("/logout", models.AdminLogout)
 		// ADMIN ORDER ACTION
 		admin.PUT("/accept/:id", models.AcceptOrder)
 		admin.PUT("/reject/:id", models.RejectOrder)

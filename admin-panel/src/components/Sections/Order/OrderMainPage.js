@@ -7,6 +7,7 @@ import PropTypes from "prop-types";
 import { Redirect } from "react-router";
 import { update_cart } from "../../../actions/orders";
 import AddIcon from "@material-ui/icons/Add";
+import MenuIcon from "@material-ui/icons/Menu";
 import RemoveIcon from "@material-ui/icons/Remove";
 import {
   GetAsyncCategories,
@@ -24,6 +25,7 @@ import {
   CircularProgress,
   Container,
   createMuiTheme,
+  Drawer,
   Grid,
   Hidden,
   IconButton,
@@ -52,6 +54,7 @@ class OrderMainPage extends Component {
     this.changeCategory = this.changeCategory.bind(this);
     this.showModal = this.showModal.bind(this);
     this.showAlert = this.showAlert.bind(this);
+    this.toggleDrawer = this.toggleDrawer.bind(this);
   }
   state = {
     cart: [],
@@ -70,6 +73,7 @@ class OrderMainPage extends Component {
     products: [],
     categories: [],
     isReady: false,
+    openDrawer: false,
   };
   static propTypes = {
     orderReducer: PropTypes.object.isRequired,
@@ -85,8 +89,11 @@ class OrderMainPage extends Component {
     get_categories: PropTypes.func.isRequired,
     get_ingredients: PropTypes.func.isRequired,
   };
-  changeCategory = (category) => {
+  changeCategory = (category, drawer) => {
     this.setState({ selectedCategory: category });
+    if (drawer) {
+      this.setState({ openDrawer: false });
+    }
   };
 
   continueOrder = () => {
@@ -181,6 +188,10 @@ class OrderMainPage extends Component {
       indexToUpdate: index,
       itemToUpdate: item,
     });
+  };
+
+  toggleDrawer = (bool) => {
+    this.setState({ openDrawer: bool });
   };
 
   changeQuantity = (bool, index) => {
@@ -322,6 +333,40 @@ class OrderMainPage extends Component {
               {alertModal}
               {/* <Row className="orderMainPageRow"> */}
               {/* ############## CATEGORIES ################## */}
+              <Hidden smUp>
+                <Grid item sm={2} xs={2} spacing={2}>
+                  <Button
+                    style={{
+                      justifyContent: "left",
+                    }}
+                    className="menu-categories-list-button"
+                    onClick={() => this.toggleDrawer(true)}
+                  >
+                    <MenuIcon />
+                  </Button>
+                  <Drawer
+                    anchor={"left"}
+                    open={this.state.openDrawer}
+                    onClose={() => this.toggleDrawer(false)}
+                  >
+                    {this.props.categories.map((categ, index) => {
+                      let selected = false;
+                      if (this.state.selectedCategory === categ.name) {
+                        selected = true;
+                      }
+                      return (
+                        <ListGroup.Item
+                          key={index}
+                          onClick={() => this.changeCategory(categ.name, true)}
+                          active={selected}
+                        >
+                          {categ.name}
+                        </ListGroup.Item>
+                      );
+                    })}
+                  </Drawer>
+                </Grid>
+              </Hidden>
               <Hidden mdDown>
                 <Grid item lg={3} className="categoriesListCol">
                   <div className="categoriesList">
@@ -334,7 +379,9 @@ class OrderMainPage extends Component {
                         return (
                           <ListGroup.Item
                             key={index}
-                            onClick={() => this.changeCategory(categ.name)}
+                            onClick={() =>
+                              this.changeCategory(categ.name, false)
+                            }
                             active={selected}
                           >
                             {categ.name}
@@ -350,7 +397,8 @@ class OrderMainPage extends Component {
                 item
                 lg={6}
                 md={12}
-                sm={12}
+                sm={10}
+                xs={10}
                 style={{ width: "100%" }}
                 className="productList"
               >
@@ -472,12 +520,12 @@ class OrderMainPage extends Component {
               </Grid>
               {modal}
               {/* ################### CART ############### */}
-
               <Grid
                 item
                 lg={3}
                 md={12}
                 sm={12}
+                xs={12}
                 style={{ width: "100%" }}
                 className="cart"
               >

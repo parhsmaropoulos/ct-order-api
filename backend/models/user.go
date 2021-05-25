@@ -72,6 +72,7 @@ func CreateProfile(c *gin.Context) {
 	// Check if email exist
 	var usr User
 	err_usr := Users.FindOne(context.Background(), bson.M{"email": input.Email}).Decode(&usr)
+	// fmt.Print(err_usr.Error())
 	if err_usr != mongo.ErrNoDocuments {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": "Email already exists",
@@ -80,6 +81,7 @@ func CreateProfile(c *gin.Context) {
 	}
 
 	password := input.Password
+	// fmt.Print(password)
 	// Encrypt password
 	bs, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.MinCost)
 	if err != nil {
@@ -264,7 +266,6 @@ func Login(c *gin.Context) {
 	var user User
 	err := Users.FindOne(context.Background(),
 		bson.M{"email": input.Email}).Decode(&user)
-	fmt.Print(err)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
 			"message": "Email is not valid!",
@@ -272,6 +273,7 @@ func Login(c *gin.Context) {
 		})
 		return
 	}
+
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(input.Password))
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{

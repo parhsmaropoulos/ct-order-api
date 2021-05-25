@@ -12,8 +12,10 @@
 import axios from "axios";
 import jwt from "jwt-decode";
 import { headers } from "../utils/axiosHeaders";
-import { live_url } from "../utils/util";
+import { local_url } from "../utils/util";
 import {
+  ADMIN_LOADING,
+  ADMIN_LOGIN_SUCCESS,
   EMPTY_CART,
   GET_USER,
   LOGIN_FAIL,
@@ -59,7 +61,7 @@ export const login = (email, password) => (dispatch) => {
         id: token.user_id,
         user: token.user,
       };
-      // console.log(data.user);
+      console.log(token);
       dispatch({
         type: LOGIN_SUCCESS,
         token: res.data.access_token,
@@ -75,6 +77,57 @@ export const login = (email, password) => (dispatch) => {
     })
     .catch((err) => {
       console.log(err.response);
+      // dispatch(returnErrors(err, err.status));
+      dispatch({
+        type: LOGIN_FAIL,
+        error: err.response.data.message,
+      });
+      dispatch({
+        type: SNACKBAR_ERROR,
+        message: "Invalid credits",
+      });
+    });
+};
+
+// LOGIN ADMIN
+export const admin_login = (email, password) => (dispatch) => {
+  dispatch({
+    type: ADMIN_LOADING,
+  });
+  // Request Body
+  const data = {
+    email: email,
+    password: password,
+  };
+
+  axios
+    .post("http://localhost:8080/admin/login", data, headers)
+    .then((res) => {
+      // console.log(data.user);
+      // Decode token
+      const token = jwt(res.data.access_token);
+      // const refreshToken = jwt(res.data.refresh_token);
+      // console.log(refreshToken);
+      const data = {
+        id: token.access_uuid,
+        user: token.user,
+      };
+      console.log(token);
+      dispatch({
+        type: ADMIN_LOGIN_SUCCESS,
+        token: res.data.access_token,
+        refresh_token: res.data.refresh_token,
+        user: data.user,
+      });
+    })
+    .then((res) => {
+      dispatch({
+        type: SNACKBAR_SUCCESS,
+        message: "Login successful",
+      });
+    })
+    .catch((err) => {
+      console.log(err);
       // dispatch(returnErrors(err, err.status));
       dispatch({
         type: LOGIN_FAIL,
@@ -127,15 +180,15 @@ export const refreshToken = (token) => (dispatch) => {
 
 // Update User
 export const updateUser = (data) => (dispatch) => {
-  // Headers
+  // Request Body
+  // const body = JSON.stringify({ username, email, password1, password2 });
+  var token = sessionStorage.getItem("token");
   const config = {
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     },
   };
-
-  // Request Body
-  // const body = JSON.stringify({ username, email, password1, password2 });
   const body = data;
   axios
     .put("http://localhost:8080/user/update", body, config)
@@ -187,12 +240,14 @@ export const getUser = (id) => (dispatch) => {
 // REGISTER USER
 export const register = (data) => (dispatch) => {
   // Headers
-
+  dispatch({
+    type: USER_LOADING,
+  });
   // Request Body
   // const body = JSON.stringify({ username, email, password1, password2 });
   const body = data;
   axios
-    .post(live_url + "user/register", body, headers)
+    .post(local_url + "user/register", body, headers)
     .then((res) => {
       console.log(res);
       dispatch({

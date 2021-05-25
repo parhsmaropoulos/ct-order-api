@@ -76,6 +76,9 @@ class Header extends Component {
     if (autheticated === "true" && this.props.user === null) {
       this.props.refreshToken(this.props.refresh_token);
     }
+    if (window.location.href.endsWith("admin_login")) {
+      return null;
+    }
     return (
       <Grid container>
         <Grid item xs={1}></Grid>
@@ -123,6 +126,7 @@ class Header extends Component {
                       role={undefined}
                       transition
                       disablePortal
+                      style={{ zIndex: 10 }}
                     >
                       {({ TransitionProps, placement }) => (
                         <Grow
@@ -138,7 +142,6 @@ class Header extends Component {
                             <ClickAwayListener onClickAway={this.handleClose}>
                               <MenuList
                                 autoFocusItem={this.state.open}
-                                style={{ zIndex: 10 }}
                                 id="menu-list-grow"
                               >
                                 <MenuItem onClick={this.handleClose}>
@@ -146,6 +149,11 @@ class Header extends Component {
                                 </MenuItem>
                                 <MenuItem onClick={this.handleClose}>
                                   <Link to="/account/orders">My orders</Link>
+                                </MenuItem>
+                                <MenuItem onClick={this.handleClose}>
+                                  <Link to="/account/addresses">
+                                    My addresses
+                                  </Link>
                                 </MenuItem>
                                 <MenuItem onClick={this.handleClose}>
                                   <Link to="/account/ratings">My ratings</Link>
@@ -164,34 +172,6 @@ class Header extends Component {
                         </Grow>
                       )}
                     </Popper>
-                    {/* <Dropdown>
-                      <Dropdown.Toggle variant="success" id="dropdown-basic">
-                        <PersonCircle />
-                        Profile
-                      </Dropdown.Toggle>
-
-                      <Dropdown.Menu>
-                        <ul>
-                          <li className="header-menu-li">
-                            <Link to="/account">My profile</Link>
-                          </li>
-                          <li className="header-menu-li">
-                            <Link to="/account/orders">My orders</Link>
-                          </li>
-                          <li className="header-menu-li">
-                            <Link to="/account/addresses">My addresses</Link>
-                          </li>
-                          <li className="header-menu-li">
-                            <Link to="/account/ratings">My ratings</Link>
-                          </li>
-                          <li className="header-menu-li">
-                            <Link to="/home" onClick={() => this.logOut()}>
-                              Logout
-                            </Link>
-                          </li>
-                        </ul>
-                      </Dropdown.Menu>
-                    </Dropdown> */}
                   </Grid>
                 ) : (
                   // <Row style={{ marginLeft: 10 }}>

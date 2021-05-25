@@ -354,3 +354,6 @@
     width: 100%;
   }
 }
+.menu-categories-list-button:focus {
+  outline: 0;
+}

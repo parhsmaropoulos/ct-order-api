@@ -72,6 +72,9 @@ class Footer extends Component {
   };
 
   render() {
+    if (window.location.href.endsWith("admin_login")) {
+      return null;
+    }
     return (
       <Grid container style={{ flexGrow: 1 }} className="footerRow">
         {/* 

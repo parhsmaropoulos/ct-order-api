@@ -26,6 +26,7 @@ const useStyles = makeStyles((theme) => ({
   },
   list: {
     width: "90%",
+    heigth: "100%",
   },
   listTitle: {
     fontSize: "25px",
@@ -46,7 +47,7 @@ export default function Sidebar(props) {
   // const [open, toogleOpen] = useState(true);
 
   return (
-    <Paper className={classes.root} elevation={3}>
+    <Paper className={classes.root} elevation={3} style={{ overflowY: "auto" }}>
       <Grid container>
         <Grid item xs={12}>
           <List className={classes.list}>

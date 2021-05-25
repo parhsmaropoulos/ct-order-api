@@ -23,24 +23,24 @@ class UserRatings extends Component {
       return (
         <Container className="accountMainPage">
           <Row className="headerRow">
-            <Grid xs={8} spacing={3} container>
-              <Grid item lg={3} md={3} sm={6}>
+            <Grid spacing={3} container>
+              <Grid item lg={3} md={3} sm={6} xs={12}>
                 <Link className="nav-text" to="/account">
                   Ο λογαριασμός μου
                 </Link>
               </Grid>
-              <Grid item lg={3} md={3} sm={6}>
+              <Grid item lg={3} md={3} sm={6} xs={12}>
                 <Link className="nav-text" to="/account/orders">
                   Οι παραγγελίες μου
                 </Link>
               </Grid>
-              <Grid item lg={2} md={2} sm={6}>
+              <Grid item lg={2} md={2} sm={6} xs={12}>
                 <Link className="nav-text" to="/account/addresses">
                   Διευθύνσεις
                 </Link>
               </Grid>
 
-              <Grid item lg={2} md={2} sm={6}>
+              <Grid item lg={2} md={2} sm={6} xs={12}>
                 <Link
                   className="nav-text  nav-text-activated"
                   to="/account/ratings"

@@ -24,6 +24,9 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: "black",
     },
   },
+  classItem: {
+    cursor: "pointer",
+  },
 }));
 
 export default function InnerSidebarCatalog(props) {
@@ -41,7 +44,10 @@ export default function InnerSidebarCatalog(props) {
                 category.name === props.selectedCategory ? "selected" : ""
               }
             >
-              <ListItem onClick={(e) => props.onCategoryChange(category.name)}>
+              <ListItem
+                className={classes.classItem}
+                onClick={(e) => props.onCategoryChange(category.name)}
+              >
                 <ListItemText primary={category.name} />
               </ListItem>
             </div>

@@ -169,18 +169,18 @@ class UserAdress extends Component {
     } else {
       return (
         <Container className="accountMainPage">
-          <Grid xs={8} spacing={3} container>
-            <Grid item lg={3} md={3} sm={6}>
-              <Link className="nav-text " to="/account">
+          <Grid spacing={3} container>
+            <Grid item lg={3} md={3} sm={6} xs={12}>
+              <Link className="nav-text" to="/account">
                 Ο λογαριασμός μου
               </Link>
             </Grid>
-            <Grid item lg={3} md={3} sm={6}>
+            <Grid item lg={3} md={3} sm={6} xs={12}>
               <Link className="nav-text" to="/account/orders">
                 Οι παραγγελίες μου
               </Link>
             </Grid>
-            <Grid item lg={2} md={2} sm={6}>
+            <Grid item lg={2} md={2} sm={6} xs={12}>
               <Link
                 className="nav-text  nav-text-activated"
                 to="/account/addresses"
@@ -189,13 +189,13 @@ class UserAdress extends Component {
               </Link>
             </Grid>
 
-            <Grid item lg={2} md={2} sm={6}>
+            <Grid item lg={2} md={2} sm={6} xs={12}>
               <Link className="nav-text" to="/account/ratings">
                 Βαθμολογίες
               </Link>
             </Grid>
           </Grid>
-          <Grid contaier style={{ marginTop: 10 }}>
+          <Grid container style={{ marginTop: 10 }}>
             <Grid container className="roundedContainer">
               <div className="userAddressColHeader">
                 <div className="title">Οι διευθήνσεις σου</div>
