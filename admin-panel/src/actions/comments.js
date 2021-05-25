@@ -1,6 +1,6 @@
 import axios from "axios";
 import { headers } from "../utils/axiosHeaders";
-import { current_url, local_url } from "../utils/util";
+import { current_url } from "../utils/util";
 import {
   APPROVE_COMMENT,
   GET_COMMENTS,

@@ -12,7 +12,7 @@
 import axios from "axios";
 import jwt from "jwt-decode";
 import { headers } from "../utils/axiosHeaders";
-import { current_url, local_url } from "../utils/util";
+import { current_url } from "../utils/util";
 import {
   ADMIN_LOADING,
   ADMIN_LOGIN_SUCCESS,

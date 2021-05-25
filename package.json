@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "react-social-icons": "^4.1.0",
-    "redux-persist": "^6.0.0"
-  }
-}
