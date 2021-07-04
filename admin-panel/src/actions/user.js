@@ -37,12 +37,6 @@ export const login = (email, password) => (dispatch) => {
   dispatch({
     type: USER_LOADING,
   });
-  // Headers
-  const config = {
-    headers: {
-      "Content-Type": "application/json",
-    },
-  };
 
   // Request Body
   const data = {
@@ -51,7 +45,7 @@ export const login = (email, password) => (dispatch) => {
   };
 
   axios
-    .post(current_url + "user/login", data, config)
+    .post(current_url + "user/login", data, headers)
     .then((res) => {
       // Decode token
       const token = jwt(res.data.access_token);
