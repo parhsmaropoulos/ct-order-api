@@ -115,21 +115,18 @@ class App extends Component {
             <Route path="/search/:string" component={OrderMainPage} />
             {/* ADMIN ROUTES */}
             <Route path="/admin_login" component={AdminLogInPage} />
-            <AdminRoute path="/admin" component={AdminMainPage} />
+            <Route path="/admin" component={AdminMainPage} />
             {/* <Route path="/orders" component={OrdersPage} /> */}
             {/* <Route path="/users" component={UsersPage} /> */}
 
-            <AdminRoute path="/single_item" component={SingleItemPage} />
-            <AdminRoute
-              path="/single_ingredient"
-              component={SingleIngredientPage}
-            />
-            <AdminRoute path="/single_choice" component={SingleChoicePage} />
-            <AdminRoute path="/document/:type" component={TextPage} />
-            <AdminRoute path="/comments" component={AllComents} />
-            <AdminRoute path="/stats/:id" component={StatsPage} />
-            <AdminRoute path="/create_item" component={CreatePage} />
-            <AdminRoute path="/all_users" component={AllUsersPage} />
+            <Route path="/single_item" component={SingleItemPage} />
+            <Route path="/single_ingredient" component={SingleIngredientPage} />
+            <Route path="/single_choice" component={SingleChoicePage} />
+            <Route path="/document/:type" component={TextPage} />
+            <Route path="/comments" component={AllComents} />
+            <Route path="/stats/:id" component={StatsPage} />
+            <Route path="/create_item" component={CreatePage} />
+            <Route path="/all_users" component={AllUsersPage} />
             {/* PRIVATE ROUTES */}
             {/* <Route path="/order_menu" component={OrderMenuPage} /> */}
             <PrivateRoute exact path="/account" component={MainPage} />

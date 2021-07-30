@@ -20,6 +20,7 @@ class CreateItemForm extends Component {
       name: "",
       price: 0,
       category: "Kafedes",
+      category_id: 0,
       description: "",
       filename: "Choose product image *",
       source: "",
@@ -49,34 +50,40 @@ class CreateItemForm extends Component {
     create_product: PropTypes.func.isRequired,
     ingredients: PropTypes.array.isRequired,
     choices: PropTypes.array.isRequired,
+    categories: PropTypes.array.isRequired,
+    ingredientCategories: PropTypes.array.isRequired,
   };
 
   onSubmit(event) {
     event.preventDefault();
+    console.log(this.state);
     const item = {
       name: this.state.name,
       description: this.state.description,
       price: parseFloat(this.state.price),
-      category: this.state.category,
-      ingredients: this.state.extra_ingredients.slice(1),
-      extra_ingredients: [],
-      choices: this.state.choices,
+      category_id: parseInt(this.state.category_id),
+      default_ingredients: this.state.extra_ingredients.slice(1),
+      ingredients_id: this.state.available_ingredients.slice(1),
+      choices_id: this.state.checkedChoices.slice(1),
       custom: this.state.isCustom,
     };
-    for (var i in this.state.checkedChoices) {
-      if (this.state.checkedChoices[i] !== -1) {
-        item.choices.push(this.props.choices[this.state.checkedChoices[i]]);
-      }
+    for (var i in item.default_ingredients) {
+      item.default_ingredients[i] = item.default_ingredients[i].trim();
     }
-    let in_cat = this.props.ingredients;
-    let avail_ingredients = this.state.available_ingredients;
-    for (i in in_cat) {
-      for (var j in in_cat[i]) {
-        if (avail_ingredients.includes(in_cat[i][j].name)) {
-          item.extra_ingredients.push(in_cat[i][j]);
-        }
-      }
-    }
+    // for (var i in this.state.checkedChoices) {
+    //   if (this.state.checkedChoices[i] !== -1) {
+    //     item.choices.push(this.props.choices[this.state.checkedChoices[i]]);
+    //   }
+    // }
+    // let in_cat = this.props.ingredients;
+    // let avail_ingredients = this.state.available_ingredients;
+    // for (var i in in_cat) {
+    //   for (var j in in_cat[i]) {
+    //     if (avail_ingredients.includes(in_cat[i][j].name)) {
+    //       item.extra_ingredients.push(in_cat[i][j]);
+    //     }
+    //   }
+    // }
     // console.log(item.choices);
     const image = this.state.image;
     console.log(item);
@@ -242,13 +249,18 @@ class CreateItemForm extends Component {
           <Form.Label>Category *</Form.Label>
           <Form.Control
             as="select"
-            name="category"
+            name="category_id"
             onChange={this.onChange}
             required
           >
+            <option>None</option>
             {this.props.categories.length > 0 ? (
               this.props.categories.map((category, index) => {
-                return <option key={index}>{category.name}</option>;
+                return (
+                  <option key={index} value={category.id}>
+                    {category.base_category.name.trim()}
+                  </option>
+                );
               })
             ) : (
               <option key="0">No categories yet</option>
@@ -263,26 +275,29 @@ class CreateItemForm extends Component {
           <Collapse in={this.state.showChoices} timeout="auto" unmountOnExit>
             <List component="div" disablePadding>
               {this.props.choices.map((choice, index) => {
-                const labelId = `choice-item-${choice.name}`;
+                const labelId = `choice-item-${choice.id}`;
                 return (
                   <ListItem
                     key={index}
                     role={undefined}
                     dense
                     button
-                    onClick={() => this.handleChoiceToggle(index)}
+                    onClick={() => this.handleChoiceToggle(choice.id)}
                   >
                     <ListItemIcon>
                       <Checkbox
                         edge="start"
                         checked={
-                          this.state.checkedChoices.indexOf(index) !== -1
+                          this.state.checkedChoices.indexOf(choice.id) !== -1
                         }
                         tabIndex={-1}
                         disableRipple
                         inputProps={{ "aria-labelledby": labelId }}
                       />
-                      <ListItemText id={labelId} primary={`${choice.name}`} />
+                      <ListItemText
+                        id={labelId}
+                        primary={`${choice.base_choice.name}`}
+                      />
                     </ListItemIcon>
                   </ListItem>
                 );
@@ -320,9 +335,9 @@ class CreateItemForm extends Component {
               return (
                 <li key={index}>
                   <ul>
-                    <ListSubheader>{`${ingredientCategory[0].category}`}</ListSubheader>
+                    <ListSubheader>{`${this.props.ingredientCategories[index]}`}</ListSubheader>
                     {ingredientCategory.map((ingredient, index) => {
-                      const labelId = `ingredient-item-${ingredient.name}`;
+                      const labelId = `ingredient-item-${ingredient.id}`;
                       return (
                         <ListItem
                           key={index}
@@ -330,7 +345,7 @@ class CreateItemForm extends Component {
                           dense
                           button
                           onClick={() =>
-                            this.handleAvailableToggle(ingredient.name)
+                            this.handleAvailableToggle(ingredient.id)
                           }
                         >
                           <ListItemIcon>
@@ -338,7 +353,7 @@ class CreateItemForm extends Component {
                               edge="start"
                               checked={
                                 this.state.available_ingredients.indexOf(
-                                  ingredient.name
+                                  ingredient.id
                                 ) !== -1
                               }
                               tabIndex={-1}
@@ -347,7 +362,7 @@ class CreateItemForm extends Component {
                             />
                             <ListItemText
                               id={labelId}
-                              primary={`${ingredient.name}`}
+                              primary={`${ingredient.base_ingredient.name}`}
                             />
                           </ListItemIcon>
                         </ListItem>
@@ -381,23 +396,25 @@ class CreateItemForm extends Component {
               return (
                 <li key={index}>
                   <ul>
-                    <ListSubheader>{`${ingredientCategory[0].category}`}</ListSubheader>
+                    <ListSubheader>{`${this.props.ingredientCategories[index]}`}</ListSubheader>
                     {ingredientCategory.map((ingredient, index) => {
-                      const labelId = `ingredient-item-${ingredient.name}`;
+                      const labelId = `ingredient-item-${ingredient.base_ingredient.name}`;
                       return (
                         <ListItem
                           key={index}
                           role={undefined}
                           dense
                           button
-                          onClick={() => this.handleToggle(ingredient.name)}
+                          onClick={() =>
+                            this.handleToggle(ingredient.base_ingredient.name)
+                          }
                         >
                           <ListItemIcon>
                             <Checkbox
                               edge="start"
                               checked={
                                 this.state.extra_ingredients.indexOf(
-                                  ingredient.name
+                                  ingredient.base_ingredient.name
                                 ) !== -1
                               }
                               tabIndex={-1}
@@ -406,7 +423,7 @@ class CreateItemForm extends Component {
                             />
                             <ListItemText
                               id={labelId}
-                              primary={`${ingredient.name}`}
+                              primary={`${ingredient.base_ingredient.name}`}
                             />
                           </ListItemIcon>
                         </ListItem>
@@ -433,9 +450,14 @@ class CreateItemForm extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  isAuthenticated: state.userReducer.isAuthenticated,
-  ingredients: state.productReducer.ingredients,
-  choices: state.productReducer.choices,
-});
+const mapStateToProps = (state) => (
+  console.log(state),
+  {
+    isAuthenticated: state.userReducer.isAuthenticated,
+    ingredients: state.productReducer.ingredients,
+    ingredientCategories: state.productReducer.ingredientCategories,
+    choices: state.productReducer.choices,
+    categories: state.productReducer.categories,
+  }
+);
 export default connect(mapStateToProps, { create_product })(CreateItemForm);

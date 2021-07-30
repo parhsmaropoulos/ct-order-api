@@ -31,11 +31,11 @@ class SingleChoicePage extends Component {
     let choice = this.props.location.state.choice;
     this.setState({
       id: choice.id,
-      name: choice.name,
-      description: choice.description,
-      options: choice.options,
-      multiple: choice.multiple,
-      required: choice.required,
+      name: choice.base_choice.name,
+      description: choice.base_choice.description,
+      options: choice.base_choice.options,
+      multiple: choice.base_choice.multiple,
+      required: choice.base_choice.required,
     });
   }
 
@@ -76,8 +76,8 @@ class SingleChoicePage extends Component {
 
     const choice = {
       id: this.state.id,
-      name: this.state.name,
-      description: this.state.description,
+      name: this.state.name.trim(),
+      description: this.state.description.trim(),
       required: this.state.required,
       multiple: this.state.multiple,
       options: this.state.options,
@@ -108,7 +108,6 @@ class SingleChoicePage extends Component {
               type="text"
               value={this.state.description}
               placeholder="Enter description"
-              required
               onChange={this.onChange}
             />
           </Form.Group>

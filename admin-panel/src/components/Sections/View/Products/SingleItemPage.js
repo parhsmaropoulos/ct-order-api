@@ -23,12 +23,13 @@ class SingleItemPage extends Component {
       id: 0,
       name: "",
       price: 0,
-      category: "",
+      category_id: 0,
       description: "",
       filename: "Choose product image *",
       source: "",
       image: null,
       extra_ingredients: [""],
+      available_ingredients: [""],
       checkedChoices: [-1],
       hasIngredients: false,
       showChoices: false,
@@ -47,15 +48,26 @@ class SingleItemPage extends Component {
   }
   componentWillMount() {
     let item = this.props.location.state.item;
+    let product = item.base_product;
+
+    let showChoices = false;
+    if (product.choices_id.length > 0) {
+      showChoices = true;
+    }
+
     this.setState({
       id: item.id,
-      name: item.name,
-      price: item.price,
-      category: item.category,
-      description: item.description,
-      filename: item.image,
-      choices: item.choices,
-      isCustom: item.custom,
+      name: product.name,
+      price: product.price,
+      category_id: product.category_id,
+      checkedChoices: [-1].concat(product.choices_id),
+      available_ingredients: product.ingredients_id,
+      extra_ingredients: product.default_ingredients,
+      description: product.description,
+      filename: product.image,
+      choices: product.choices,
+      isCustom: product.custom,
+      showChoices: showChoices,
     });
   }
 
@@ -75,17 +87,22 @@ class SingleItemPage extends Component {
       name: this.state.name,
       description: this.state.description,
       price: parseFloat(this.state.price),
-      category: this.state.category,
-      ingredients: this.state.extra_ingredients.slice(1),
-      choices: [],
+      category_id: parseInt(this.state.category_id),
+      default_ingredients: this.state.extra_ingredients.slice(1),
+      ingredients_id: this.state.available_ingredients.slice(1),
+      choices_id: this.state.checkedChoices.slice(1),
       custom: this.state.isCustom,
     };
 
-    for (var i in this.state.checkedChoices) {
-      if (this.state.checkedChoices[i] !== -1) {
-        item.choices.push(this.props.choices[this.state.checkedChoices[i]]);
-      }
+    for (var i in item.default_ingredients) {
+      item.default_ingredients[i] = item.default_ingredients[i].trim();
     }
+
+    // for (var i in this.state.checkedChoices) {
+    //   if (this.state.checkedChoices[i] !== -1) {
+    //     item.choices.push(this.props.choices[this.state.checkedChoices[i]]);
+    //   }
+    // }
     // console.log(item);
     this.props.update_item(item.id, item, "update_product");
     this.setState({
@@ -152,13 +169,23 @@ class SingleItemPage extends Component {
     console.log(newChecked);
   };
 
+  handleAvailableToggle = (value) => {
+    const currentIndex = this.state.available_ingredients.indexOf(value);
+    const newChecked = [...this.state.available_ingredients];
+
+    if (currentIndex === -1) {
+      newChecked.push(value);
+    } else {
+      newChecked.splice(currentIndex, 1);
+    }
+
+    this.setState({
+      available_ingredients: newChecked,
+    });
+  };
+
   onChangeCheck() {
     this.setState({ hasIngredients: !this.state.hasIngredients });
-    if (document.getElementById("ingredient-list").style.display === "block") {
-      document.getElementById("ingredient-list").style.display = "none";
-    } else {
-      document.getElementById("ingredient-list").style.display = "block";
-    }
   }
 
   onCustomChange() {
@@ -209,13 +236,22 @@ class SingleItemPage extends Component {
           <Form.Label>Category</Form.Label>
           <Form.Control
             as="select"
-            name="category"
-            defaultValue={this.state.category}
+            name="category_id"
+            defaultValue={this.state.category_id}
             onChange={this.onChange}
           >
-            {this.props.categories.map((category, index) => {
-              return <option key={index}>{category.name}</option>;
-            })}
+            <option>None</option>
+            {this.props.categories.length > 0 ? (
+              this.props.categories.map((category, index) => {
+                return (
+                  <option key={index} value={category.id}>
+                    {category.base_category.name.trim()}
+                  </option>
+                );
+              })
+            ) : (
+              <option key="0">No categories yet</option>
+            )}
           </Form.Control>
         </Form.Group>
         <Form.Group controlId="choices">
@@ -226,26 +262,29 @@ class SingleItemPage extends Component {
           <Collapse in={this.state.showChoices} timeout="auto" unmountOnExit>
             <List component="div" disablePadding>
               {this.props.choices.map((choice, index) => {
-                const labelId = `choice-item-${choice.name}`;
+                const labelId = `choice-item-${choice.id}`;
                 return (
                   <ListItem
                     key={index}
                     role={undefined}
                     dense
                     button
-                    onClick={() => this.handleChoiceToggle(index)}
+                    onClick={() => this.handleChoiceToggle(choice.id)}
                   >
                     <ListItemIcon>
                       <Checkbox
                         edge="start"
                         checked={
-                          this.state.checkedChoices.indexOf(index) !== -1
+                          this.state.checkedChoices.indexOf(choice.id) !== -1
                         }
                         tabIndex={-1}
                         disableRipple
                         inputProps={{ "aria-labelledby": labelId }}
                       />
-                      <ListItemText id={labelId} primary={`${choice.name}`} />
+                      <ListItemText
+                        id={labelId}
+                        primary={`${choice.base_choice.name}`}
+                      />
                     </ListItemIcon>
                   </ListItem>
                 );
@@ -265,6 +304,55 @@ class SingleItemPage extends Component {
             }
             label="Is product custom?"
           />
+          {this.state.isCustom ? (
+            <List
+              className="create-item-ingredient-list"
+              id="available-ingredient-list"
+              subhead={<li />}
+            >
+              {this.props.ingredients.map((ingredientCategory, index) => {
+                return (
+                  <li key={index}>
+                    <ul>
+                      <ListSubheader>{`${this.props.ingredientCategories[index]}`}</ListSubheader>
+                      {ingredientCategory.map((ingredient, index) => {
+                        const labelId = `ingredient-item-${ingredient.id}`;
+                        return (
+                          <ListItem
+                            key={index}
+                            role={undefined}
+                            dense
+                            button
+                            onClick={() =>
+                              this.handleAvailableToggle(ingredient.id)
+                            }
+                          >
+                            <ListItemIcon>
+                              <Checkbox
+                                edge="start"
+                                checked={
+                                  this.state.available_ingredients.indexOf(
+                                    ingredient.id
+                                  ) !== -1
+                                }
+                                tabIndex={-1}
+                                disableRipple
+                                inputProps={{ "aria-labelledby": labelId }}
+                              />
+                              <ListItemText
+                                id={labelId}
+                                primary={`${ingredient.base_ingredient.name}`}
+                              />
+                            </ListItemIcon>
+                          </ListItem>
+                        );
+                      })}
+                    </ul>
+                  </li>
+                );
+              })}
+            </List>
+          ) : null}
         </Form.Group>
         <Form.Group controlId="ingredients">
           <FormControlLabel
@@ -278,52 +366,55 @@ class SingleItemPage extends Component {
             }
             label="Has ingredients"
           />
-          <List
-            style={{ display: "none" }}
-            className="create-item-ingredient-list"
-            id="ingredient-list"
-            subhead={<li />}
-          >
-            {this.props.ingredients.map((ingredientCategory, index) => {
-              return (
-                <li key={index}>
-                  <ul>
-                    <ListSubheader>{`${ingredientCategory[0].category}`}</ListSubheader>
-                    {ingredientCategory.map((ingredient, index) => {
-                      const labelId = `ingredient-item-${ingredient.name}`;
-                      return (
-                        <ListItem
-                          key={index}
-                          role={undefined}
-                          dense
-                          button
-                          onClick={() => this.handleToggle(ingredient.name)}
-                        >
-                          <ListItemIcon>
-                            <Checkbox
-                              edge="start"
-                              checked={
-                                this.state.extra_ingredients.indexOf(
-                                  ingredient.name
-                                ) !== -1
-                              }
-                              tabIndex={-1}
-                              disableRipple
-                              inputProps={{ "aria-labelledby": labelId }}
-                            />
-                            <ListItemText
-                              id={labelId}
-                              primary={`${ingredient.name}`}
-                            />
-                          </ListItemIcon>
-                        </ListItem>
-                      );
-                    })}
-                  </ul>
-                </li>
-              );
-            })}
-          </List>
+          {this.state.hasIngredients ? (
+            <List
+              className="create-item-ingredient-list"
+              id="ingredient-list"
+              subhead={<li />}
+            >
+              {this.props.ingredients.map((ingredientCategory, index) => {
+                return (
+                  <li key={index}>
+                    <ul>
+                      <ListSubheader>{`${this.props.ingredientCategories[index]}`}</ListSubheader>
+                      {ingredientCategory.map((ingredient, index) => {
+                        const labelId = `ingredient-item-${ingredient.base_ingredient.name}`;
+                        return (
+                          <ListItem
+                            key={index}
+                            role={undefined}
+                            dense
+                            button
+                            onClick={() =>
+                              this.handleToggle(ingredient.base_ingredient.name)
+                            }
+                          >
+                            <ListItemIcon>
+                              <Checkbox
+                                edge="start"
+                                checked={
+                                  this.state.extra_ingredients.indexOf(
+                                    ingredient.base_ingredient.name
+                                  ) !== -1
+                                }
+                                tabIndex={-1}
+                                disableRipple
+                                inputProps={{ "aria-labelledby": labelId }}
+                              />
+                              <ListItemText
+                                id={labelId}
+                                primary={`${ingredient.base_ingredient.name}`}
+                              />
+                            </ListItemIcon>
+                          </ListItem>
+                        );
+                      })}
+                    </ul>
+                  </li>
+                );
+              })}
+            </List>
+          ) : null}
         </Form.Group>
         <Form.Group controlId="name">
           <Form.File
@@ -346,9 +437,10 @@ class SingleItemPage extends Component {
 
 const mapStateToProps = (state) => ({
   isAuthenticated: state.userReducer.isAuthenticated,
-  categories: state.productReducer.categories,
-  choices: state.productReducer.choices,
   ingredients: state.productReducer.ingredients,
+  ingredientCategories: state.productReducer.ingredientCategories,
+  choices: state.productReducer.choices,
+  categories: state.productReducer.categories,
 });
 
 export default connect(mapStateToProps, {

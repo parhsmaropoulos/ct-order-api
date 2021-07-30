@@ -40,9 +40,9 @@ import { returnErrors } from "./messages";
 // GET ALL ITEMS
 export const get_items = () => (dispatch) => {
   axios
-    .get(current_url + "products/all")
+    .get(current_url + "products/all", headers)
     .then((res) => {
-      // console.log(res);
+      console.log(res);
       dispatch({
         type: GET_ITEMS,
         products: res.data.data,
@@ -53,7 +53,7 @@ export const get_items = () => (dispatch) => {
       });
     })
     .catch((err) => {
-      console.log(err);
+      console.log(err.response);
       dispatch({
         type: SNACKBAR_ERROR,
         message: err.response.data.message,
@@ -88,8 +88,8 @@ export const create_product = (data, image) => (dispatch) => {
       });
     })
     .catch((err) => {
-      console.log(err);
-      dispatch(returnErrors(err, err.status));
+      console.log(err.response);
+      // dispatch(returnErrors(err, err.status));
       dispatch({
         type: SNACKBAR_ERROR,
         message: err.response.data.message,
@@ -98,15 +98,41 @@ export const create_product = (data, image) => (dispatch) => {
 };
 
 // Update an item
-export const update_item = (id, product, reason) => (dispatch) => {
-  const body = {
-    id: id,
-    product: product,
-    reason: reason,
+export const update_item = (id, product) => (dispatch) => {
+  let body = new FormData();
+  // TODO update image
+  // body.append("file", image);
+  body.append("data", JSON.stringify(product));
+  const headers = {
+    "Content-Type": "multipart/form-data",
   };
-  console.log(body);
   axios
-    .put(current_url + `products/update`, body, headers)
+    .put(current_url + `products/${id}/update_values`, body, headers)
+    .then((res) => {
+      console.log(res.data);
+      dispatch({
+        type: UPDATE_ITEM,
+        new_item: res.data.data,
+      });
+      dispatch({
+        type: SNACKBAR_SUCCESS,
+        message: "item updated successfully",
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+      // dispatch(returnErrors(err, err.status));
+      dispatch({
+        type: SNACKBAR_ERROR,
+        message: err.response.data.message,
+      });
+    });
+};
+
+// Change availability of  an item
+export const change_item_availability = (id) => (dispatch) => {
+  axios
+    .put(current_url + `products/${id}/change_availability`, headers)
     .then((res) => {
       console.log(res.data);
       dispatch({
@@ -196,7 +222,7 @@ export const create_category = (data, image) => (dispatch) => {
 // GET ALL INGREDIENTS
 export const get_ingredients = () => (dispatch) => {
   axios
-    .get(current_url + "products/ingredients")
+    .get(current_url + "ingredients/all")
     .then((res) => {
       dispatch({
         type: GET_INGREDIENTS,
@@ -222,7 +248,7 @@ export const get_ingredients = () => (dispatch) => {
 export const create_ingredient = (data) => (dispatch) => {
   const body = data;
   axios
-    .post(current_url + "products/create_product_ingredient", body, headers)
+    .post(current_url + "ingredients/create_ingredient", body, headers)
     .then((res) => {
       dispatch({
         type: CREATE_INGREDIENT,
@@ -244,14 +270,34 @@ export const create_ingredient = (data) => (dispatch) => {
 };
 
 // Update an Ingredient
-export const update_ingredient = (id, ingredient, reason) => (dispatch) => {
-  const body = {
-    id: id,
-    ingredient: ingredient,
-    reason: reason,
-  };
+export const update_ingredient = (id, ingredient) => (dispatch) => {
+  const body = ingredient;
   axios
-    .put(current_url + "products/update_ingredient", body, headers)
+    .put(current_url + `ingredients/${id}/update_values`, body, headers)
+    .then((res) => {
+      console.log(res);
+      dispatch({
+        type: UPDATE_INGREDIENT,
+        new_ingredient: res.data.data,
+      });
+      dispatch({
+        type: SNACKBAR_SUCCESS,
+        message: "Ingredient updated successfully",
+      });
+    })
+    .catch((err) => {
+      dispatch(returnErrors(err, err.status));
+      dispatch({
+        type: SNACKBAR_ERROR,
+        message: err.response.data.message,
+      });
+    });
+};
+
+// Change ingredient availability
+export const change_ingredient_availability = (id) => (dispatch) => {
+  axios
+    .put(current_url + `ingredients/${id}/change_availability`, headers)
     .then((res) => {
       console.log(res);
       dispatch({
@@ -279,7 +325,7 @@ export const update_ingredient = (id, ingredient, reason) => (dispatch) => {
 // GET ALL CHOICES
 export const get_choices = () => (dispatch) => {
   axios
-    .get(current_url + "products/choices")
+    .get(current_url + "product_choices/all")
     .then((res) => {
       // console.log(res);
       dispatch({
@@ -305,7 +351,7 @@ export const get_choices = () => (dispatch) => {
 export const create_choice = (data) => (dispatch) => {
   const body = data;
   axios
-    .post(current_url + "products/create_product_choice", body, headers)
+    .post(current_url + "product_choices/new_product_choice", body, headers)
     .then((res) => {
       dispatch({
         type: CREATE_CHOICE,
@@ -328,12 +374,13 @@ export const create_choice = (data) => (dispatch) => {
 
 // Update a choice
 export const update_choice = (id, choice) => (dispatch) => {
-  const body = {
-    id: id,
-    choice: choice,
-  };
+  const data = choice;
   axios
-    .put(`${current_url}products/update_choice`, body, headers)
+    .put(
+      `${current_url}product_choices/${id}/update_product_choice`,
+      data,
+      headers
+    )
     .then((res) => {
       dispatch({
         type: UPDATE_CHOICE,
@@ -462,7 +509,7 @@ export const delete_item = (id, type) => (dispatch) => {
 
 export const GetAsyncItems = async () => {
   try {
-    const resp = await axios.get(current_url + "products/all");
+    const resp = await axios.get(current_url + "products/all", headers);
     return resp.data;
   } catch (err) {
     console.log(err);
@@ -472,7 +519,7 @@ export const GetAsyncItems = async () => {
 
 export const GetAsyncCategories = async () => {
   try {
-    const resp = await axios.get(current_url + "product_categories/all");
+    const resp = await axios.get(current_url + "product_category/all", headers);
     return resp.data;
   } catch (err) {
     console.log(err);

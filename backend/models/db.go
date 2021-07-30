@@ -1,14 +1,7 @@
 package models
 
 import (
-	"context"
-	"log"
-	"os"
-	"time"
-
-	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // Users is the pointer to the db collection of type user.
@@ -50,67 +43,67 @@ var Subscribes *mongo.Collection
 // Redis_client is the pointer to the redis db.
 // var Redis_client *redis.Client
 
-func goDotEnvVariable(key string) string {
-	//load .env file
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatalf("Error loading env file")
-	}
-	return os.Getenv(key)
-}
+// func goDotEnvVariable(key string) string {
+// 	//load .env file
+// 	err := godotenv.Load("../.env")
+// 	if err != nil {
+// 		log.Fatalf("Error loading env file")
+// 	}
+// 	return os.Getenv(key)
+// }
 
 // Initialize the db connection
-func Init() {
-	// Start a mongo db session
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+// func Init() {
+// 	// Start a mongo db session
+// 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 
-	dbUrl := ""
-	// Initialize mongo db
-	if goDotEnvVariable("STATE") == "local" {
-		// dbUrl = goDotEnvVariable("CONNECTION_URL")
-		dbUrl = "mongodb://127.0.0.1:27017"
-	} else {
-		dbUrl = goDotEnvVariable("CONNECTION_URL")
-	}
+// 	dbUrl := ""
+// 	// Initialize mongo db
+// 	if goDotEnvVariable("STATE") == "local" {
+// 		// dbUrl = goDotEnvVariable("CONNECTION_URL")
+// 		dbUrl = "mongodb://127.0.0.1:27017"
+// 	} else {
+// 		dbUrl = goDotEnvVariable("CONNECTION_URL")
+// 	}
 
-	Client, err := mongo.Connect(ctx, options.Client().ApplyURI(dbUrl))
-	if err != nil {
-		log.Fatal(err)
-	}
-	// addrs := ""
-	// pass := ""
-	// Initialize redis
-	// if goDotEnvVariable("STATE") == "local" {
-	// 	addrs = "localhost:6379"
-	// } else {
-	// 	addrs = goDotEnvVariable("REDIS_URL")
-	// 	pass = goDotEnvVariable("REDIS_PASSWORD")
-	// }
+// 	Client, err := mongo.Connect(ctx, options.Client().ApplyURI(dbUrl))
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+// 	// addrs := ""
+// 	// pass := ""
+// 	// Initialize redis
+// 	// if goDotEnvVariable("STATE") == "local" {
+// 	// 	addrs = "localhost:6379"
+// 	// } else {
+// 	// 	addrs = goDotEnvVariable("REDIS_URL")
+// 	// 	pass = goDotEnvVariable("REDIS_PASSWORD")
+// 	// }
 
-	// Redis_client = redis.NewClient(&redis.Options{
-	// 	Addr:     addrs,
-	// 	Password: pass,
-	// })
-	// _, err = Redis_client.Ping().Result()
-	// if err != nil {
-	// 	fmt.Println(err)
-	// 	panic(err)
-	// }
+// 	// Redis_client = redis.NewClient(&redis.Options{
+// 	// 	Addr:     addrs,
+// 	// 	Password: pass,
+// 	// })
+// 	// _, err = Redis_client.Ping().Result()
+// 	// if err != nil {
+// 	// 	fmt.Println(err)
+// 	// 	panic(err)
+// 	// }
 
-	Users = Client.Database("CoffeeTwist").Collection("Users")
-	Subscribes = Client.Database("CoffeeTwist").Collection("Subscribes")
+// 	Users = Client.Database("CoffeeTwist").Collection("Users")
+// 	Subscribes = Client.Database("CoffeeTwist").Collection("Subscribes")
 
-	Orders = Client.Database("CoffeeTwist").Collection("Orders")
-	Comments = Client.Database("CoffeeTwist").Collection("Comments")
-	Ratings = Client.Database("CoffeeTwist").Collection("Ratings")
+// 	Orders = Client.Database("CoffeeTwist").Collection("Orders")
+// 	Comments = Client.Database("CoffeeTwist").Collection("Comments")
+// 	Ratings = Client.Database("CoffeeTwist").Collection("Ratings")
 
-	Discounts = Client.Database("CoffeeTwist").Collection("Discounts")
+// 	Discounts = Client.Database("CoffeeTwist").Collection("Discounts")
 
-	Images = Client.Database("CoffeeTwist")
+// 	Images = Client.Database("CoffeeTwist")
 
-	Products = Client.Database("CoffeeTwist").Collection("Products")
-	Choices = Client.Database("CoffeeTwist").Collection("Choices")
-	Ingredients = Client.Database("CoffeeTwist").Collection("Ingredients")
-	Products_Categories = Client.Database("CoffeeTwist").Collection("Product_Category")
-	Ingredient_Categories = Client.Database("CoffeeTwist").Collection("Ingredient_Category")
-}
+// 	Products = Client.Database("CoffeeTwist").Collection("Products")
+// 	Choices = Client.Database("CoffeeTwist").Collection("Choices")
+// 	Ingredients = Client.Database("CoffeeTwist").Collection("Ingredients")
+// 	Products_Categories = Client.Database("CoffeeTwist").Collection("Product_Category")
+// 	Ingredient_Categories = Client.Database("CoffeeTwist").Collection("Ingredient_Category")
+// }

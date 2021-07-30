@@ -62,7 +62,7 @@ func AdminLogin(c *gin.Context) {
 		})
 		return
 	}
-	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(input.Password))
+	err = bcrypt.CompareHashAndPassword([]byte(user.BaseUser.Password), []byte(input.Password))
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
 			"message": "Password is wrong!",
@@ -80,17 +80,17 @@ func AdminLogin(c *gin.Context) {
 		return
 	}
 
-	user.Password = ""
+	user.BaseUser.Password = ""
 
 	// Token
-	ts, err := CreateToken(user.ID, user)
-	if err != nil {
-		c.JSON(http.StatusUnprocessableEntity, err)
-		return
-	}
-	tokens := map[string]string{
-		"access_token":  ts.AccessToken,
-		"refresh_token": ts.RefreshToken,
-	}
-	c.JSON(http.StatusOK, tokens)
+	// // ts, err := CreateToken(user.ID, user)
+	// // if err != nil {
+	// // 	c.JSON(http.StatusUnprocessableEntity, err)
+	// // 	return
+	// // }
+	// // tokens := map[string]string{
+	// // 	"access_token":  ts.AccessToken,
+	// // 	"refresh_token": ts.RefreshToken,
+	// // }
+	// c.JSON(http.StatusOK, tokens)
 }

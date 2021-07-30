@@ -25,7 +25,6 @@ class CreateIngredientForm extends Component {
   };
 
   componentDidMount() {
-    console.log(this.props.categories);
     this.setState({
       category: this.props.categories[0],
     });
@@ -34,10 +33,10 @@ class CreateIngredientForm extends Component {
   onSubmit(event) {
     event.preventDefault();
     const ingredient = {
-      name: this.state.name,
+      name: this.state.name.trim(),
       price: parseFloat(this.state.price),
       description: this.state.description,
-      category: this.state.category,
+      category: this.state.category.trim(),
     };
     this.props.create_ingredient(ingredient);
     this.setState({
