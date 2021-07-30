@@ -18,6 +18,7 @@ const defaultState = {
   isLoading: false,
   hasLoaded: false,
   user: null,
+  addresses: [],
   error: "",
 };
 
@@ -91,6 +92,7 @@ const userReducer = (state = defaultState, action) => {
       };
     case LOGOUT_SUCCESS:
       sessionStorage.removeItem("token");
+      sessionStorage.removeItem("refreshToken");
       sessionStorage.removeItem("isAuthenticated");
       sessionStorage.removeItem("userID");
       return {

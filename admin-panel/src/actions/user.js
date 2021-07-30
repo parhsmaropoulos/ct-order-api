@@ -11,7 +11,7 @@
 
 import axios from "axios";
 import jwt from "jwt-decode";
-import { headers } from "../utils/axiosHeaders";
+import { authHeaders, headers } from "../utils/axiosHeaders";
 import { current_url } from "../utils/util";
 import {
   ADMIN_LOADING,
@@ -45,21 +45,21 @@ export const login = (email, password) => (dispatch) => {
   };
 
   axios
-    .post(current_url + "user/login", data, headers)
+    .post(current_url + "user/login", data, authHeaders)
     .then((res) => {
       // Decode token
-      const token = jwt(res.data.access_token);
+      const token = jwt(res.data.data.access_token);
       // const refreshToken = jwt(res.data.refresh_token);
       // console.log(refreshToken);
       const data = {
         id: token.user_id,
         user: token.user,
       };
-      console.log(token);
+      console.log(data);
       dispatch({
         type: LOGIN_SUCCESS,
-        token: res.data.access_token,
-        refresh_token: res.data.refresh_token,
+        token: res.data.data.access_token,
+        refresh_token: res.data.data.refresh_token,
         user: data.user,
       });
     })
@@ -70,11 +70,11 @@ export const login = (email, password) => (dispatch) => {
       });
     })
     .catch((err) => {
-      console.log(err.response);
+      console.log(err);
       // dispatch(returnErrors(err, err.status));
       dispatch({
         type: LOGIN_FAIL,
-        error: err.response.data.message,
+        error: err.response,
       });
       dispatch({
         type: SNACKBAR_ERROR,
@@ -183,9 +183,9 @@ export const updateUser = (data) => (dispatch) => {
       Authorization: `Bearer ${token}`,
     },
   };
-  const body = data;
+  const body = data.user;
   axios
-    .put(current_url + "user/update", body, config)
+    .put(current_url + `user/${data.id}/update_personal_info`, body, config)
     .then((res) => {
       // console.log(res);
       dispatch({
@@ -304,7 +304,7 @@ export const subscribe = (data) => (dispatch) => {
   // Request Body
   const body = data;
   axios
-    .post(current_url + "user/subscribe", body, config)
+    .post(current_url + "subscribes/new", body, config)
     .then((res) => {
       console.log(res);
       dispatch({
@@ -335,7 +335,7 @@ export const unsubscribe = (id) => (dispatch) => {
     },
   };
   axios
-    .put(`${current_url}user/subscribe/${id}`, config)
+    .put(`${current_url}subscribes/unsubscribe/${id}`, config)
     .then((res) => {
       console.log(res);
       dispatch({

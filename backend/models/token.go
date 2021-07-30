@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -29,7 +30,9 @@ type TokenDetails struct {
 var authenticator auth.Authenticator
 var cache store.Cache
 
-func CreateToken(userid primitive.ObjectID, user User) (*TokenDetails, error) {
+// With mongo object id
+// func CreateToken(userid primitive.ObjectID, user User)
+func CreateToken(userid int64, user User) (*TokenDetails, error) {
 	td := &TokenDetails{}
 	td.AtExpires = time.Now().Add(time.Minute * 15).Unix()
 	td.AccessUuid = uuid.NewV4().String()
@@ -123,7 +126,7 @@ func TokenValid(r *http.Request) error {
 // FOR redis TODO fix bugs
 type AccessDetails struct {
 	AccessUuid string
-	UserId     primitive.ObjectID
+	UserId     int64
 }
 
 func ExtractTokenMetadata(r *http.Request) (*AccessDetails, error) {
@@ -142,8 +145,9 @@ func ExtractTokenMetadata(r *http.Request) (*AccessDetails, error) {
 		if !ok {
 			return nil, err
 		}
-		// userId, err := strconv.ParseUint(fmt.Sprintf("%.f", claims["user_id"]), 10, 64)
-		userId, err := primitive.ObjectIDFromHex(fmt.Sprintf("%s", claims["user"].(map[string]interface{})["id"]))
+		// userId, err := strconv.ParseInt(fmt.Sprintf("%.f", claims["usid"]), 10, 64)
+		userId, err := strconv.ParseInt(fmt.Sprintf("%s", claims["user"].(map[string]interface{})["id"]), 10, 64)
+		// userId := fmt.Sprintf("%s", claims["user"].(map[int64]interface{})["id"])
 		// fmt.Println("USERID AND ERR")
 		// fmt.Println(userId, err)
 		if err != nil {
@@ -241,7 +245,8 @@ func Refresh(c *gin.Context) {
 		var user User
 		Users.FindOne(context.Background(), bson.M{"_id": userId}).Decode(&user)
 		//Create new pairs of refresh and access tokens
-		ts, createErr := CreateToken(userId, user)
+		// ts, createErr := CreateToken(user.ID, user) for mongo its objectid
+		ts, createErr := CreateToken(1, user)
 		if createErr != nil {
 			c.JSON(http.StatusForbidden, createErr.Error())
 			return

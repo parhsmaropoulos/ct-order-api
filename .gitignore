@@ -3,3 +3,4 @@ node_modules/*
 Temp_DBS/*
 admin-panel/utils/*
 .VSCodeCounter/*
+./backend/vendor/*

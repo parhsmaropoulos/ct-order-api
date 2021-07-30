@@ -63,8 +63,8 @@ class CreateChoiceForm extends Component {
     event.preventDefault();
 
     const choice = {
-      name: this.state.name,
-      description: this.state.description,
+      name: this.state.name.trim(),
+      description: this.state.description.trim(),
       required: this.state.required,
       multiple: this.state.multiple,
       options: this.state.options,

@@ -44,7 +44,7 @@ export const send_order = (data) => (dispatch, getState) => {
     },
   };
   axios
-    .post(current_url + "orders/send_order", body, config)
+    .post(current_url + "orders/new_order", body, config)
     .then((res) => {
       console.log(res);
       SSEdata.id = res.data.order.id;
@@ -184,7 +184,7 @@ export const accept_order = (order, time_input) => (dispatch) => {
     delivery_time: parseInt(time_input),
   };
   axios
-    .put(`${current_url}admin/accept/${order.id}`, data_2, headers)
+    .put(`${current_url}admin/${order.id}/accept_order`, data_2, headers)
     .then((res) => {
       console.log(res);
       axios.post(`${current_url}sse/acceptorder`, data).then((res) => {
@@ -212,7 +212,7 @@ export const accept_order = (order, time_input) => (dispatch) => {
 // Complete an order
 
 export const complete_order = (id) => (dispatch) => {
-  axios.put(`${current_url}admin/complete/${id}`).then((res) => {
+  axios.put(`${current_url}admin/${id}/complete_order`).then((res) => {
     console.log(id);
     dispatch({
       type: COMPLETE_ORDER,
@@ -234,7 +234,7 @@ export const reject_order = (order, time_input) => (dispatch) => {
       type: REJECT_ORDER,
       accepted_id: order.id,
     });
-    axios.put(`${current_url}admin/reject/${order.id}`).then((res) => {
+    axios.put(`${current_url}admin/${order.id}/cancel_order`).then((res) => {
       console.log(res);
     });
   });

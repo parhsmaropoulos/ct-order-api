@@ -202,7 +202,7 @@ class UserAdress extends Component {
                 <span></span>
               </div>
               <div className="userAddressColBody table-responsive-sm">
-                {this.props.userReducer.user.addresses.length > 0 ? (
+                {this.props.userReducer.addresses.length > 0 ? (
                   <Table striped bordered hover>
                     <thead>
                       <tr>
@@ -215,7 +215,7 @@ class UserAdress extends Component {
                       </tr>
                     </thead>
                     <tbody>
-                      {this.props.userReducer.user.addresses.map(
+                      {this.props.userReducer.addresses.map(
                         (address, index) => {
                           return (
                             <tr
@@ -268,8 +268,11 @@ class UserAdress extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  userReducer: state.userReducer,
-});
+const mapStateToProps = (state) => (
+  console.log(state.userReducer),
+  {
+    userReducer: state.userReducer,
+  }
+);
 
 export default connect(mapStateToProps, { getUser, updateUser })(UserAdress);

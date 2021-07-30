@@ -17,6 +17,7 @@ class MainPage extends Component {
       phone: "",
       newPassword: "",
       newPassword2: "",
+      user: {},
     };
     this.onUpdateSubmit = this.onUpdateSubmit.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
@@ -36,11 +37,13 @@ class MainPage extends Component {
     if (this.props.userReducer.hasLoaded === false) {
       this.props.getUser(this.props.userReducer.user.id);
     }
+    console.log(this.props.userReducer);
     this.setState({
-      name: this.props.userReducer.user.name,
-      surname: this.props.userReducer.user.surname,
-      phone: this.props.userReducer.user.phone,
-      email: this.props.userReducer.user.email,
+      name: this.props.userReducer.user.personal_info.name,
+      surname: this.props.userReducer.user.personal_info.surname,
+      phone: this.props.userReducer.user.personal_info.phone,
+      email: this.props.userReducer.user.base_user.email,
+      user: this.props.userReducer.user,
     });
   }
 
@@ -51,7 +54,7 @@ class MainPage extends Component {
   onChangePasswordSubmit(e) {
     e.preventDefault();
     const data = {
-      id: this.props.userReducer.user.id,
+      id: this.state.user.id,
       password: this.state.newPassword,
       reason: "change_password",
     };
@@ -60,12 +63,12 @@ class MainPage extends Component {
 
   onUpdateSubmit(e) {
     e.preventDefault();
+    console.log(this.props.userReducer);
     const data = {
-      id: this.props.userReducer.user.id,
+      id: this.state.user.id,
       user: {
         name: this.state.name,
         surname: this.state.surname,
-        email: this.state.email,
         phone: this.state.phone,
       },
       reason: "update_user",
@@ -142,6 +145,7 @@ class MainPage extends Component {
                       name="email"
                       value={this.state.email}
                       placeholder="Enter email"
+                      readOnly
                     />
                   </Form.Group>
                   <Form.Group as={Col} controlId="formGridPhone">
@@ -198,8 +202,11 @@ class MainPage extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  userReducer: state.userReducer,
-});
+const mapStateToProps = (state) => (
+  console.log(state),
+  {
+    userReducer: state.userReducer,
+  }
+);
 
 export default connect(mapStateToProps, { updateUser, getUser })(MainPage);

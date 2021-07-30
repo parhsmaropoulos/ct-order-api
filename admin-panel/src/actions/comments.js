@@ -37,7 +37,7 @@ export const get_comments = () => (dispatch) => {
 // Approve Comment
 export const approve_comment = (id) => (dispatch) => {
   axios
-    .post(`${current_url}comments/approve/${id}`, null, headers)
+    .post(`${current_url}comments/${id}/approve_comment`, null, headers)
     .then((res) => {
       console.log(res);
       dispatch({
@@ -61,7 +61,7 @@ export const approve_comment = (id) => (dispatch) => {
 // Reject Comment
 export const reject_comment = (id) => (dispatch) => {
   axios
-    .post(`${current_url}admin/reject/${id}`, null, headers)
+    .post(`${current_url}admin/${id}/reject_comment`, null, headers)
     .then((res) => {
       console.log(res);
       dispatch({
@@ -85,7 +85,7 @@ export const reject_comment = (id) => (dispatch) => {
 // Answer Comment
 export const answer_comment = (id, data) => (dispatch) => {
   axios
-    .post(`${current_url}comments/answer/${id}`, data, headers)
+    .post(`${current_url}comments/${id}/answer_comment`, data, headers)
     .then((res) => {
       console.log(res);
       dispatch({
