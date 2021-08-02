@@ -2,16 +2,16 @@ package main
 
 import (
 	handlers "GoProjects/CoffeeTwist/backend/handlers"
+	"GoProjects/CoffeeTwist/backend/lib"
+	"GoProjects/CoffeeTwist/backend/middleware"
 	models "GoProjects/CoffeeTwist/backend/models"
 	sse "GoProjects/CoffeeTwist/backend/sse"
 	websock "GoProjects/CoffeeTwist/backend/websocket"
+
 	"fmt"
-	"log"
 	"net/http"
-	"os"
 
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 )
 
 func CORS() gin.HandlerFunc {
@@ -30,20 +30,11 @@ func CORS() gin.HandlerFunc {
 	}
 }
 
-func goDotEnvVariable(key string) string {
-	//load .env file
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatalf("Error loading env file")
-	}
-	return os.Getenv(key)
-}
-
 func main() {
 	// Initialize Mongo DB session / collections (old)
 	// Initialize Psql DB (new)
 	models.Init()
-	defer models.DB.Close()
+	defer models.SQLDB.Close()
 	// Initialize gin router
 	router := gin.Default()
 	router.Use(CORS())
@@ -99,58 +90,58 @@ func main() {
 		users.POST("/logout", handlers.LogoutHandler)
 
 		// User actions
-
 		users.POST("/register", handlers.RegisterHandler)
 		users.PUT("/:id/update_personal_info", handlers.UpdatePersonalInfoUserByIdHandler)
 		users.PUT("/:id/update_password", handlers.ChangeUserPasswordByIdHandler)
-		users.GET("/:id", handlers.GetUserByIdHandler)
+		users.GET("/:id", middleware.TokenAuthMiddleware(), handlers.GetUserByIdHandler)
 
 	}
 	subscribes := router.Group("/subscribes/")
 	{
 		subscribes.POST("/new", handlers.SubscribeHandler)
-		subscribes.PUT("/unsubscribe/:id", handlers.UnsubscribeHandler)
+		subscribes.DELETE("/unsubscribe", handlers.UnsubscribeHandler)
 
 	}
 	token := router.Group("/token/")
 	{
-		token.POST("/refresh", models.Refresh)
+		token.POST("/refresh", middleware.Refresh)
 	}
 
-	products := router.Group("/products/")
-	{
-		// GET ALL
-		products.GET("/all", handlers.GetAllProductsHandler)
+	// products := router.Group("/products/")
+	// {
+	// 	// GET ALL
+	// 	products.GET("/all", handlers.GetAllProductsHandler)
 
-		// GET SINGLE
-		products.GET("/:id", handlers.GetSingleProductByIdHandler)
+	// 	// GET SINGLE
+	// 	products.GET("/:id", handlers.GetSingleProductByIdHandler)
 
-		// CREATE
-		products.POST("/create_product", handlers.RegisterProductHandler)
+	// 	// CREATE
+	// 	products.POST("/create_product", handlers.RegisterProductHandler)
 
-		// UPDATE VALUES
-		products.PUT("/:id/update_values", handlers.UpdateProductValuesByIdHandler)
+	// 	// UPDATE VALUES
+	// 	products.PUT("/:id/update_values", handlers.UpdateProductValuesByIdHandler)
 
-		// ADD CHOICE ?
-		products.PUT("/:id/add_choice", handlers.AddChoiceToProductByIdHandler)
+	// 	// ADD CHOICE ?
+	// 	products.PUT("/:id/add_choice", handlers.AddChoiceToProductByIdHandler)
 
-		// CHANGE AVAILABILITY
-		products.PUT("/:id/change_availability", handlers.ChangeAvailabilityOfProductByIdHandler)
-	}
-	product_choices := router.Group("/product_choices/")
-	{
-		// GET ALL
-		product_choices.GET("/all", handlers.GetAllProductChoicesHandler)
+	// 	// CHANGE AVAILABILITY
+	// 	products.PUT("/:id/change_availability", handlers.ChangeAvailabilityOfProductByIdHandler)
+	// }
 
-		// GET SINGLE
-		product_choices.GET("/:id", handlers.GetSingleProductChoiceByIdHandler)
+	// product_choices := router.Group("/product_choices/")
+	// {
+	// 	// GET ALL
+	// 	product_choices.GET("/all", handlers.GetAllProductChoicesHandler)
 
-		// CREATE
-		product_choices.POST("/new_product_choice", handlers.RegisterProductChoiceHandler)
+	// 	// GET SINGLE
+	// 	product_choices.GET("/:id", handlers.GetSingleProductChoiceByIdHandler)
 
-		// UPDATE SINGLE
-		product_choices.PUT("/:id/update_product_choice", handlers.UpdateProductChoiceByIdHandler)
-	}
+	// 	// CREATE
+	// 	product_choices.POST("/new_product_choice", handlers.RegisterProductChoiceHandler)
+
+	// 	// UPDATE SINGLE
+	// 	product_choices.PUT("/:id/update_product_choice", handlers.UpdateProductChoiceByIdHandler)
+	// }
 
 	ingredients := router.Group("/ingredients/")
 	{
@@ -169,72 +160,75 @@ func main() {
 		// GET SINGLE
 		ingredients.GET("/:id", handlers.GetSingleIngredientByIdHandler)
 
-	}
-
-	product_categories := router.Group("/product_category/")
-	{
-		// GET ALL
-		product_categories.GET("/all", handlers.GetAllProductCategoriesHandler)
-
-		// CREATE NEW
-		product_categories.POST("/create_product_category", handlers.RegisterProductCategoryHandler)
-
-		// GET SINGLE ?
-		// DELETE ?
-	}
-	orders := router.Group("/orders/")
-	{
-		// GET ALL
-		orders.GET("/all", handlers.GetAllOrdersHandler)
-
-		// GET TODAY
-		// orders.GET("/today", handlers.GetTodayOrdersHandler)
-
-		// GET SINGLE
-		orders.GET("/:id", handlers.GetSingleOrderByIdHandler)
-
-		// CREATE ORDER
-		orders.POST("/new_order", handlers.RegisterOrderHandler)
-
-	}
-	admin := router.Group("/admin/")
-	{
-		// Auth actions
-		admin.POST("/login", models.AdminLogin)
-		// admin.POST("/logout", models.AdminLogout)
-
-		// ADMIN ORDER ACTION
-		admin.PUT("/orders/:id/accept_order", handlers.AcceptOrderByIdHandler)
-		admin.PUT("/orders/:id/cancel_order", handlers.CancelOrderByIdHandler)
-		admin.PUT("/orders/:id/complete_order", handlers.CompleteOrderByIdHandler)
-
-		// Fetch orders
-		// admin.PUT("/update_order", models.UpdateOrder)
-		// admin.GET("/:id", models.GetSingleOrder)
-
-		// GET TODAY ORDERS
-		admin.GET("/today", handlers.GetTodayOrdersHandler)
+		// DELETE
+		ingredients.DELETE("/:id", handlers.DeleteIngredientByIdHandler)
 
 	}
 
-	comments := router.Group("/comments/")
-	{
-		// CREATE NEW
-		comments.POST("/new_comment", handlers.RegisterCommentHandler)
+	// product_categories := router.Group("/product_category/")
+	// {
+	// 	// GET ALL
+	// 	product_categories.GET("/all", handlers.GetAllProductCategoriesHandler)
 
-		// GET SINGLE
-		comments.GET("/:id", handlers.GetSingleCommentByIdHandler)
+	// 	// CREATE NEW
+	// 	product_categories.POST("/create_product_category", handlers.RegisterProductCategoryHandler)
 
-		// GET ALL
-		comments.GET("/all", handlers.GetAllCommentsHandler)
+	// 	// GET SINGLE ?
+	// 	// DELETE ?
+	// }
+	// orders := router.Group("/orders/")
+	// {
+	// 	// GET ALL
+	// 	orders.GET("/all", handlers.GetAllOrdersHandler)
 
-		// APPROVE COMMENT
-		comments.PUT("/:id/approve_comment", handlers.ApproveCommentByIdHandler)
-		// REJECT COMMENT
-		comments.PUT("/:id/reject_comment", handlers.RejectCommentByIdHandler)
-		// ANSWER COMMENT
-		comments.PUT("/:id/answer_comment", handlers.AnswerCommentByIdHandler)
-	}
+	// 	// GET TODAY
+	// 	// orders.GET("/today", handlers.GetTodayOrdersHandler)
+
+	// 	// GET SINGLE
+	// 	orders.GET("/:id", handlers.GetSingleOrderByIdHandler)
+
+	// 	// CREATE ORDER
+	// 	orders.POST("/new_order", handlers.RegisterOrderHandler)
+
+	// }
+	// admin := router.Group("/admin/")
+	// {
+	// 	// Auth actions
+	// 	admin.POST("/login", models.AdminLogin)
+	// 	// admin.POST("/logout", models.AdminLogout)
+
+	// 	// ADMIN ORDER ACTION
+	// 	admin.PUT("/orders/:id/accept_order", handlers.AcceptOrderByIdHandler)
+	// 	admin.PUT("/orders/:id/cancel_order", handlers.CancelOrderByIdHandler)
+	// 	admin.PUT("/orders/:id/complete_order", handlers.CompleteOrderByIdHandler)
+
+	// 	// Fetch orders
+	// 	// admin.PUT("/update_order", models.UpdateOrder)
+	// 	// admin.GET("/:id", models.GetSingleOrder)
+
+	// 	// GET TODAY ORDERS
+	// 	admin.GET("/today", handlers.GetTodayOrdersHandler)
+
+	// }
+
+	// comments := router.Group("/comments/")
+	// {
+	// 	// CREATE NEW
+	// 	comments.POST("/new_comment", handlers.RegisterCommentHandler)
+
+	// 	// GET SINGLE
+	// 	comments.GET("/:id", handlers.GetSingleCommentByIdHandler)
+
+	// 	// GET ALL
+	// 	comments.GET("/all", handlers.GetAllCommentsHandler)
+
+	// 	// APPROVE COMMENT
+	// 	comments.PUT("/:id/approve_comment", handlers.ApproveCommentByIdHandler)
+	// 	// REJECT COMMENT
+	// 	comments.PUT("/:id/reject_comment", handlers.RejectCommentByIdHandler)
+	// 	// ANSWER COMMENT
+	// 	comments.PUT("/:id/answer_comment", handlers.AnswerCommentByIdHandler)
+	// }
 
 	router.Any("/", func(c *gin.Context) {
 		if c.Request.URL.Path != "/" {
@@ -246,11 +240,12 @@ func main() {
 
 	port := ""
 	// Initialize redis
-	if goDotEnvVariable("STATE") == "local" {
+	if lib.GoDotEnvVariable("STATE") == "local" {
 		port = "localhost:8080"
 	} else {
-		port = ":" + goDotEnvVariable("PORT")
+		port = ":" + lib.GoDotEnvVariable("PORT")
 	}
 
+	fmt.Println("SERVER RUNNING ON :" + port)
 	router.Run(port)
 }

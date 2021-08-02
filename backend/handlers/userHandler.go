@@ -3,16 +3,12 @@ package handlers
 import (
 	models "GoProjects/CoffeeTwist/backend/models"
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 )
-
-//
 
 // Get all users
 func GetAllHandler(c *gin.Context) {
@@ -20,55 +16,16 @@ func GetAllHandler(c *gin.Context) {
 		fmt.Println("Only get requests here, nothing else!")
 		return
 	}
-	// db := models.OpenConnection()
-
-	rows, err := models.DB.Query(` SELECT id,username,email,name,surname,phone,
-					addresses_id,orders_id,created_at,deleted_at,active FROM users ;`)
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	var users []models.User
-	var user models.User
-	for rows.Next() {
-		var tmp struct {
-			id           int64
-			username     string
-			email        string
-			name         string
-			surname      string
-			phone        int64
-			addresses_id []int
-			orders_id    []int
-			created_at   time.Time
-			deleted_at   time.Time
-			active       bool
-		}
-		rows.Scan(&tmp.id, &tmp.username, &tmp.email, &tmp.name, &tmp.surname, &tmp.phone,
-			&tmp.addresses_id, &tmp.orders_id, &tmp.created_at, &tmp.deleted_at, &tmp.active)
 
-		user.ID = tmp.id
-		user.BaseUser.Username = tmp.username
-		user.BaseUser.Email = tmp.email
-		user.PersonalInfo.Name = tmp.name
-		user.PersonalInfo.Surname = tmp.surname
-		user.PersonalInfo.Phone = tmp.phone
-		user.Addresses_id = tmp.addresses_id
-		user.OrdersInfo.Orders_ids = tmp.orders_id
-		user.Created_at = tmp.created_at
-		user.Deleted_at = tmp.deleted_at
-		users = append(users, user)
+	result := models.GORMDB.Find(&users)
+	if result.Error != nil {
+		ContexJsonResponse(c, "Error on users search", http.StatusInternalServerError, nil, result.Error)
+		return
 	}
 
-	// usersBytes, _ := json.MarshalIndent(users, "", "\t")
-
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Users fetched successfully",
-		"data":    users,
-	})
-
-	// defer rows.Close()
-	// defer db.Close()
+	ContexJsonResponse(c, "Users fetched successfully", http.StatusOK, users, nil)
 }
 
 // Register a new user
@@ -77,58 +34,44 @@ func RegisterHandler(c *gin.Context) {
 		fmt.Println("Only post requests here, nothing else!")
 		return
 	}
-	// db := models.OpenConnection()
 
 	// JSON input from query
 	// username: ""
 	// password: ""
 	// email : ""
-	var input models.BaseUser
+	var input struct {
+		Username string `json:"username"`
+		Password string `json:"password"`
+		Email    string `json:"email"`
+	}
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ContexJsonResponse(c, "Error on data parse", 500, nil, err)
 		return
 	}
 
-	// // Check if mail exists
-	// sqlQuery := `SELECT username FROM users where email = $1;`
-	// rows, err := db.Query(sqlQuery, input.Email)
-	// fmt.Print(rows)
-	// if rows.Next() {
-	// 	c.JSON(http.StatusInternalServerError, gin.H{
-	// 		"message": "Email already exists",
-	// 	})
-	// 	return
-	// }
 	// Encrypt password
 
 	password := input.Password
 	bs, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.MinCost)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Internal server error on password encryption",
-		})
+		ContexJsonResponse(c, "Internal server error on password encryption", http.StatusInternalServerError, nil, err)
 		return
 	}
 	password = string(bs)
+	input.Password = password
 
-	sqlStatement := `INSERT INTO users (username , password , email,created_at) VALUES ($1,$2,$3, NOW());`
-	_, err = models.DB.Exec(sqlStatement, input.Username, password, input.Email) //,,,,
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Internal server error on registration",
-		})
-		fmt.Print(err)
-		panic(err)
-	}
 	user := models.User{}
-	user.BaseUser = input
-	user.BaseUser.Password = ""
-	c.JSON(http.StatusOK, gin.H{
-		"message": "User created successfully",
-		"data":    user,
-	})
-	// defer db.Close()
-	return
+	user.Username = input.Username
+	user.Password = password
+	user.Email = input.Email
+	result := models.GORMDB.Select("username", "password", "email").Create(&user)
+	if result.Error != nil {
+		ContexJsonResponse(c, "Internal server error on user creation", http.StatusInternalServerError, nil, result.Error)
+		return
+	}
+	user.Password = ""
+
+	ContexJsonResponse(c, "user created successfully", 200, user, result.Error)
 }
 
 // Get single user by id
@@ -137,57 +80,21 @@ func GetUserByIdHandler(c *gin.Context) {
 		fmt.Println("Only post requests here, nothing else!")
 		return
 	}
+	fmt.Print("here")
 
 	// db := models.OpenConnection()
 
 	// Int in params :id
 	id := c.Param("id")
 
-	rows, err := models.DB.Query(`SELECT id,username,email,name,surname,phone,
-					addresses_id,orders_id,created_at,deleted_at,active FROM users where id = $1 ;`, id)
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	var user models.User
-	for rows.Next() {
-		var tmp struct {
-			id           int64
-			username     string
-			email        string
-			name         string
-			surname      string
-			phone        int64
-			addresses_id []int
-			orders_id    []int
-			created_at   time.Time
-			deleted_at   time.Time
-			active       bool
-		}
-		rows.Scan(&tmp.id, &tmp.username, &tmp.email, &tmp.name, &tmp.surname, &tmp.phone,
-			&tmp.addresses_id, &tmp.orders_id, &tmp.created_at, &tmp.deleted_at, &tmp.active)
 
-		user.ID = tmp.id
-		user.BaseUser.Username = tmp.username
-		user.BaseUser.Email = tmp.email
-		user.PersonalInfo.Name = tmp.name
-		user.PersonalInfo.Surname = tmp.surname
-		user.PersonalInfo.Phone = tmp.phone
-		user.Addresses_id = tmp.addresses_id
-		user.OrdersInfo.Orders_ids = tmp.orders_id
-		user.Created_at = tmp.created_at
-		user.Deleted_at = tmp.deleted_at
-	}
+	models.GORMDB.Find(&user, id)
 
-	// usersBytes, _ := json.MarshalIndent(user, "", "\t")
+	user.Password = ""
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "User fetched successfully",
-		"data":    user,
-	})
+	ContexJsonResponse(c, "User fetched successfully", 200, user, nil)
 
-	// defer rows.Close()
-	// defer db.Close()
 }
 
 // Update single user by id
@@ -208,36 +115,29 @@ func UpdatePersonalInfoUserByIdHandler(c *gin.Context) {
 	var input struct {
 		Name    string `json:"name"`
 		Surname string `json:"surname"`
-		Phone   string `json:"phone"`
+		Phone   int64  `json:"phone"`
 	}
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ContexJsonResponse(c, "Error on update personal info", http.StatusBadRequest, nil, err)
 		return
 	}
 
-	sqlStatement := `UPDATE  users set name=$1, surname=$2, phone=$3 where id = $4;`
-	phone, err := strconv.ParseInt(input.Phone, 10, 64)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Internal server error on update phone",
-		})
-		fmt.Print(err)
-		panic(err)
-	}
-	_, err = models.DB.Exec(sqlStatement, input.Name, input.Surname, phone, id) //,,,,
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Internal server error on update user",
-		})
-		fmt.Print(err)
-		panic(err)
-	}
+	// Get user
+	var user models.User
+	models.GORMDB.First(&user, id)
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "User updated successfully",
-	})
-	// defer db.Close()
-	return
+	user.Name = input.Name
+	user.Surname = input.Surname
+	// phone, err := strconv.ParseInt(input.Phone, 10, 64)
+	// if err != nil {
+	// 	ContexJsonResponse(c, "Error on phone parse", http.StatusInternalServerError, nil, err)
+	// }
+	user.Phone = input.Phone
+
+	models.GORMDB.Save(&user)
+
+	user.Password = ""
+	ContexJsonResponse(c, "User's personal info updated", 200, user, nil)
 }
 
 // Change users Password by id
@@ -246,7 +146,6 @@ func ChangeUserPasswordByIdHandler(c *gin.Context) {
 		fmt.Println("Only put requests here, nothing else!")
 		return
 	}
-	// db := models.OpenConnection()
 
 	// Int in params :id
 	id := c.Param("id")
@@ -257,7 +156,7 @@ func ChangeUserPasswordByIdHandler(c *gin.Context) {
 		Password string `json:"password"`
 	}
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ContexJsonResponse(c, "Error on data parse", http.StatusBadRequest, nil, err)
 		return
 	}
 
@@ -266,28 +165,20 @@ func ChangeUserPasswordByIdHandler(c *gin.Context) {
 	password := input.Password
 	bs, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.MinCost)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Internal server error on password encryption",
-		})
+		ContexJsonResponse(c, "Error on password encryption.", http.StatusInternalServerError, nil, err)
 		return
 	}
 	password = string(bs)
 
-	sqlStatement := `UPDATE  users set password=$1 where id = $2;`
-	_, err = models.DB.Exec(sqlStatement, password, id) //,,,,
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Internal server error on update user",
-		})
-		fmt.Print(err)
-		panic(err)
-	}
+	// Get user
+	var user models.User
+	models.GORMDB.First(&user, id)
+	user.Password = password
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "User updated successfully",
-	})
-	// defer db.Close()
-	return
+	models.GORMDB.Save(&user)
+	user.Password = ""
+
+	ContexJsonResponse(c, "User's personal info updated", 200, user, nil)
 }
 
 // Add address id to user
@@ -296,7 +187,6 @@ func AddAdressToUserByIdHandler(c *gin.Context) {
 		fmt.Println("Only put requests here, nothing else!")
 		return
 	}
-	// db := models.OpenConnection()
 
 	// Int in params :id
 	id := c.Param("id")
@@ -306,23 +196,25 @@ func AddAdressToUserByIdHandler(c *gin.Context) {
 		Address_id string `json:"address_id"`
 	}
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ContexJsonResponse(c, "Error on data parse", http.StatusBadRequest, nil, err)
 		return
 	}
 
-	sqlStatement := `UPDATE  users set addresses_id = array_append(addresses_id, $1) where id = $2;`
-	_, err := models.DB.Exec(sqlStatement, input.Address_id, id) //,,,,
+	// Get user
+	var user models.User
+	models.GORMDB.First(&user, id)
+
+	add_id, err := strconv.ParseInt(input.Address_id, 10, 64)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Internal server error on update user",
-		})
-		fmt.Print(err)
-		panic(err)
+		ContexJsonResponse(c, "Error on address id conversion", http.StatusBadRequest, nil, err)
+		return
 	}
-	// defer db.Close()
+	user.Addresses_id = append(user.Addresses_id, add_id)
 
-	ContexJsonResponse(c, "User updated successfully", http.StatusOK, nil)
+	models.GORMDB.Save(&user)
+	user.Password = ""
 
+	ContexJsonResponse(c, "User updated successfully", http.StatusOK, user, nil)
 }
 
 // TODO Delete User??

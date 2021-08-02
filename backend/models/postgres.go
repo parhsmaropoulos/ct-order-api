@@ -8,9 +8,13 @@ import (
 
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
+
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
-var DB *sql.DB
+var GORMDB *gorm.DB
+var SQLDB *sql.DB
 
 func Init() {
 	err := godotenv.Load()
@@ -28,15 +32,22 @@ func Init() {
 		os.Getenv("DATABASE_DB"),
 	)
 
-	DB, err := sql.Open("postgres", psqlInfo)
+	SQLDB, err := sql.Open("postgres", psqlInfo)
+
+	GORMDB, err = gorm.Open(postgres.New(postgres.Config{
+		Conn: SQLDB,
+	}), &gorm.Config{})
 	if err != nil {
-		panic(err)
+		panic("Failed to connect to database")
 	}
-	defer DB.Close()
-	err = DB.Ping()
-	if err != nil {
-		panic(err)
-	}
+	fmt.Println("DATABASE CONNECTION ESTABLISHED")
+
+	GORMDB.AutoMigrate(&User{})
+	GORMDB.AutoMigrate(&Ingredient{})
+	GORMDB.AutoMigrate(&Product{})
+	GORMDB.AutoMigrate(&Subscribe{})
+	GORMDB.AutoMigrate(&Choice{})
+	fmt.Println("DATABASE MIGRATION COMPLETED")
 
 	// return db
 }
@@ -57,16 +68,21 @@ func InitTest() {
 		os.Getenv("DATABASE_DB"),
 	)
 
-	DB, err := sql.Open("postgres", psqlInfo)
-	if err != nil {
-		panic(err)
-	}
-	defer DB.Close()
+	SQLDB, err := sql.Open("postgres", psqlInfo)
 
-	err = DB.Ping()
+	GORMDB, err = gorm.Open(postgres.New(postgres.Config{
+		Conn: SQLDB,
+	}), &gorm.Config{})
 	if err != nil {
-		panic(err)
+		panic("Failed to connect to database")
 	}
+	fmt.Println("DATABASE CONNECTION ESTABLISHED")
 
+	GORMDB.AutoMigrate(&User{})
+	GORMDB.AutoMigrate(&Ingredient{})
+	GORMDB.AutoMigrate(&Product{})
+	GORMDB.AutoMigrate(&Subscribe{})
+	GORMDB.AutoMigrate(&Choice{})
+	fmt.Println("DATABASE MIGRATION COMPLETED")
 	// return db
 }

@@ -14,67 +14,54 @@ func SubscribeHandler(c *gin.Context) {
 		fmt.Println("Only post requests here, nothing else!")
 		return
 	}
-	// db := models.OpenConnection()
-
 	// JSON input from query
 	// email : ""
-	var input models.BaseSubscribe
+	var input struct {
+		Email string `json:"email"`
+	}
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ContexJsonResponse(c, "Error on data parse.", 500, nil, err)
 		return
 	}
 
-	// Check if mail exists
-	// sqlQuery := `SELECT email FROM subscribes where email = $1;`
-	// rows, err := db.Query(sqlQuery, input.Email)
-	// fmt.Print(rows)
-	// if rows != nil {
-	// 	c.JSON(http.StatusInternalServerError, gin.H{
-	// 		"message": "Email already exists",
-	// 	})
-	// 	return
-	// }
+	subscribe := models.Subscribe{}
 
-	sqlStatement := `INSERT INTO subscribes ( email, active) values ($1, $2);`
-	_, err := models.DB.Exec(sqlStatement, input.Email, true) //,,,,
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Internal server error on subscribe",
-		})
-		fmt.Print(err)
-		panic(err)
+	subscribe.Email = input.Email
+	subscribe.Active = true
+
+	result := models.GORMDB.Select("email", "active").Create(&subscribe)
+
+	if result.Error != nil {
+		ContexJsonResponse(c, "Internal server error on subscription", http.StatusInternalServerError, nil, result.Error)
+		return
 	}
-	c.JSON(http.StatusOK, gin.H{
-		"message": "User subscribed successfully",
-	})
-	// defer db.Close()
-	return
+	ContexJsonResponse(c, "Subscribed successfully", 200, subscribe, nil)
+
 }
 
 // Unsubscribe by ID
 func UnsubscribeHandler(c *gin.Context) {
-	if c.Request.Method != "PUT" {
+	if c.Request.Method != "DELETE" {
 		fmt.Println("Only post requests here, nothing else!")
 		return
 	}
 	// db := models.OpenConnection()
 
-	// Int in params :id
-	id := c.Param("id")
-	fmt.Print(id)
-	// Set subscribe to inactive
-	sqlStatement := `UPDATE subscribes SET active = $1 where id = $2;`
-	_, err := models.DB.Exec(sqlStatement, false, id) //,,,,
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Internal server error on unsubscribe",
-		})
-		fmt.Print(err)
-		panic(err)
+	// Input json
+	// Email = ""
+	var subscribe models.Subscribe
+
+	var input struct {
+		Email string `json:"email"`
 	}
-	c.JSON(http.StatusOK, gin.H{
-		"message": "User unsubscribed successfully",
-	})
-	// defer db.Close()
-	return
+	if err := c.ShouldBindJSON(&input); err != nil {
+		ContexJsonResponse(c, "Error on data parse.", 500, nil, err)
+		return
+	}
+
+	result := models.GORMDB.Table("subscribes").Where("email = ?", input.Email).Delete(&subscribe)
+
+	ContexJsonResponse(c, "Unsubscribes successfully", 200, result, result.Error)
 }
+
+// TODO GET subscrtibes

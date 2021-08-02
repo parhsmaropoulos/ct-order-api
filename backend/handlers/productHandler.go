@@ -2,21 +2,12 @@ package handlers
 
 import (
 	models "GoProjects/CoffeeTwist/backend/models"
-	"bytes"
 	"encoding/json"
 	"fmt"
-	"image"
-	"image/png"
-	"io/ioutil"
-	"log"
 	"math"
-	"net/http"
-	"strings"
-
-	resize "github.com/nfnt/resize"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/lib/pq"
 )
 
 // Get all products
@@ -25,303 +16,26 @@ func GetAllProductsHandler(c *gin.Context) {
 		fmt.Println("Only get requests here, nothing else!")
 		return
 	}
-	// db := models.OpenConnection()
-
-	rows, err := models.DB.Query(` SELECT * FROM products ;`)
-	if err != nil {
-		fmt.Print(err.Error())
-		log.Fatal(err)
-	}
 
 	var products []models.Product
-	var product models.Product
-	for rows.Next() {
-		var tmp struct {
-			id                  int64
-			name                string
-			description         string
-			price               float64
-			image               string
-			choices_id          []int64
-			custom              bool
-			available           bool
-			visible             bool
-			category_id         int
-			ingredients_id      []int64
-			default_ingredients []string
-		}
 
-		rows.Scan(&tmp.id, &tmp.name, &tmp.description, &tmp.price, &tmp.image, pq.Array(&tmp.choices_id),
-			&tmp.custom, &tmp.available, &tmp.visible, &tmp.category_id, pq.Array(&tmp.ingredients_id), pq.Array(&tmp.default_ingredients))
-
-		product.BaseProduct.Available = tmp.available
-		product.BaseProduct.Category_id = tmp.category_id
-		product.BaseProduct.Choices_id = tmp.choices_id
-		product.BaseProduct.Custom = tmp.custom
-		product.BaseProduct.Description = tmp.description
-		product.BaseProduct.Image = tmp.image
-		product.BaseProduct.Ingredients_id = tmp.ingredients_id
-		product.BaseProduct.Name = tmp.name
-		product.BaseProduct.Price = tmp.price
-		product.BaseProduct.Visible = tmp.visible
-		product.BaseProduct.Default_Ingredients = tmp.default_ingredients
-		product.ID = tmp.id
-
-		products = append(products, product)
+	result := models.GORMDB.Find(&products)
+	if result.Error != nil {
+		ContexJsonResponse(c, "Error on products search", 500, nil, result.Error)
+		return
 	}
 
-	// usersBytes, _ := json.MarshalIndent(users, "", "\t")
-	// defer rows.Close()
-	// defer db.Close()
-
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Products fetched successfully",
-		"data":    products,
-	})
-
+	ContexJsonResponse(c, "Products fetched successfully", 200, products, nil)
 }
 
-// Register a new user
+// Register a new product
 func RegisterProductHandler(c *gin.Context) {
 	if c.Request.Method != "POST" {
 		fmt.Println("Only post requests here, nothing else!")
 		return
 	}
-	// db := models.OpenConnection()
-
-	// JSON input from query
-	// product : {}
-	var input models.BaseProduct
-
-	// For iamge
-	var imageName string = ""
-	c.Request.ParseMultipartForm(10 << 20)
-	// Check if there is a  file
-	if len(c.Request.MultipartForm.File) != 0 {
-
-		// Retrieve file
-		file, handler, err := c.Request.FormFile("file")
-		// c.SaveUploadedFile(file, "saved/"+file.Filename)
-		fmt.Println("Got Here")
-		if err != nil {
-			log.Fatal(err)
-		}
-		filename := fmt.Sprintf("%s-*.png", strings.Split(handler.Filename, ".")[0])
-		// Write temporary file
-		tempFile, err := ioutil.TempFile("assets/images", filename)
-		if err != nil {
-			fmt.Println(err)
-		}
-		defer tempFile.Close()
-		imageName = strings.Split(tempFile.Name(), "\\")[2]
-		fileBytes, err := ioutil.ReadAll(file)
-		if err != nil {
-			fmt.Println(err)
-		}
-		img, _, _ := image.Decode(bytes.NewReader(fileBytes))
-
-		resized := resize.Thumbnail(100, 100, img, resize.NearestNeighbor)
-		errs := png.Encode(tempFile, resized)
-		if errs != nil {
-			log.Fatal(errs)
-		}
-	}
-
-	// 	// Get the product values
-	data := c.Request.FormValue("data")
-	err := json.Unmarshal([]byte(data), &input)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	input.Image = imageName
-
-	input.Price = math.Round((input.Price * 100) / 100)
-
-	sqlStatement := `INSERT INTO products (name , description, price
-		,image, choices_id, custom, available, visible, category_id, ingredients_ids, default_ingredients)
-		 VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) returning id;`
-	_, err = models.DB.Exec(sqlStatement, input.Name, input.Description, input.Price, input.Image, pq.Array(input.Choices_id), input.Custom, false, true, input.Category_id, pq.Array(input.Ingredients_id), pq.Array(input.Default_Ingredients)) //,,,,
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Internal server error on registration",
-		})
-		fmt.Print(err)
-		panic(err)
-	}
-	// defer db.Close()
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Product created successfully",
-		"data":    input,
-	})
-}
-
-// Get single product by id
-func GetSingleProductByIdHandler(c *gin.Context) {
-	if c.Request.Method != "GET" {
-		fmt.Println("Only get requests here, nothing else!")
-		return
-	}
-	// db := models.OpenConnection()
-
-	id := c.Param("id")
-
-	rows, err := models.DB.Query(` SELECT * FROM products where id = $1;`, id)
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	var product models.Product
-	for rows.Next() {
-		var tmp struct {
-			id                  int64
-			name                string
-			description         string
-			price               float64
-			image               string
-			choices_id          []int64
-			custom              bool
-			available           bool
-			visible             bool
-			category_id         int
-			ingredients_id      []int64
-			default_ingredients []string
-		}
-
-		rows.Scan(&tmp.id, &tmp.name, &tmp.description, &tmp.price, &tmp.image, pq.Array(&tmp.choices_id),
-			&tmp.custom, &tmp.available, &tmp.visible, &tmp.category_id, pq.Array(&tmp.ingredients_id), pq.Array(&tmp.default_ingredients))
-
-		product.BaseProduct.Available = tmp.available
-		product.BaseProduct.Category_id = tmp.category_id
-		product.BaseProduct.Choices_id = tmp.choices_id
-		product.BaseProduct.Custom = tmp.custom
-		product.BaseProduct.Description = tmp.description
-		product.BaseProduct.Image = tmp.image
-		product.BaseProduct.Ingredients_id = tmp.ingredients_id
-		product.BaseProduct.Name = tmp.name
-		product.BaseProduct.Price = tmp.price
-		product.BaseProduct.Visible = tmp.visible
-		product.BaseProduct.Default_Ingredients = tmp.default_ingredients
-		product.ID = tmp.id
-	}
-
-	// usersBytes, _ := json.MarshalIndent(users, "", "\t")
-	// defer rows.Close()
-	// defer db.Close()
-
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Products fetched successfully",
-		"data":    product,
-	})
-
-}
-
-// Delete single product by id
-func DeleteProductByIdHandler(c *gin.Context) {
-	if c.Request.Method != "DELETE" {
-		fmt.Println("Only delete requests here, nothing else!")
-		return
-	}
-	// db := models.OpenConnection()
-
-	id := c.Param("id")
-
-	_, err := models.DB.Query(` DELETE FROM products where id = $1;`, id)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// usersBytes, _ := json.MarshalIndent(users, "", "\t")
-	// defer rows.Close()
-	// defer db.Close()
-
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Product deleted successfully",
-	})
-
-}
-
-// Update choices of product by id
-func AddChoiceToProductByIdHandler(c *gin.Context) {
-	if c.Request.Method != "PUT" {
-		fmt.Println("Only put requests here, nothing else!")
-		return
-	}
-	// db := models.OpenConnection()
-	// defer db.Close()
-
-	// Int in params :id
-	id := c.Param("id")
-
-	// JSON input from request
-	// choice_id
-	var input struct {
-		Choice_id int64 `json:"choice_id"`
-	}
-	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	sqlStatement := `update products set choices_id = array_append(choices_id, $1) where id = $2;`
-	_, err := models.DB.Exec(sqlStatement, input.Choice_id, id) //,,,,
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Internal server error on update user",
-		})
-		fmt.Print(err)
-		panic(err)
-	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Product choice added to product successfully",
-	})
-
-}
-
-// Change Availability of product by id
-func ChangeAvailabilityOfProductByIdHandler(c *gin.Context) {
-	if c.Request.Method != "PUT" {
-		fmt.Println("Only put requests here, nothing else!")
-		return
-	}
-	// db := models.OpenConnection()
-
-	// Int in params :id
-	id := c.Param("id")
-
-	sqlStatement := `update products set available = NOT available where id = $1;`
-	_, err := models.DB.Exec(sqlStatement, id) //,,,,
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Internal server error on update user",
-		})
-		fmt.Print(err)
-		panic(err)
-	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Product availability changed  successfully",
-	})
-}
-
-// Update product values by id
-func UpdateProductValuesByIdHandler(c *gin.Context) {
-	if c.Request.Method != "PUT" {
-		fmt.Println("Only put requests here, nothing else!")
-		return
-	}
-	// db := models.OpenConnection()
-	// defer db.Close()
-
-	// Int in params :id
-	id := c.Param("id")
-
-	// JSON input from query
-	// product : {}
-	var input models.BaseProduct
-
 	// For iamge
 	var imageName string = ""
 	c.Request.ParseMultipartForm(10 << 20)
@@ -357,29 +71,267 @@ func UpdateProductValuesByIdHandler(c *gin.Context) {
 	// }
 
 	// 	// Get the product values
-	data := c.Request.FormValue("data")
-	err := json.Unmarshal([]byte(data), &input)
+	product.Name = c.Request.FormValue("name")
+	product.Description = c.Request.FormValue("description")
+	product.Price, _ = strconv.ParseFloat(c.Request.FormValue("price"), 64)
 
-	if err != nil {
-		log.Fatal(err)
+	choices_ := c.Request.FormValue("choices_id")
+	if err := json.Unmarshal([]byte(choices_), &product.Choices_id); err != nil {
+		ContexJsonResponse(c, "Error on choices_id unmarshal", 500, nil, err)
+		return
 	}
 
-	input.Image = imageName
+	product.Custom, _ = strconv.ParseBool(c.Request.FormValue("custom"))
+	product.Category_id, _ = strconv.ParseInt(c.Request.FormValue("category_id"), 10, 64)
 
-	input.Price = math.Round((input.Price * 100) / 100)
-
-	sqlStatement := `update products set name = $1, description = $2, price=$3, image=$4, choices_id=$5, custom=$6,category_id=$7,ingredients_ids=$8 , default_ingredients=$10 where id = $9;`
-	_, err = models.DB.Exec(sqlStatement, input.Name, input.Description, input.Price, input.Image, pq.Array(input.Choices_id), input.Custom, input.Category_id, pq.Array(input.Ingredients_id), id, pq.Array(input.Default_Ingredients)) //,,,,
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Internal server error on update user",
-		})
-		fmt.Print(err)
-		panic(err)
+	ingredients_ := c.Request.FormValue("ingredients_id")
+	if err := json.Unmarshal([]byte(ingredients_), &product.Ingredients_id); err != nil {
+		ContexJsonResponse(c, "Error on ingredients unmarshal", 500, nil, err)
+		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Product updated successfully",
-	})
-	return
+	default_ingredients_ := c.Request.FormValue("default_ingredients")
+	if err := json.Unmarshal([]byte(default_ingredients_), &product.Default_Ingredients); err != nil {
+		ContexJsonResponse(c, "Error on default_ingredients unmarshal", 500, nil, err)
+		return
+	}
+
+	product.Image = imageName
+
+	product.Price = math.Round((product.Price * 100) / 100)
+
+	result := models.GORMDB.Create(&product)
+
+	if result.Error != nil {
+		ContexJsonResponse(c, "Internal server error on product creation", 500, nil, result.Error)
+		return
+	}
+
+	ContexJsonResponse(c, "Products created successfully", 200, product, nil)
+}
+
+// Get single product by id
+func GetSingleProductByIdHandler(c *gin.Context) {
+	if c.Request.Method != "GET" {
+		fmt.Println("Only get requests here, nothing else!")
+		return
+	}
+	// db := models.OpenConnection()
+
+	id := c.Param("id")
+
+	var product models.Product
+
+	result := models.GORMDB.Table("products").First(&product, id)
+
+	if result.Error != nil {
+		ContexJsonResponse(c, "Internal server error on product fetch", 500, nil, result.Error)
+		return
+	}
+
+	ContexJsonResponse(c, "Product fetched successfully", 200, product, nil)
+}
+
+// Delete single product by id
+func DeleteProductByIdHandler(c *gin.Context) {
+	if c.Request.Method != "DELETE" {
+		fmt.Println("Only delete requests here, nothing else!")
+		return
+	}
+	// db := models.OpenConnection()
+
+	var product models.Product
+
+	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	if err != nil {
+		ContexJsonResponse(c, "Internal server error on id parse", 500, nil, err)
+		return
+	}
+
+	product.ID = uint(id)
+	if err != nil {
+		ContexJsonResponse(c, "Error on id parse", 500, nil, err)
+		return
+	}
+
+	result := models.GORMDB.Table("products").Delete(&product)
+	if result.Error != nil {
+		ContexJsonResponse(c, "Internal server error on product delete", 500, nil, result.Error)
+		return
+	}
+
+	ContexJsonResponse(c, "Product deleted successfully", 200, product, nil)
+}
+
+// Update choices of product by id
+func AddChoiceToProductByIdHandler(c *gin.Context) {
+	if c.Request.Method != "PUT" {
+		fmt.Println("Only put requests here, nothing else!")
+		return
+	}
+	// db := models.OpenConnection()
+	// defer db.Close()
+
+	// Int in params :id
+	id := c.Param("id")
+
+	// JSON input
+	// choice_id: int
+	var input struct {
+		Choice_id int64 `json:"choice_id"`
+	}
+	err := c.ShouldBindJSON(&input)
+	if err != nil {
+		ContexJsonResponse(c, "Error on data parse", 500, nil, err)
+		return
+	}
+
+	// Get product
+	var product models.Product
+	models.GORMDB.First(&product, id)
+	if product.ID == 0 {
+		ContexJsonResponse(c, "Product availability changed  failed, no such an ID available", 500, nil, nil)
+		return
+	}
+
+	// Add choice id
+	product.Choices_id = append(product.Choices_id, input.Choice_id)
+
+	result := models.GORMDB.Save(&product)
+	if result.Error != nil {
+		ContexJsonResponse(c, "Internal server error on product update", 500, nil, result.Error)
+		return
+	}
+
+	ContexJsonResponse(c, "Added new choice to product successfully", 200, product, nil)
+
+}
+
+// Change Availability of product by id
+func ChangeAvailabilityOfProductByIdHandler(c *gin.Context) {
+	if c.Request.Method != "PUT" {
+		fmt.Println("Only put requests here, nothing else!")
+		return
+	}
+	// db := models.OpenConnection()
+
+	// Int in params :id
+	id := c.Param("id")
+
+	// Get product
+	var product models.Product
+	models.GORMDB.First(&product, id)
+
+	if product.Available {
+		product.Available = false
+	} else {
+		product.Available = true
+	}
+
+	if product.ID == 0 {
+		ContexJsonResponse(c, "Product availability changed  failed, no such an ID available", 500, nil, nil)
+		return
+	}
+	result := models.GORMDB.Save(&product)
+	if result.Error != nil {
+		ContexJsonResponse(c, "Internal server error on product update", 500, nil, result.Error)
+		return
+	}
+
+	ContexJsonResponse(c, "Product availability changed", 200, product, nil)
+}
+
+// Update product values by id
+func UpdateProductValuesByIdHandler(c *gin.Context) {
+	if c.Request.Method != "PUT" {
+		fmt.Println("Only put requests here, nothing else!")
+		return
+	}
+	// db := models.OpenConnection()
+	// defer db.Close()
+
+	// Int in params :id
+	id := c.Param("id")
+
+	// JSON input from query
+	// product : {}
+	var product models.Product
+
+	// For iamge
+	var imageName string = ""
+	c.Request.ParseMultipartForm(10 << 20)
+	// Check if there is a  file
+	// if len(c.Request.MultipartForm.File) != 0 {
+
+	// 	// Retrieve file
+	// 	file, handler, err := c.Request.FormFile("file")
+	// 	// c.SaveUploadedFile(file, "saved/"+file.Filename)
+	// 	fmt.Println("Got Here")
+	// 	if err != nil {
+	// 		log.Fatal(err)
+	// 	}
+	// 	filename := fmt.Sprintf("%s-*.png", strings.Split(handler.Filename, ".")[0])
+	// 	// Write temporary file
+	// 	tempFile, err := ioutil.TempFile("assets/images", filename)
+	// 	if err != nil {
+	// 		fmt.Println(err)
+	// 	}
+	// 	defer tempFile.Close()
+	// 	imageName = strings.Split(tempFile.Name(), "\\")[2]
+	// 	fileBytes, err := ioutil.ReadAll(file)
+	// 	if err != nil {
+	// 		fmt.Println(err)
+	// 	}
+	// 	img, _, _ := image.Decode(bytes.NewReader(fileBytes))
+
+	// 	resized := resize.Thumbnail(100, 100, img, resize.NearestNeighbor)
+	// 	errs := png.Encode(tempFile, resized)
+	// 	if errs != nil {
+	// 		log.Fatal(errs)
+	// 	}
+	// }
+
+	// Get product
+	result := models.GORMDB.Table("products").First(&product, id)
+	if result.Error != nil {
+		ContexJsonResponse(c, "No such product", 500, nil, result.Error)
+	}
+
+	// 	// Get the product values
+	product.Name = c.Request.FormValue("name")
+	product.Description = c.Request.FormValue("description")
+	product.Price, _ = strconv.ParseFloat(c.Request.FormValue("price"), 64)
+
+	choices_ := c.Request.FormValue("choices_id")
+	if err := json.Unmarshal([]byte(choices_), &product.Choices_id); err != nil {
+		ContexJsonResponse(c, "Error on choices_id unmarshal", 500, nil, err)
+		return
+	}
+
+	product.Custom, _ = strconv.ParseBool(c.Request.FormValue("custom"))
+	product.Category_id, _ = strconv.ParseInt(c.Request.FormValue("category_id"), 10, 64)
+
+	ingredients_ := c.Request.FormValue("ingredients_id")
+	if err := json.Unmarshal([]byte(ingredients_), &product.Ingredients_id); err != nil {
+		ContexJsonResponse(c, "Error on ingredients unmarshal", 500, nil, err)
+		return
+	}
+
+	default_ingredients_ := c.Request.FormValue("default_ingredients")
+	if err := json.Unmarshal([]byte(default_ingredients_), &product.Default_Ingredients); err != nil {
+		ContexJsonResponse(c, "Error on default_ingredients unmarshal", 500, nil, err)
+		return
+	}
+
+	product.Image = imageName
+
+	product.Price = math.Round((product.Price * 100) / 100)
+
+	result = models.GORMDB.Save(&product)
+	if result.Error != nil {
+		ContexJsonResponse(c, "Internal server error on product update", 500, nil, result.Error)
+		return
+	}
+
+	ContexJsonResponse(c, "Product updated", 200, product, nil)
 }
