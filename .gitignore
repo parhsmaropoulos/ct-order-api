@@ -1,6 +1,7 @@
 node_modules/*
-./backend/assets
+backend/assets
 Temp_DBS/*
 admin-panel/utils/*
-.VSCodeCounter/*
-./backend/vendor/*
+VSCodeCounter/*
+backend/vendor/*
+backend/.env
