@@ -174,10 +174,17 @@ func SendOrder(b *Broker, c *gin.Context) {
 	var id = c.Param("id")
 
 	var input struct {
-		ID      string             `json:"id"`
-		Order   models.Order       `json:"order"`
-		Details models.UserDetails `json:"user_details"`
-		From    string             `json:"from"`
+		ID      string       `json:"id"`
+		Order   models.Order `json:"order"`
+		Details struct {
+			Name       string `json:"name"`
+			Surname    string `json:"surname"`
+			Address_id int64  `json:"address_id"`
+			Phone      int64  `json:"phone"`
+			Bell_name  string `json:"bell_name"`
+			Floor      string `json:"floor"`
+		} `json:"user_details"`
+		From string `json:"from"`
 	}
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "message": err})

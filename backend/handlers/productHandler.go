@@ -138,7 +138,6 @@ func DeleteProductByIdHandler(c *gin.Context) {
 		fmt.Println("Only delete requests here, nothing else!")
 		return
 	}
-	// db := models.OpenConnection()
 
 	var product models.Product
 
@@ -149,10 +148,6 @@ func DeleteProductByIdHandler(c *gin.Context) {
 	}
 
 	product.ID = uint(id)
-	if err != nil {
-		ContexJsonResponse(c, "Error on id parse", 500, nil, err)
-		return
-	}
 
 	result := models.GORMDB.Table("products").Delete(&product)
 	if result.Error != nil {

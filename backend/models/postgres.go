@@ -1,12 +1,10 @@
 package models
 
 import (
+	"GoProjects/CoffeeTwist/backend/lib"
 	"database/sql"
 	"fmt"
-	"log"
-	"os"
 
-	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 
 	"gorm.io/driver/postgres"
@@ -16,20 +14,16 @@ import (
 var GORMDB *gorm.DB
 var SQLDB *sql.DB
 
-func Init() {
-	err := godotenv.Load()
-	if err != nil {
-		fmt.Print(err.Error())
-		log.Fatal("Error loading .env file")
-	}
-
+func init() {
+	fmt.Println("init 1")
+	fmt.Print(lib.GoDotEnvVariable("STATE"))
 	psqlInfo := fmt.Sprintf("host =%s port=%s user=%s "+
 		"password=%s dbname = %s sslmode=disable",
-		os.Getenv("DATABASE_HOST"),
-		os.Getenv("DATABASE_PORT"),
-		os.Getenv("DATABASE_USERNAME"),
-		os.Getenv("DATABASE_PASSWORD"),
-		os.Getenv("DATABASE_DB"),
+		lib.GoDotEnvVariable("DATABASE_HOST"),
+		lib.GoDotEnvVariable("DATABASE_PORT"),
+		lib.GoDotEnvVariable("DATABASE_USERNAME"),
+		lib.GoDotEnvVariable("DATABASE_PASSWORD"),
+		lib.GoDotEnvVariable("DATABASE_DB"),
 	)
 
 	SQLDB, err := sql.Open("postgres", psqlInfo)
@@ -47,42 +41,52 @@ func Init() {
 	GORMDB.AutoMigrate(&Product{})
 	GORMDB.AutoMigrate(&Subscribe{})
 	GORMDB.AutoMigrate(&Choice{})
+	GORMDB.AutoMigrate(&ChoiceOption{})
+	GORMDB.AutoMigrate(&Order{})
+	GORMDB.AutoMigrate(&Product_Category{})
 	fmt.Println("DATABASE MIGRATION COMPLETED")
+	// defer SQLDB.Close()
 
 	// return db
 }
 
-func InitTest() {
-	err := godotenv.Load("../.env")
-	if err != nil {
-		fmt.Print(err.Error())
-		log.Fatal("Error loading .env file")
-	}
+// func InitTest() {
+// 	fmt.Println("init 2")
 
-	psqlInfo := fmt.Sprintf("host =%s port=%s user=%s "+
-		"password=%s dbname = %s sslmode=disable",
-		os.Getenv("DATABASE_HOST"),
-		os.Getenv("DATABASE_PORT"),
-		os.Getenv("DATABASE_USERNAME"),
-		os.Getenv("DATABASE_PASSWORD"),
-		os.Getenv("DATABASE_DB"),
-	)
+// 	err := godotenv.Load("../.env")
+// 	if err != nil {
+// 		fmt.Print(err.Error())
+// 		log.Fatal("Error loading .env file")
+// 	}
 
-	SQLDB, err := sql.Open("postgres", psqlInfo)
+// 	psqlInfo := fmt.Sprintf("host =%s port=%s user=%s "+
+// 		"password=%s dbname = %s sslmode=disable",
+// 		os.Getenv("DATABASE_HOST"),
+// 		os.Getenv("DATABASE_PORT"),
+// 		os.Getenv("DATABASE_USERNAME"),
+// 		os.Getenv("DATABASE_PASSWORD"),
+// 		os.Getenv("DATABASE_DB"),
+// 	)
 
-	GORMDB, err = gorm.Open(postgres.New(postgres.Config{
-		Conn: SQLDB,
-	}), &gorm.Config{})
-	if err != nil {
-		panic("Failed to connect to database")
-	}
-	fmt.Println("DATABASE CONNECTION ESTABLISHED")
+// 	SQLDB, err := sql.Open("postgres", psqlInfo)
 
-	GORMDB.AutoMigrate(&User{})
-	GORMDB.AutoMigrate(&Ingredient{})
-	GORMDB.AutoMigrate(&Product{})
-	GORMDB.AutoMigrate(&Subscribe{})
-	GORMDB.AutoMigrate(&Choice{})
-	fmt.Println("DATABASE MIGRATION COMPLETED")
-	// return db
-}
+// 	GORMDB, err = gorm.Open(postgres.New(postgres.Config{
+// 		Conn: SQLDB,
+// 	}), &gorm.Config{})
+// 	if err != nil {
+// 		panic("Failed to connect to database")
+// 	}
+// 	fmt.Println("DATABASE CONNECTION ESTABLISHED")
+
+// 	GORMDB.AutoMigrate(&User{})
+// 	GORMDB.AutoMigrate(&Ingredient{})
+// 	GORMDB.AutoMigrate(&Product{})
+// 	GORMDB.AutoMigrate(&Subscribe{})
+// 	GORMDB.AutoMigrate(&Choice{})
+// 	GORMDB.AutoMigrate(&ChoiceOption{})
+// 	GORMDB.AutoMigrate(&Product_Category{})
+// 	fmt.Println("DATABASE MIGRATION COMPLETED")
+// 	defer SQLDB.Close()
+
+// 	// return db
+// }

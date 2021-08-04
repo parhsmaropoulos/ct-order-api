@@ -33,7 +33,8 @@ func CORS() gin.HandlerFunc {
 func main() {
 	// Initialize Mongo DB session / collections (old)
 	// Initialize Psql DB (new)
-	models.Init()
+	// It runs auto as we import it
+	// models.Init()
 	defer models.SQLDB.Close()
 	// Initialize gin router
 	router := gin.Default()
@@ -107,41 +108,45 @@ func main() {
 		token.POST("/refresh", middleware.Refresh)
 	}
 
-	// products := router.Group("/products/")
-	// {
-	// 	// GET ALL
-	// 	products.GET("/all", handlers.GetAllProductsHandler)
+	products := router.Group("/products/")
+	{
+		// GET ALL
+		products.GET("/all", handlers.GetAllProductsHandler)
 
-	// 	// GET SINGLE
-	// 	products.GET("/:id", handlers.GetSingleProductByIdHandler)
+		// GET SINGLE
+		products.GET("/:id", handlers.GetSingleProductByIdHandler)
 
-	// 	// CREATE
-	// 	products.POST("/create_product", handlers.RegisterProductHandler)
+		// CREATE
+		products.POST("/create_product", handlers.RegisterProductHandler)
 
-	// 	// UPDATE VALUES
-	// 	products.PUT("/:id/update_values", handlers.UpdateProductValuesByIdHandler)
+		// UPDATE VALUES
+		products.PUT("/:id/update_values", handlers.UpdateProductValuesByIdHandler)
 
-	// 	// ADD CHOICE ?
-	// 	products.PUT("/:id/add_choice", handlers.AddChoiceToProductByIdHandler)
+		// ADD CHOICE ?
+		products.PUT("/:id/add_choice", handlers.AddChoiceToProductByIdHandler)
 
-	// 	// CHANGE AVAILABILITY
-	// 	products.PUT("/:id/change_availability", handlers.ChangeAvailabilityOfProductByIdHandler)
-	// }
+		// CHANGE AVAILABILITY
+		products.PUT("/:id/change_availability", handlers.ChangeAvailabilityOfProductByIdHandler)
+	}
 
-	// product_choices := router.Group("/product_choices/")
-	// {
-	// 	// GET ALL
-	// 	product_choices.GET("/all", handlers.GetAllProductChoicesHandler)
+	product_choices := router.Group("/product_choices/")
+	{
+		// GET ALL
+		product_choices.GET("/all", handlers.GetAllProductChoicesHandler)
 
-	// 	// GET SINGLE
-	// 	product_choices.GET("/:id", handlers.GetSingleProductChoiceByIdHandler)
+		// GET SINGLE
+		product_choices.GET("/:id", handlers.GetSingleProductChoiceByIdHandler)
 
-	// 	// CREATE
-	// 	product_choices.POST("/new_product_choice", handlers.RegisterProductChoiceHandler)
+		// CREATE
+		product_choices.POST("/new_product_choice", handlers.RegisterProductChoiceHandler)
 
-	// 	// UPDATE SINGLE
-	// 	product_choices.PUT("/:id/update_product_choice", handlers.UpdateProductChoiceByIdHandler)
-	// }
+		// UPDATE SINGLE
+		product_choices.PUT("/:id/update_product_choice", handlers.UpdateProductChoiceByIdHandler)
+
+		// DELETE SINGLE
+		product_choices.DELETE("/:id", handlers.UpdateProductChoiceByIdHandler)
+
+	}
 
 	ingredients := router.Group("/ingredients/")
 	{
@@ -176,6 +181,7 @@ func main() {
 	// 	// GET SINGLE ?
 	// 	// DELETE ?
 	// }
+
 	// orders := router.Group("/orders/")
 	// {
 	// 	// GET ALL

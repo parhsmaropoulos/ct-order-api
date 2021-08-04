@@ -170,9 +170,13 @@ func UpdateIngredientValuesByIdHandler(c *gin.Context) {
 		ContexJsonResponse(c, "Product availability changed  failed, no such an ID available", 500, nil, nil)
 		return
 	}
-	models.GORMDB.Save(&ingredient)
+	result := models.GORMDB.Save(&ingredient)
+	if result.Error != nil {
+		ContexJsonResponse(c, "Internal server error on ingredient save", http.StatusInternalServerError, nil, result.Error)
+		return
+	}
 
-	ContexJsonResponse(c, "Product updated successfully", 200, ingredient, nil)
+	ContexJsonResponse(c, "Ingredient updated successfully", 200, ingredient, nil)
 	return
 }
 
