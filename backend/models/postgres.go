@@ -44,6 +44,7 @@ func init() {
 	GORMDB.AutoMigrate(&ChoiceOption{})
 	GORMDB.AutoMigrate(&Order{})
 	GORMDB.AutoMigrate(&Product_Category{})
+	GORMDB.AutoMigrate(&Address{})
 	fmt.Println("DATABASE MIGRATION COMPLETED")
 	// defer SQLDB.Close()
 
