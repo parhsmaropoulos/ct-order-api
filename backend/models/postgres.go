@@ -36,19 +36,9 @@ func init() {
 	}
 	fmt.Println("DATABASE CONNECTION ESTABLISHED")
 
-	GORMDB.AutoMigrate(&User{})
-	GORMDB.AutoMigrate(&Ingredient{})
-	GORMDB.AutoMigrate(&Product{})
-	GORMDB.AutoMigrate(&Subscribe{})
-	GORMDB.AutoMigrate(&Choice{})
-	GORMDB.AutoMigrate(&ChoiceOption{})
-	GORMDB.AutoMigrate(&Order{})
-	GORMDB.AutoMigrate(&Product_Category{})
-	GORMDB.AutoMigrate(&Address{})
-	fmt.Println("DATABASE MIGRATION COMPLETED")
-	// defer SQLDB.Close()
+	GORMDB.AutoMigrate(&User{}, &Ingredient{}, &Product{}, &Subscribe{}, &Choice{}, &ChoiceOption{}, &Order{}, &Product_Category{}, &Address{}, &Comment{})
 
-	// return db
+	fmt.Println("DATABASE MIGRATION COMPLETED")
 }
 
 // func InitTest() {

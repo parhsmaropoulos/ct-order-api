@@ -41,3 +41,21 @@ func RegisterAddressHandler(c *gin.Context) {
 	}
 	ContexJsonResponse(c, "Address created successfully", 200, input, nil)
 }
+
+// Get users addresses by id
+func GetUserAddressessByIdHandler(c *gin.Context) {
+	if c.Request.Method != "GET" {
+		fmt.Println("Only get requests here, nothing else!")
+		return
+	}
+	id := c.Param("id")
+	var addressess []models.Address
+
+	result := models.GORMDB.Where("user_id = ?", id).Find(&addressess)
+	if result.Error != nil {
+		ContexJsonResponse(c, "Error on addresses search", http.StatusInternalServerError, nil, result.Error)
+		return
+	}
+
+	ContexJsonResponse(c, "Addresses fetched successfully", http.StatusOK, addressess, nil)
+}

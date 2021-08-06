@@ -35,7 +35,7 @@ func main() {
 	// Initialize Psql DB (new)
 	// It runs auto as we import it
 	// models.Init()
-	defer models.SQLDB.Close()
+	// defer models.SQLDB.Close()
 	// Initialize gin router
 	router := gin.Default()
 	router.Use(CORS())
@@ -119,6 +119,9 @@ func main() {
 		// CREATE
 		products.POST("/create_product", handlers.RegisterProductHandler)
 
+		// CREATE
+		products.DELETE("/:id", handlers.RegisterProductHandler)
+
 		// UPDATE VALUES
 		products.PUT("/:id/update_values", handlers.UpdateProductValuesByIdHandler)
 
@@ -170,71 +173,73 @@ func main() {
 
 	}
 
-	// product_categories := router.Group("/product_category/")
-	// {
-	// 	// GET ALL
-	// 	product_categories.GET("/all", handlers.GetAllProductCategoriesHandler)
+	product_categories := router.Group("/product_category/")
+	{
+		// GET ALL
+		product_categories.GET("/all", handlers.GetAllProductCategoriesHandler)
 
-	// 	// CREATE NEW
-	// 	product_categories.POST("/create_product_category", handlers.RegisterProductCategoryHandler)
+		// CREATE NEW
+		product_categories.POST("/create_product_category", handlers.RegisterProductCategoryHandler)
 
-	// 	// GET SINGLE ?
-	// 	// DELETE ?
-	// }
+		// GET SINGLE ?
+		// DELETE ?
+		product_categories.DELETE("/:id", handlers.DeleteProductCategoryByIdHandler)
 
-	// orders := router.Group("/orders/")
-	// {
-	// 	// GET ALL
-	// 	orders.GET("/all", handlers.GetAllOrdersHandler)
+	}
 
-	// 	// GET TODAY
-	// 	// orders.GET("/today", handlers.GetTodayOrdersHandler)
+	orders := router.Group("/orders/")
+	{
+		// GET ALL
+		orders.GET("/all", handlers.GetAllOrdersHandler)
 
-	// 	// GET SINGLE
-	// 	orders.GET("/:id", handlers.GetSingleOrderByIdHandler)
+		// GET TODAY
+		orders.GET("/today", handlers.GetTodayOrdersHandler)
 
-	// 	// CREATE ORDER
-	// 	orders.POST("/new_order", handlers.RegisterOrderHandler)
+		// GET SINGLE
+		orders.GET("/:id", handlers.GetSingleOrderByIdHandler)
 
-	// }
-	// admin := router.Group("/admin/")
-	// {
-	// 	// Auth actions
-	// 	admin.POST("/login", models.AdminLogin)
-	// 	// admin.POST("/logout", models.AdminLogout)
+		// CREATE ORDER
+		orders.POST("/new_order", handlers.RegisterOrderHandler)
 
-	// 	// ADMIN ORDER ACTION
-	// 	admin.PUT("/orders/:id/accept_order", handlers.AcceptOrderByIdHandler)
-	// 	admin.PUT("/orders/:id/cancel_order", handlers.CancelOrderByIdHandler)
-	// 	admin.PUT("/orders/:id/complete_order", handlers.CompleteOrderByIdHandler)
+	}
+	admin := router.Group("/admin/")
+	{
+		// Auth actions
+		// admin.POST("/login", models.AdminLogin)
+		// admin.POST("/logout", models.AdminLogout)
 
-	// 	// Fetch orders
-	// 	// admin.PUT("/update_order", models.UpdateOrder)
-	// 	// admin.GET("/:id", models.GetSingleOrder)
+		// ADMIN ORDER ACTION
+		admin.PUT("/orders/:id/accept_order", handlers.AcceptOrderByIdHandler)
+		admin.PUT("/orders/:id/cancel_order", handlers.CancelOrderByIdHandler)
+		admin.PUT("/orders/:id/complete_order", handlers.CompleteOrderByIdHandler)
 
-	// 	// GET TODAY ORDERS
-	// 	admin.GET("/today", handlers.GetTodayOrdersHandler)
+		// Fetch orders
+		// admin.PUT("/update_order", models.UpdateOrder)
+		// admin.GET("/:id", models.GetSingleOrder)
 
-	// }
+		// GET TODAY ORDERS
+		admin.GET("/today", handlers.GetTodayOrdersHandler)
 
-	// comments := router.Group("/comments/")
-	// {
-	// 	// CREATE NEW
-	// 	comments.POST("/new_comment", handlers.RegisterCommentHandler)
+	}
 
-	// 	// GET SINGLE
-	// 	comments.GET("/:id", handlers.GetSingleCommentByIdHandler)
+	comments := router.Group("/comments/")
+	{
+		// CREATE NEW
+		comments.POST("/new_comment", handlers.RegisterCommentHandler)
 
-	// 	// GET ALL
-	// 	comments.GET("/all", handlers.GetAllCommentsHandler)
+		// GET SINGLE
+		comments.GET("/:id", handlers.GetSingleCommentByIdHandler)
 
-	// 	// APPROVE COMMENT
-	// 	comments.PUT("/:id/approve_comment", handlers.ApproveCommentByIdHandler)
-	// 	// REJECT COMMENT
-	// 	comments.PUT("/:id/reject_comment", handlers.RejectCommentByIdHandler)
-	// 	// ANSWER COMMENT
-	// 	comments.PUT("/:id/answer_comment", handlers.AnswerCommentByIdHandler)
-	// }
+		// GET ALL
+		comments.GET("/all", handlers.GetAllCommentsHandler)
+
+		// APPROVE COMMENT
+		comments.PUT("/:id/approve_comment", handlers.ApproveCommentByIdHandler)
+		// REJECT COMMENT
+		comments.PUT("/:id/reject_comment", handlers.RejectCommentByIdHandler)
+		// ANSWER COMMENT
+		comments.PUT("/:id/answer_comment", handlers.AnswerCommentByIdHandler)
+	}
 
 	router.Any("/", func(c *gin.Context) {
 		if c.Request.URL.Path != "/" {

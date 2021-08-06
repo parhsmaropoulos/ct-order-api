@@ -2,7 +2,6 @@
 package models
 
 import (
-	"github.com/lib/pq"
 	"gorm.io/gorm"
 )
 
@@ -14,14 +13,14 @@ type Subscribe struct {
 
 type Address struct {
 	gorm.Model
-	CityName      string  `json:"city_name"`
-	AreaName      string  `json:"area_name"`
-	AddressName   string  `json:"address_name"`
-	AddressNumber string  `json:"address_number"`
-	Zipcode       string  `json:"zipcode"`
+	CityName      string  `json:"city_name" gorm:"UNIQUE_INDEX:compositeindex"`
+	AreaName      string  `json:"area_name" gorm:"UNIQUE_INDEX:compositeindex"`
+	AddressName   string  `json:"address_name" gorm:"UNIQUE_INDEX:compositeindex"`
+	AddressNumber string  `json:"address_number" gorm:"UNIQUE_INDEX:compositeindex"`
+	Zipcode       string  `json:"zipcode" gorm:"UNIQUE_INDEX:compositeindex"`
 	Latitude      float64 `json:"latitude"`
 	Longitude     float64 `json:"longitude"`
-	UserId        int64   `json:"user_id"`
+	UserID        int64   `json:"user_id"`
 }
 
 type User struct {
@@ -37,16 +36,13 @@ type User struct {
 	Phone   int64  `json:"phone"`
 
 	// User's location info
-	// Addresses []Address `json:"addresses"`
-	Addresses_id pq.Int64Array `json:"addresses_ids" gorm:"type:integer[]"`
+	Addresses []Address `json:"addresses"`
+	// Addresses_id pq.Int64Array `json:"addresses_ids" gorm:"type:integer[]"`
 
 	// User's info for the shop
-	Comments_id pq.Int64Array `json:"comments_ids" gorm:"type:integer[]"`
-	Last_Order  Order         `json:"last_order" gorm:"-"`
-	Orders_ids  pq.Int64Array `json:"orders_ids" gorm:"type:integer[]"`
-
-	// Account info
-	// Active bool
-	// Last login?
-	//
+	// Comments_id pq.Int64Array `json:"comments_ids" gorm:"type:integer[]"`
+	Comments   []Comment `json:"comments"`
+	Last_Order Order     `json:"last_order" gorm:"-"`
+	// Orders_ids pq.Int64Array `json:"orders_ids" gorm:"type:integer[]"`
+	Orders []Order `json:"orders"`
 }

@@ -4,7 +4,6 @@ import (
 	models "GoProjects/CoffeeTwist/backend/models"
 	"fmt"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
@@ -182,39 +181,39 @@ func ChangeUserPasswordByIdHandler(c *gin.Context) {
 }
 
 // Add address id to user
-func AddAdressToUserByIdHandler(c *gin.Context) {
-	if c.Request.Method != "PUT" {
-		fmt.Println("Only put requests here, nothing else!")
-		return
-	}
+// func AddAdressToUserByIdHandler(c *gin.Context) {
+// 	if c.Request.Method != "PUT" {
+// 		fmt.Println("Only put requests here, nothing else!")
+// 		return
+// 	}
 
-	// Int in params :id
-	id := c.Param("id")
+// 	// Int in params :id
+// 	id := c.Param("id")
 
-	// JSON input from request
-	var input struct {
-		Address_id string `json:"address_id"`
-	}
-	if err := c.ShouldBindJSON(&input); err != nil {
-		ContexJsonResponse(c, "Error on data parse", http.StatusBadRequest, nil, err)
-		return
-	}
+// 	// JSON input from request
+// 	var input struct {
+// 		Address_id string `json:"address_id"`
+// 	}
+// 	if err := c.ShouldBindJSON(&input); err != nil {
+// 		ContexJsonResponse(c, "Error on data parse", http.StatusBadRequest, nil, err)
+// 		return
+// 	}
 
-	// Get user
-	var user models.User
-	models.GORMDB.First(&user, id)
+// 	// Get user
+// 	var user models.User
+// 	models.GORMDB.First(&user, id)
 
-	add_id, err := strconv.ParseInt(input.Address_id, 10, 64)
-	if err != nil {
-		ContexJsonResponse(c, "Error on address id conversion", http.StatusBadRequest, nil, err)
-		return
-	}
-	user.Addresses_id = append(user.Addresses_id, add_id)
+// 	add_id, err := strconv.ParseInt(input.Address_id, 10, 64)
+// 	if err != nil {
+// 		ContexJsonResponse(c, "Error on address id conversion", http.StatusBadRequest, nil, err)
+// 		return
+// 	}
+// 	user.Addresses_id = append(user.Addresses_id, add_id)
 
-	models.GORMDB.Save(&user)
-	user.Password = ""
+// 	models.GORMDB.Save(&user)
+// 	user.Password = ""
 
-	ContexJsonResponse(c, "User updated successfully", http.StatusOK, user, nil)
-}
+// 	ContexJsonResponse(c, "User updated successfully", http.StatusOK, user, nil)
+// }
 
 // TODO Delete User??
