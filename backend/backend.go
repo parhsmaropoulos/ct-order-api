@@ -35,7 +35,7 @@ func main() {
 	// Initialize Psql DB (new)
 	// It runs auto as we import it
 	// models.Init()
-	// defer models.SQLDB.Close()
+	defer models.SQLDB.Close()
 	// Initialize gin router
 	router := gin.Default()
 	router.Use(CORS())

@@ -258,7 +258,7 @@ class CreateItemForm extends Component {
               this.props.categories.map((category, index) => {
                 return (
                   <option key={index} value={category.id}>
-                    {category.base_category.name.trim()}
+                    {category.name.trim()}
                   </option>
                 );
               })
@@ -294,10 +294,7 @@ class CreateItemForm extends Component {
                         disableRipple
                         inputProps={{ "aria-labelledby": labelId }}
                       />
-                      <ListItemText
-                        id={labelId}
-                        primary={`${choice.base_choice.name}`}
-                      />
+                      <ListItemText id={labelId} primary={`${choice.name}`} />
                     </ListItemIcon>
                   </ListItem>
                 );
@@ -362,7 +359,7 @@ class CreateItemForm extends Component {
                             />
                             <ListItemText
                               id={labelId}
-                              primary={`${ingredient.base_ingredient.name}`}
+                              primary={`${ingredient.name}`}
                             />
                           </ListItemIcon>
                         </ListItem>
@@ -398,23 +395,21 @@ class CreateItemForm extends Component {
                   <ul>
                     <ListSubheader>{`${this.props.ingredientCategories[index]}`}</ListSubheader>
                     {ingredientCategory.map((ingredient, index) => {
-                      const labelId = `ingredient-item-${ingredient.base_ingredient.name}`;
+                      const labelId = `ingredient-item-${ingredient.name}`;
                       return (
                         <ListItem
                           key={index}
                           role={undefined}
                           dense
                           button
-                          onClick={() =>
-                            this.handleToggle(ingredient.base_ingredient.name)
-                          }
+                          onClick={() => this.handleToggle(ingredient.name)}
                         >
                           <ListItemIcon>
                             <Checkbox
                               edge="start"
                               checked={
                                 this.state.extra_ingredients.indexOf(
-                                  ingredient.base_ingredient.name
+                                  ingredient.name
                                 ) !== -1
                               }
                               tabIndex={-1}
@@ -423,7 +418,7 @@ class CreateItemForm extends Component {
                             />
                             <ListItemText
                               id={labelId}
-                              primary={`${ingredient.base_ingredient.name}`}
+                              primary={`${ingredient.name}`}
                             />
                           </ListItemIcon>
                         </ListItem>

@@ -250,7 +250,7 @@ export const register = (data) => (dispatch) => {
       });
       dispatch({
         type: SNACKBAR_SUCCESS,
-        message: res.message,
+        message: res.data.message,
       });
     })
     .catch((err) => {

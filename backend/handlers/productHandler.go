@@ -19,7 +19,7 @@ func GetAllProductsHandler(c *gin.Context) {
 
 	var products []models.Product
 
-	result := models.GORMDB.Find(&products)
+	result := models.GORMDB.Preload("choices").Preload("ingredients").Find(&products)
 	if result.Error != nil {
 		ContexJsonResponse(c, "Error on products search", 500, nil, result.Error)
 		return
@@ -122,7 +122,7 @@ func GetSingleProductByIdHandler(c *gin.Context) {
 
 	var product models.Product
 
-	result := models.GORMDB.Table("products").First(&product, id)
+	result := models.GORMDB.Preload("choices").Preload("ingredients").Table("products").First(&product, id)
 
 	if result.Error != nil {
 		ContexJsonResponse(c, "Internal server error on product fetch", 500, nil, result.Error)

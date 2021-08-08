@@ -25,9 +25,11 @@ class CreateIngredientForm extends Component {
   };
 
   componentDidMount() {
-    this.setState({
-      category: this.props.categories[0],
-    });
+    if (this.props.categories) {
+      this.setState({
+        category: this.props.categories[0],
+      });
+    }
   }
 
   onSubmit(event) {
@@ -107,7 +109,7 @@ class CreateIngredientForm extends Component {
             onChange={this.onChange}
             required
           >
-            {this.props.categories.length > 0 ? (
+            {this.props.categories ? (
               this.props.categories.map((category, index) => {
                 return <option key={index}>{category}</option>;
               })

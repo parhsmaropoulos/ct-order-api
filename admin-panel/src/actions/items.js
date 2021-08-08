@@ -67,7 +67,14 @@ export const create_product = (data, image) => (dispatch) => {
   // const body = data;
   let body = new FormData();
   body.append("file", image);
-  body.append("data", JSON.stringify(data));
+  body.append("name", data.name);
+  body.append("description", data.description);
+  body.append("price", data.price);
+  body.append("choices_id", data.choices_id);
+  body.append("custom", data.custom);
+  body.append("category_id", data.category_id);
+  body.append("ingredients_id", data.ingredients_id);
+  body.append("default_ingredients", data.default_ingredients);
   const headers = {
     "Content-Type": "multipart/form-data",
   };
@@ -186,7 +193,8 @@ export const get_categories = () => (dispatch) => {
 export const create_category = (data, image) => (dispatch) => {
   let body = new FormData();
   body.append("file", image);
-  body.append("data", JSON.stringify(data));
+  body.append("name", data.name);
+  body.append("description", data.description);
   const headers = {
     "Content-Type": "multipart/form-data",
   };
@@ -224,10 +232,11 @@ export const get_ingredients = () => (dispatch) => {
   axios
     .get(current_url + "ingredients/all")
     .then((res) => {
+      console.log(res);
       dispatch({
         type: GET_INGREDIENTS,
-        ingredients: res.data.data,
-        categories: res.data.categories,
+        ingredients: res.data.data.Ingredients,
+        categories: res.data.data.Categories,
       });
       dispatch({
         type: SNACKBAR_SUCCESS,
