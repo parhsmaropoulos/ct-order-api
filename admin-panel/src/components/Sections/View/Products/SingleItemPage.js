@@ -48,20 +48,27 @@ class SingleItemPage extends Component {
   }
   componentWillMount() {
     let item = this.props.location.state.item;
-    let product = item.base_product;
+    let product = item;
 
     let showChoices = false;
-    if (product.choices_id.length > 0) {
+    if (product.choices.length > 0) {
       showChoices = true;
     }
-
+    let choice_ids = [];
+    let ingredients_ids = [];
+    item.choices.forEach(function (choice) {
+      choice_ids.push(choice.ID);
+    });
+    item.ingredients.forEach(function (ingredient) {
+      ingredients_ids.push(ingredient.ID);
+    });
     this.setState({
-      id: item.id,
+      id: item.ID,
       name: product.name,
       price: product.price,
       category_id: product.category_id,
-      checkedChoices: [-1].concat(product.choices_id),
-      available_ingredients: product.ingredients_id,
+      checkedChoices: [-1].concat(choice_ids),
+      available_ingredients: ingredients_ids,
       extra_ingredients: product.default_ingredients,
       description: product.description,
       filename: product.image,
@@ -103,7 +110,7 @@ class SingleItemPage extends Component {
     //     item.choices.push(this.props.choices[this.state.checkedChoices[i]]);
     //   }
     // }
-    // console.log(item);
+    console.log(item);
     this.props.update_item(item.id, item, "update_product");
     this.setState({
       name: "",
@@ -244,8 +251,8 @@ class SingleItemPage extends Component {
             {this.props.categories.length > 0 ? (
               this.props.categories.map((category, index) => {
                 return (
-                  <option key={index} value={category.id}>
-                    {category.base_category.name.trim()}
+                  <option key={index} value={category.ID}>
+                    {category.name.trim()}
                   </option>
                 );
               })
@@ -269,22 +276,19 @@ class SingleItemPage extends Component {
                     role={undefined}
                     dense
                     button
-                    onClick={() => this.handleChoiceToggle(choice.id)}
+                    onClick={() => this.handleChoiceToggle(choice.ID)}
                   >
                     <ListItemIcon>
                       <Checkbox
                         edge="start"
                         checked={
-                          this.state.checkedChoices.indexOf(choice.id) !== -1
+                          this.state.checkedChoices.indexOf(choice.ID) !== -1
                         }
                         tabIndex={-1}
                         disableRipple
                         inputProps={{ "aria-labelledby": labelId }}
                       />
-                      <ListItemText
-                        id={labelId}
-                        primary={`${choice.base_choice.name}`}
-                      />
+                      <ListItemText id={labelId} primary={`${choice.name}`} />
                     </ListItemIcon>
                   </ListItem>
                 );
@@ -324,7 +328,7 @@ class SingleItemPage extends Component {
                             dense
                             button
                             onClick={() =>
-                              this.handleAvailableToggle(ingredient.id)
+                              this.handleAvailableToggle(ingredient.ID)
                             }
                           >
                             <ListItemIcon>
@@ -332,7 +336,7 @@ class SingleItemPage extends Component {
                                 edge="start"
                                 checked={
                                   this.state.available_ingredients.indexOf(
-                                    ingredient.id
+                                    ingredient.ID
                                   ) !== -1
                                 }
                                 tabIndex={-1}
@@ -341,7 +345,7 @@ class SingleItemPage extends Component {
                               />
                               <ListItemText
                                 id={labelId}
-                                primary={`${ingredient.base_ingredient.name}`}
+                                primary={`${ingredient.name}`}
                               />
                             </ListItemIcon>
                           </ListItem>
@@ -378,23 +382,21 @@ class SingleItemPage extends Component {
                     <ul>
                       <ListSubheader>{`${this.props.ingredientCategories[index]}`}</ListSubheader>
                       {ingredientCategory.map((ingredient, index) => {
-                        const labelId = `ingredient-item-${ingredient.base_ingredient.name}`;
+                        const labelId = `ingredient-item-${ingredient.name}`;
                         return (
                           <ListItem
                             key={index}
                             role={undefined}
                             dense
                             button
-                            onClick={() =>
-                              this.handleToggle(ingredient.base_ingredient.name)
-                            }
+                            onClick={() => this.handleToggle(ingredient.name)}
                           >
                             <ListItemIcon>
                               <Checkbox
                                 edge="start"
                                 checked={
                                   this.state.extra_ingredients.indexOf(
-                                    ingredient.base_ingredient.name
+                                    ingredient.name
                                   ) !== -1
                                 }
                                 tabIndex={-1}
@@ -403,7 +405,7 @@ class SingleItemPage extends Component {
                               />
                               <ListItemText
                                 id={labelId}
-                                primary={`${ingredient.base_ingredient.name}`}
+                                primary={`${ingredient.name}`}
                               />
                             </ListItemIcon>
                           </ListItem>

@@ -70,11 +70,13 @@ export const create_product = (data, image) => (dispatch) => {
   body.append("name", data.name);
   body.append("description", data.description);
   body.append("price", data.price);
-  body.append("choices_id", data.choices_id);
+  body.append("choices_id", JSON.stringify(data.choices_id));
+  // body.append("choices", data.choices);
   body.append("custom", data.custom);
   body.append("category_id", data.category_id);
-  body.append("ingredients_id", data.ingredients_id);
-  body.append("default_ingredients", data.default_ingredients);
+  body.append("ingredients_id", JSON.stringify(data.ingredients_id));
+  // body.append("ingredients", data.ingredients);
+  body.append("default_ingredients", JSON.stringify(data.default_ingredients));
   const headers = {
     "Content-Type": "multipart/form-data",
   };
@@ -109,7 +111,20 @@ export const update_item = (id, product) => (dispatch) => {
   let body = new FormData();
   // TODO update image
   // body.append("file", image);
-  body.append("data", JSON.stringify(product));
+  // body.append("file", image);
+  body.append("name", product.name);
+  body.append("description", product.description);
+  body.append("price", product.price);
+  body.append("choices_id", JSON.stringify(product.choices_id));
+  // body.append("choices", data.choices);
+  body.append("custom", product.custom);
+  body.append("category_id", product.category_id);
+  body.append("ingredients_id", JSON.stringify(product.ingredients_id));
+  // body.append("ingredients", data.ingredients);
+  body.append(
+    "default_ingredients",
+    JSON.stringify(product.default_ingredients)
+  );
   const headers = {
     "Content-Type": "multipart/form-data",
   };
@@ -235,8 +250,8 @@ export const get_ingredients = () => (dispatch) => {
       console.log(res);
       dispatch({
         type: GET_INGREDIENTS,
-        ingredients: res.data.data.Ingredients,
-        categories: res.data.data.Categories,
+        ingredients: res.data.data.ingredients,
+        categories: res.data.data.categories,
       });
       dispatch({
         type: SNACKBAR_SUCCESS,
@@ -245,7 +260,6 @@ export const get_ingredients = () => (dispatch) => {
     })
     .catch((err) => {
       console.log(err);
-      dispatch(returnErrors(err, err.status));
       dispatch({
         type: SNACKBAR_ERROR,
         message: err.response.data.message,
@@ -270,7 +284,6 @@ export const create_ingredient = (data) => (dispatch) => {
     })
     .catch((err) => {
       console.log(err);
-      dispatch(returnErrors(err, err.status));
       dispatch({
         type: SNACKBAR_ERROR,
         message: err.response.data.message,

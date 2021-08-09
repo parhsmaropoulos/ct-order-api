@@ -30,7 +30,7 @@ class IngredientsComponent extends Component {
   };
 
   changeAvailabilityIngredient(item) {
-    this.props.change_ingredient_availability(item.id);
+    this.props.change_ingredient_availability(item.ID);
   }
 
   render() {
@@ -74,17 +74,17 @@ class IngredientsComponent extends Component {
                   (ingredient, index) => {
                     return (
                       <tr key={index}>
-                        <td>{ingredient.base_ingredient.name}</td>
-                        <td>{ingredient.base_ingredient.price}</td>
-                        <td>{ingredient.base_ingredient.description}</td>
+                        <td>{ingredient.name}</td>
+                        <td>{ingredient.price}</td>
+                        <td>{ingredient.description}</td>
                         <td>
                           <Form.Check
                             type="switch"
-                            checked={ingredient.base_ingredient.available}
+                            checked={ingredient.available}
                             onChange={() =>
                               this.changeAvailabilityIngredient(ingredient)
                             }
-                            id={ingredient.id}
+                            id={ingredient.ID}
                             label="Available"
                           />
                         </td>

@@ -35,14 +35,14 @@ class MainPage extends Component {
       return <Redirect to="/home" />;
     }
     if (this.props.userReducer.hasLoaded === false) {
-      this.props.getUser(this.props.userReducer.user.id);
+      this.props.getUser(this.props.userReducer.user.ID);
     }
     console.log(this.props.userReducer);
     this.setState({
-      name: this.props.userReducer.user.personal_info.name,
-      surname: this.props.userReducer.user.personal_info.surname,
-      phone: this.props.userReducer.user.personal_info.phone,
-      email: this.props.userReducer.user.base_user.email,
+      name: this.props.userReducer.user.name,
+      surname: this.props.userReducer.user.surname,
+      phone: this.props.userReducer.user.phone,
+      email: this.props.userReducer.user.email,
       user: this.props.userReducer.user,
     });
   }
@@ -54,7 +54,7 @@ class MainPage extends Component {
   onChangePasswordSubmit(e) {
     e.preventDefault();
     const data = {
-      id: this.state.user.id,
+      id: this.state.user.ID,
       password: this.state.newPassword,
       reason: "change_password",
     };
@@ -63,9 +63,9 @@ class MainPage extends Component {
 
   onUpdateSubmit(e) {
     e.preventDefault();
-    console.log(this.props.userReducer);
+    console.log(this.state);
     const data = {
-      id: this.state.user.id,
+      id: this.state.user.ID,
       user: {
         name: this.state.name,
         surname: this.state.surname,

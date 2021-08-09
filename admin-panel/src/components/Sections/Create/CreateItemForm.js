@@ -31,7 +31,7 @@ class CreateItemForm extends Component {
       hasIngredients: false,
       showChoices: false,
       isCustom: false,
-      choices: [],
+      ingredients: [],
     };
     this.onChange = this.onChange.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
@@ -66,25 +66,26 @@ class CreateItemForm extends Component {
       ingredients_id: this.state.available_ingredients.slice(1),
       choices_id: this.state.checkedChoices.slice(1),
       custom: this.state.isCustom,
+      choices: [],
+      ingredients: this.state.ingredients,
     };
     for (var i in item.default_ingredients) {
       item.default_ingredients[i] = item.default_ingredients[i].trim();
     }
-    // for (var i in this.state.checkedChoices) {
-    //   if (this.state.checkedChoices[i] !== -1) {
-    //     item.choices.push(this.props.choices[this.state.checkedChoices[i]]);
+
+    this.props.choices.forEach(function (choice) {
+      if (item.choices_id.includes(choice.ID)) {
+        item.choices.push(choice);
+      }
+    });
+    // this.props.ingredients.forEach(function (ingredient) {
+    //   console.log(item.ingredients_id.includes(ingredient.ID));
+    //   if (item.ingredients_id.includes(ingredient.ID)) {
+    //     item.ingredients.push(ingredient);
     //   }
-    // }
-    // let in_cat = this.props.ingredients;
-    // let avail_ingredients = this.state.available_ingredients;
-    // for (var i in in_cat) {
-    //   for (var j in in_cat[i]) {
-    //     if (avail_ingredients.includes(in_cat[i][j].name)) {
-    //       item.extra_ingredients.push(in_cat[i][j]);
-    //     }
-    //   }
-    // }
-    // console.log(item.choices);
+    // });
+    // console.log(this.props);
+    // console.log(item.ingredients);
     const image = this.state.image;
     console.log(item);
     this.props.create_product(item, image);
@@ -121,17 +122,21 @@ class CreateItemForm extends Component {
   };
 
   handleAvailableToggle = (value) => {
-    const currentIndex = this.state.available_ingredients.indexOf(value);
+    const currentIndex = this.state.available_ingredients.indexOf(value.ID);
     const newChecked = [...this.state.available_ingredients];
+    const newIngredients = [...this.state.ingredients];
 
     if (currentIndex === -1) {
-      newChecked.push(value);
+      newChecked.push(value.ID);
+      newIngredients.push(value);
     } else {
       newChecked.splice(currentIndex, 1);
+      newIngredients.splice(currentIndex, 1);
     }
 
     this.setState({
       available_ingredients: newChecked,
+      ingredients: newIngredients,
     });
   };
 
@@ -257,7 +262,7 @@ class CreateItemForm extends Component {
             {this.props.categories.length > 0 ? (
               this.props.categories.map((category, index) => {
                 return (
-                  <option key={index} value={category.id}>
+                  <option key={index} value={category.ID}>
                     {category.name.trim()}
                   </option>
                 );
@@ -275,20 +280,20 @@ class CreateItemForm extends Component {
           <Collapse in={this.state.showChoices} timeout="auto" unmountOnExit>
             <List component="div" disablePadding>
               {this.props.choices.map((choice, index) => {
-                const labelId = `choice-item-${choice.id}`;
+                const labelId = `choice-item-${choice.ID}`;
                 return (
                   <ListItem
                     key={index}
                     role={undefined}
                     dense
                     button
-                    onClick={() => this.handleChoiceToggle(choice.id)}
+                    onClick={() => this.handleChoiceToggle(choice.ID)}
                   >
                     <ListItemIcon>
                       <Checkbox
                         edge="start"
                         checked={
-                          this.state.checkedChoices.indexOf(choice.id) !== -1
+                          this.state.checkedChoices.indexOf(choice.ID) !== -1
                         }
                         tabIndex={-1}
                         disableRipple
@@ -334,23 +339,21 @@ class CreateItemForm extends Component {
                   <ul>
                     <ListSubheader>{`${this.props.ingredientCategories[index]}`}</ListSubheader>
                     {ingredientCategory.map((ingredient, index) => {
-                      const labelId = `ingredient-item-${ingredient.id}`;
+                      const labelId = `ingredient-item-${ingredient.ID}`;
                       return (
                         <ListItem
                           key={index}
                           role={undefined}
                           dense
                           button
-                          onClick={() =>
-                            this.handleAvailableToggle(ingredient.id)
-                          }
+                          onClick={() => this.handleAvailableToggle(ingredient)}
                         >
                           <ListItemIcon>
                             <Checkbox
                               edge="start"
                               checked={
                                 this.state.available_ingredients.indexOf(
-                                  ingredient.id
+                                  ingredient.ID
                                 ) !== -1
                               }
                               tabIndex={-1}

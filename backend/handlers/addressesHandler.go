@@ -4,6 +4,7 @@ import (
 	"GoProjects/CoffeeTwist/backend/models"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -26,14 +27,24 @@ func RegisterAddressHandler(c *gin.Context) {
 	// longitude: float
 	// user_id: int
 	// address_number int
-
+	id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
 	var input models.Address
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	input.ID = uint(id)
 
-	result := models.GORMDB.Create(&input)
+	var user models.User
+	result := models.GORMDB.Find(&user, id)
+	if result.Error != nil {
+		ContexJsonResponse(c, "Internal server error on user fetcj", http.StatusInternalServerError, nil, result.Error)
+		return
+	}
+	user.Addresses = append(user.Addresses, input)
+
+	result = models.GORMDB.Save(&user)
+	// result := models.GORMDB.Create(&input)
 
 	if result.Error != nil {
 		ContexJsonResponse(c, "Internal server error on address creation", http.StatusInternalServerError, nil, result.Error)

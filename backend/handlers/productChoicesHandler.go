@@ -163,6 +163,8 @@ func UpdateProductChoiceByIdHandler(c *gin.Context) {
 	choice.Multiple = input.Multiple
 	choice.Options = input.Options
 
+	models.GORMDB.Model(&choice).Association("Options").Replace(input.Options)
+
 	result = models.GORMDB.Save(&choice)
 
 	if result.Error != nil {

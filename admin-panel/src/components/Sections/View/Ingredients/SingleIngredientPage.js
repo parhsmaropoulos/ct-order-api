@@ -68,13 +68,12 @@ class SingleIngredientPage extends Component {
     let oldIngredient = this.props.location.state.ingredient;
 
     this.setState({
-      id: oldIngredient.id,
-      name: oldIngredient.base_ingredient.name,
-      price: oldIngredient.base_ingredient.price,
-      category: oldIngredient.base_ingredient.category,
-      description: oldIngredient.base_ingredient.description,
+      id: oldIngredient.ID,
+      name: oldIngredient.name,
+      price: oldIngredient.price,
+      category: oldIngredient.category,
+      description: oldIngredient.description,
     });
-    // console.log(this.props);
   }
   render() {
     return (

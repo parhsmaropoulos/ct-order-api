@@ -10,6 +10,8 @@ import {
   LOGIN_FAIL,
   SUBSCRIBE_USER,
   UNSUBSCRIBE_USER,
+  GET_USER_ORDERS,
+  GET_USER_ADDRESSES,
 } from "../actions/actions";
 
 const defaultState = {
@@ -19,6 +21,8 @@ const defaultState = {
   hasLoaded: false,
   user: null,
   addresses: [],
+  orders: [],
+  ratings: [],
   error: "",
 };
 
@@ -45,6 +49,7 @@ const userReducer = (state = defaultState, action) => {
         error: "",
       };
     case GET_USER:
+      console.log(action.payload);
       return {
         ...state,
         user: action.payload.user,
@@ -63,7 +68,7 @@ const userReducer = (state = defaultState, action) => {
       sessionStorage.setItem("isAuthenticated", true);
       sessionStorage.setItem("token", action.token);
       sessionStorage.setItem("refreshToken", action.refresh_token);
-      sessionStorage.setItem("userID", action.user.id);
+      sessionStorage.setItem("userID", action.user.ID);
       // sessionStorage.setItem("isAuthenticated", true);
       // console.log(action);
       return {
@@ -114,6 +119,16 @@ const userReducer = (state = defaultState, action) => {
         hasLoaded: false,
         isAuthenticated: false,
         isLoading: false,
+      };
+    case GET_USER_ORDERS:
+      return {
+        ...state,
+        orders: action.payload.data,
+      };
+    case GET_USER_ADDRESSES:
+      return {
+        ...state,
+        addresses: action.payload.data,
       };
     default:
       return state;

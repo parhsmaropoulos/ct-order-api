@@ -16,7 +16,6 @@ import { PencilFill } from "react-bootstrap-icons";
 class ItemsComponent extends Component {
   state = {
     selectedCategory: 0,
-
     product_ids: [],
     user_id: null,
   };
@@ -35,14 +34,11 @@ class ItemsComponent extends Component {
   }
 
   changeAvailability(item) {
-    this.props.change_item_availability(item.id);
+    console.log("here");
+    this.props.change_item_availability(item.ID);
   }
   changeAvailabilityIngredient(item) {
-    this.props.update_ingredient(
-      item.id,
-      item.base_ingredient,
-      "change_availability"
-    );
+    this.props.update_ingredient(item.ID, item, "change_availability");
   }
 
   render() {
@@ -55,11 +51,11 @@ class ItemsComponent extends Component {
                 <li
                   key={key}
                   className="row"
-                  onClick={() => this.changeCategory(category.id)}
+                  onClick={() => this.changeCategory(category.ID)}
                 >
                   {" "}
                   <div id="button" name="selectedCategory">
-                    {category.base_category.name}
+                    {category.name}
                   </div>
                 </li>
               );
@@ -82,20 +78,18 @@ class ItemsComponent extends Component {
                   // console.log(ingredient);
                   return (
                     <tr key={index}>
-                      <td>{ingredient.base_ingredient.name}</td>
-                      <td>{ingredient.base_ingredient.price}</td>
-                      <td>{ingredient.base_ingredient.description}</td>
+                      <td>{ingredient.name}</td>
+                      <td>{ingredient.price}</td>
+                      <td>{ingredient.description}</td>
                       {/* <td>{ingredient.category}</td> */}
                       <td>
                         <Form.Check
                           type="switch"
-                          defaultChecked={ingredient.base_ingredient.available}
+                          defaultChecked={ingredient.available}
                           onChange={() =>
-                            this.changeAvailabilityIngredient(
-                              ingredient.base_ingredient
-                            )
+                            this.changeAvailabilityIngredient(ingredient)
                           }
-                          id={ingredient.id}
+                          id={ingredient.ID}
                           label="Available"
                         />
                       </td>
@@ -104,7 +98,7 @@ class ItemsComponent extends Component {
                           to={{
                             pathname: "/single_ingredient",
                             state: {
-                              ingredient: ingredient.base_ingredient,
+                              ingredient: ingredient,
                             },
                           }}
                         >
@@ -115,21 +109,18 @@ class ItemsComponent extends Component {
                   );
                 })
               : this.props.products.map((item, index) => {
-                  if (
-                    item.base_product.category_id ===
-                    this.state.selectedCategory
-                  ) {
+                  if (item.category_id === this.state.selectedCategory) {
                     return (
                       <tr key={index}>
-                        <td>{item.base_product.name}</td>
-                        <td>{item.base_product.price}</td>
-                        <td>{item.base_product.description}</td>
+                        <td>{item.name}</td>
+                        <td>{item.price}</td>
+                        <td>{item.description}</td>
                         <td>
                           <Form.Check
                             type="switch"
-                            defaultChecked={item.base_product.available}
+                            defaultChecked={item.available}
                             onChange={() => this.changeAvailability(item)}
-                            id={item.id}
+                            id={item.ID}
                             label="Available"
                           />
                         </td>
@@ -158,18 +149,20 @@ class ItemsComponent extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  isAuthenticated: state.userReducer.isAuthenticated,
-  // user_id: state.userReducer.user.id,
-  categories: state.productReducer.categories,
-  products: state.productReducer.products,
-  ingredients: state.productReducer.ingredients,
-  order_accepted: state.orderReducer.accepted,
-  order_sent: state.orderReducer.sent,
-});
+const mapStateToProps = (state) => (
+  console.log(state.productReducer.categories),
+  {
+    isAuthenticated: state.userReducer.isAuthenticated,
+    // user_id: state.userReducer.user.id,
+    categories: state.productReducer.categories,
+    products: state.productReducer.products,
+    ingredients: state.productReducer.ingredients,
+    order_accepted: state.orderReducer.accepted,
+    order_sent: state.orderReducer.sent,
+  }
+);
 
 export default connect(mapStateToProps, {
-  send_order,
   update_item,
   update_ingredient,
   change_item_availability,

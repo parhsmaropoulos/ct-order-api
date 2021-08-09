@@ -30,12 +30,12 @@ class SingleChoicePage extends Component {
   componentWillMount() {
     let choice = this.props.location.state.choice;
     this.setState({
-      id: choice.id,
-      name: choice.base_choice.name,
-      description: choice.base_choice.description,
-      options: choice.base_choice.options,
-      multiple: choice.base_choice.multiple,
-      required: choice.base_choice.required,
+      id: choice.ID,
+      name: choice.name,
+      description: choice.description,
+      options: choice.options,
+      multiple: choice.multiple,
+      required: choice.required,
     });
   }
 
@@ -73,7 +73,6 @@ class SingleChoicePage extends Component {
 
   onSubmit(event) {
     event.preventDefault();
-
     const choice = {
       id: this.state.id,
       name: this.state.name.trim(),
@@ -82,7 +81,7 @@ class SingleChoicePage extends Component {
       multiple: this.state.multiple,
       options: this.state.options,
     };
-    // console.log(choice);
+    console.log(choice);
     this.props.update_choice(choice.id, choice);
   }
 

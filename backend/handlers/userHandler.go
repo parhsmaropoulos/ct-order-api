@@ -4,6 +4,7 @@ import (
 	models "GoProjects/CoffeeTwist/backend/models"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
@@ -114,7 +115,7 @@ func UpdatePersonalInfoUserByIdHandler(c *gin.Context) {
 	var input struct {
 		Name    string `json:"name"`
 		Surname string `json:"surname"`
-		Phone   int64  `json:"phone"`
+		Phone   string `json:"phone"`
 	}
 	if err := c.ShouldBindJSON(&input); err != nil {
 		ContexJsonResponse(c, "Error on update personal info", http.StatusBadRequest, nil, err)
@@ -131,7 +132,7 @@ func UpdatePersonalInfoUserByIdHandler(c *gin.Context) {
 	// if err != nil {
 	// 	ContexJsonResponse(c, "Error on phone parse", http.StatusInternalServerError, nil, err)
 	// }
-	user.Phone = input.Phone
+	user.Phone, _ = strconv.ParseInt(input.Phone, 10, 64)
 
 	models.GORMDB.Save(&user)
 

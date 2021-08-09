@@ -46,7 +46,7 @@ class ChoicesComponent extends Component {
                     >
                       {" "}
                       <div id="button" name="selectedCategory">
-                        {choice.base_choice.name}
+                        {choice.name}
                       </div>
                     </li>
                   );
@@ -67,36 +67,25 @@ class ChoicesComponent extends Component {
           <tbody>
             {this.props.choices.length > 0 ? (
               <tr>
-                <td>
-                  {
-                    this.props.choices[this.state.selectedChoice].base_choice
-                      .name
-                  }
-                </td>
+                <td>{this.props.choices[this.state.selectedChoice].name}</td>
                 <td>
                   <ul>
-                    {this.props.choices[
-                      this.state.selectedChoice
-                    ].base_choice.options.map((option, index) => {
-                      return (
-                        <li key={index}>
-                          {option.name} - {option.price}
-                        </li>
-                      );
-                    })}
+                    {this.props.choices[this.state.selectedChoice].options.map(
+                      (option, index) => {
+                        return (
+                          <li key={index}>
+                            {option.name} - {option.price}
+                          </li>
+                        );
+                      }
+                    )}
                   </ul>
                 </td>
                 <td>
-                  {
-                    this.props.choices[this.state.selectedChoice].base_choice
-                      .description
-                  }
+                  {this.props.choices[this.state.selectedChoice].description}
                 </td>
                 <td>
-                  {
-                    this.props.choices[this.state.selectedChoice].base_choice
-                      .required
-                  }
+                  {this.props.choices[this.state.selectedChoice].required}
                 </td>
                 <td>
                   <Link

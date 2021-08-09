@@ -96,6 +96,15 @@ func main() {
 		users.PUT("/:id/update_password", handlers.ChangeUserPasswordByIdHandler)
 		users.GET("/:id", middleware.TokenAuthMiddleware(), handlers.GetUserByIdHandler)
 
+		//Add address
+		users.POST("/:id/add_address", handlers.RegisterAddressHandler)
+		// User orders
+		users.GET("/:id/orders", handlers.GetAllOrdersByUserIdHandler)
+		// User addresses
+		users.GET("/:id/addresses", handlers.GetUserAddressessByIdHandler)
+		// User ratings
+		users.GET("/:id/comments", handlers.GetUserCommentsByIdHandler)
+
 	}
 	subscribes := router.Group("/subscribes/")
 	{
@@ -126,7 +135,7 @@ func main() {
 		products.PUT("/:id/update_values", handlers.UpdateProductValuesByIdHandler)
 
 		// ADD CHOICE ?
-		products.PUT("/:id/add_choice", handlers.AddChoiceToProductByIdHandler)
+		// products.PUT("/:id/add_choice", handlers.AddChoiceToProductByIdHandler)
 
 		// CHANGE AVAILABILITY
 		products.PUT("/:id/change_availability", handlers.ChangeAvailabilityOfProductByIdHandler)

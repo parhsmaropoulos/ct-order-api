@@ -18,6 +18,9 @@ import {
   ADMIN_LOGIN_SUCCESS,
   EMPTY_CART,
   GET_USER,
+  GET_USER_ADDRESSES,
+  GET_USER_ORDERS,
+  GET_USER_RATINGS,
   LOGIN_FAIL,
   LOGIN_SUCCESS,
   LOGOUT_SUCCESS,
@@ -50,9 +53,10 @@ export const login = (email, password) => (dispatch) => {
       // Decode token
       const token = jwt(res.data.data.access_token);
       // const refreshToken = jwt(res.data.refresh_token);
-      // console.log(refreshToken);
+      console.log(res.data);
+      console.log(token);
       const data = {
-        id: token.user_id,
+        id: token.user.ID,
         user: token.user,
       };
       console.log(data);
@@ -176,16 +180,55 @@ export const refreshToken = (token) => (dispatch) => {
 export const updateUser = (data) => (dispatch) => {
   // Request Body
   // const body = JSON.stringify({ username, email, password1, password2 });
-  var token = sessionStorage.getItem("token");
-  const config = {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  };
-  const body = data.user;
+  var user_id = sessionStorage.getItem("userID");
+
+  let body = data.user;
+  let url = "";
+  if (data.reason === "change_password") {
+    url = `user/${user_id}/update_password`;
+    body = {
+      password: data.password,
+    };
+  } else if (data.reason === "add_address") {
+    url = `user/${user_id}/add_address`;
+
+    body = data;
+  } else {
+    url = `user/${user_id}/update_personal_info`;
+  }
   axios
-    .put(current_url + `user/${data.id}/update_personal_info`, body, config)
+    .put(current_url + url, body, authHeaders)
+    .then((res) => {
+      // console.log(res);
+      dispatch({
+        type: UPDATE_USER,
+        payload: res.data,
+      });
+      dispatch({
+        type: SNACKBAR_SUCCESS,
+        message: "User updated successfully",
+      });
+    })
+    .catch((err) => {
+      console.log(err.response);
+      dispatch(returnErrors(err, err.status));
+      dispatch({
+        type: SNACKBAR_ERROR,
+        message: err.response.data.message,
+      });
+    });
+};
+
+// Add user address
+export const addUserAddress = (data) => (dispatch) => {
+  // Request Body
+  var user_id = sessionStorage.getItem("userID");
+
+  const body = data;
+  const url = `user/${user_id}/add_address`;
+
+  axios
+    .post(current_url + url, body, authHeaders)
     .then((res) => {
       // console.log(res);
       dispatch({
@@ -209,10 +252,12 @@ export const updateUser = (data) => (dispatch) => {
 
 // Get User by id
 export const getUser = (id) => (dispatch) => {
+  const token = sessionStorage.getItem("token");
   // Headers
   const config = {
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     },
   };
 
@@ -227,7 +272,6 @@ export const getUser = (id) => (dispatch) => {
     })
     .catch((err) => {
       console.log(err.response);
-      dispatch(returnErrors(err, err.status));
     });
 };
 
@@ -276,6 +320,7 @@ export const logout = () => (dispatch, getState) => {
       Authorization: `Bearer ${token}`,
     },
   };
+  console.log(config);
   axios
     .post(current_url + "user/logout", null, config)
     .then((res) => {
@@ -287,8 +332,11 @@ export const logout = () => (dispatch, getState) => {
       });
     })
     .catch((err) => {
-      console.log(err);
-      dispatch(returnErrors(err, err.status));
+      console.log(err.response);
+      dispatch({
+        type: SNACKBAR_ERROR,
+        message: err.response.data.message,
+      });
     });
 };
 
@@ -354,6 +402,54 @@ export const unsubscribe = (id) => (dispatch) => {
         type: SNACKBAR_ERROR,
         message: err.response.data.message,
       });
+    });
+};
+
+// GET USERS ORDERS
+export const getUserOrders = (id) => (dispatch) => {
+  axios
+    .get(`${current_url}user/${id}/orders`, authHeaders)
+    .then((res) => {
+      // console.log(res);
+      dispatch({
+        type: GET_USER_ORDERS,
+        payload: res.data,
+      });
+    })
+    .catch((err) => {
+      console.log(err.response);
+    });
+};
+
+// GET USERS ADDRESSES
+export const getUserAddresses = (id) => (dispatch) => {
+  axios
+    .get(`${current_url}user/${id}/addresses`, authHeaders)
+    .then((res) => {
+      // console.log(res);
+      dispatch({
+        type: GET_USER_ADDRESSES,
+        payload: res.data,
+      });
+    })
+    .catch((err) => {
+      console.log(err.response);
+    });
+};
+
+// GET USERS COMMENTS
+export const getUserRatings = (id) => (dispatch) => {
+  axios
+    .get(`${current_url}user/${id}/comments`, authHeaders)
+    .then((res) => {
+      // console.log(res);
+      dispatch({
+        type: GET_USER_RATINGS,
+        payload: res.data,
+      });
+    })
+    .catch((err) => {
+      console.log(err.response);
     });
 };
 

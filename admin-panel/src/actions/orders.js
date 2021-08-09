@@ -10,7 +10,7 @@
  */
 
 import axios from "axios";
-import { headers } from "../utils/axiosHeaders";
+import { authHeaders, headers } from "../utils/axiosHeaders";
 import { current_url } from "../utils/util";
 import {
   ACCEPT_ORDER,
@@ -36,15 +36,8 @@ import { returnErrors } from "./messages";
 export const send_order = (data) => (dispatch, getState) => {
   const body = data;
   let SSEdata = { id: null, order: null, from: null, user_details: null };
-  const token = sessionStorage.getItem("token");
-  const config = {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  };
   axios
-    .post(current_url + "orders/new_order", body, config)
+    .post(current_url + "orders/new_order", body, authHeaders)
     .then((res) => {
       console.log(res);
       SSEdata.id = res.data.order.id;

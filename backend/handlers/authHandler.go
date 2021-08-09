@@ -66,16 +66,17 @@ func LoginHandler(c *gin.Context) {
 
 func LogoutHandler(c *gin.Context) {
 	if c.Request.Method != "POST" {
-		fmt.Println("Only delete here nothing else!")
+		ContexJsonResponse(c, "Wrong request method", http.StatusRequestTimeout, nil, nil)
+
 		return
 	}
 
 	_, err := middleware.ExtractTokenMetadata(c.Request)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, "unauthorized")
+		ContexJsonResponse(c, "Unauthorized", http.StatusUnauthorized, nil, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, "Successfully logged out")
+	ContexJsonResponse(c, "Successfully logged oout", 200, nil, nil)
 
 }

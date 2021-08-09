@@ -42,12 +42,13 @@ const productReducer = (state = defaultState, action) => {
       let grouped;
       var _ = require("lodash");
       if (action.ingredients.length > 0) {
-        grouped = _.groupBy(action.ingredients, "base_ingredient.category");
+        grouped = _.groupBy(action.ingredients, "category");
 
         for (var i in grouped) {
           grouped_ingredients.push(grouped[i]);
         }
       }
+      console.log(grouped_ingredients);
       return {
         ...state,
         ingredients: grouped_ingredients,

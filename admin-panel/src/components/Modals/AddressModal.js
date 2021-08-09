@@ -86,7 +86,7 @@ class AddressModal extends Component {
     // console.log(this.props);
 
     const data = {
-      id: this.props.userReducer.user.id,
+      id: sessionStorage.getItem("userID"),
       address: {
         area_name: this.state.areaName,
         address_name: this.state.addressName,

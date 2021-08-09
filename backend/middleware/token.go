@@ -119,8 +119,8 @@ func ExtractTokenMetadata(r *http.Request) (*AccessDetails, error) {
 			return nil, err
 		}
 		// userId, err := strconv.ParseInt(fmt.Sprintf("%.f", claims["usid"]), 10, 64)
-		userId, err := strconv.ParseInt(fmt.Sprintf("%s", claims["user"].(map[string]interface{})["id"]), 10, 64)
-		// userId := fmt.Sprintf("%s", claims["user"].(map[int64]interface{})["id"])
+		userId := fmt.Sprint(claims["user"].(map[string]interface{})["ID"])
+		intUserId, err := strconv.ParseInt(userId, 10, 64)
 		// fmt.Println("USERID AND ERR")
 		// fmt.Println(userId, err)
 		if err != nil {
@@ -128,7 +128,7 @@ func ExtractTokenMetadata(r *http.Request) (*AccessDetails, error) {
 		}
 		return &AccessDetails{
 			AccessUuid: accessUuid,
-			UserId:     userId,
+			UserId:     intUserId,
 		}, nil
 	}
 	return nil, err

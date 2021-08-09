@@ -6,7 +6,7 @@ import { Link, Redirect } from "react-router-dom";
 import "../../../css/Pages/accountpage.css";
 import { PencilFill } from "react-bootstrap-icons";
 import EditAddressModal from "../../Modals/EditAddressModal";
-import { getUser, updateUser } from "../../../actions/user";
+import { getUser, updateUser, getUserAddresses } from "../../../actions/user";
 import AddressModal from "../../Modals/AddressModal";
 import { MdRemoveCircle } from "react-icons/md";
 import { CircularProgress, Grid, Container } from "@material-ui/core";
@@ -34,12 +34,14 @@ class UserAdress extends Component {
       showAddressModal: false,
       showRemoveAddressDialog: false,
       selectedAddress: {},
+      loaded: false,
     };
   }
   static propTypes = {
     userReducer: PropTypes.object.isRequired,
     getUser: PropTypes.func.isRequired,
     updateUser: PropTypes.func.isRequired,
+    getUserAddresses: PropTypes.func.isRequired,
   };
 
   selectEditAddressModal = (info) => {
@@ -85,6 +87,12 @@ class UserAdress extends Component {
     }
     if (this.props.userReducer.hasLoaded === false) {
       this.props.getUser(this.props.userReducer.user.id);
+    }
+    if (this.state.loaded === false) {
+      this.props.getUserAddresses(sessionStorage.getItem("userID"));
+      this.setState({
+        loaded: true,
+      });
     }
   }
 
@@ -275,4 +283,8 @@ const mapStateToProps = (state) => (
   }
 );
 
-export default connect(mapStateToProps, { getUser, updateUser })(UserAdress);
+export default connect(mapStateToProps, {
+  getUser,
+  updateUser,
+  getUserAddresses,
+})(UserAdress);

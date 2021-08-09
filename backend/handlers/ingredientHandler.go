@@ -75,8 +75,8 @@ func GetAllIngredientsHandler(c *gin.Context) {
 		return
 	}
 	var data struct {
-		Ingredients []models.Ingredient
-		Categories  []string
+		Ingredients []models.Ingredient `json:"ingredients"`
+		Categories  []string            `json:"categories"`
 	}
 	data.Ingredients = ingredients
 

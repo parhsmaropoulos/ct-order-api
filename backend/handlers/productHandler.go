@@ -8,6 +8,8 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 // Get all products
@@ -19,7 +21,7 @@ func GetAllProductsHandler(c *gin.Context) {
 
 	var products []models.Product
 
-	result := models.GORMDB.Preload("choices").Preload("ingredients").Find(&products)
+	result := models.GORMDB.Preload(clause.Associations).Find(&products)
 	if result.Error != nil {
 		ContexJsonResponse(c, "Error on products search", 500, nil, result.Error)
 		return
@@ -75,20 +77,53 @@ func RegisterProductHandler(c *gin.Context) {
 	product.Description = c.Request.FormValue("description")
 	product.Price, _ = strconv.ParseFloat(c.Request.FormValue("price"), 64)
 
+	// Get choices ids
+	var choice_ids []int64
 	choices_ := c.Request.FormValue("choices_id")
-	if err := json.Unmarshal([]byte(choices_), &product.Choices_id); err != nil {
+	if err := json.Unmarshal([]byte(choices_), &choice_ids); err != nil {
 		ContexJsonResponse(c, "Error on choices_id unmarshal", 500, nil, err)
 		return
 	}
+	var choices []models.Choice
+	// Find choices
+	res := models.GORMDB.Table("choices").Find(&choices, choice_ids)
+	if res.Error != nil {
+		ContexJsonResponse(c, "Error on choices search", 500, nil, res.Error)
+		return
+	}
+	product.Choices = choices
 
-	product.Custom, _ = strconv.ParseBool(c.Request.FormValue("custom"))
-	product.Category_id, _ = strconv.ParseInt(c.Request.FormValue("category_id"), 10, 64)
+	// Get ingredients ids
+	var ingredient_ids []int64
 
 	ingredients_ := c.Request.FormValue("ingredients_id")
-	if err := json.Unmarshal([]byte(ingredients_), &product.Ingredients_id); err != nil {
+	if err := json.Unmarshal([]byte(ingredients_), &ingredient_ids); err != nil {
 		ContexJsonResponse(c, "Error on ingredients unmarshal", 500, nil, err)
 		return
 	}
+
+	var ingredients []models.Ingredient
+	// Find ingredients
+	res = models.GORMDB.Table("ingredients").Find(&ingredients, ingredient_ids)
+	if res.Error != nil {
+		ContexJsonResponse(c, "Error on ingredients  search", 500, nil, res.Error)
+		return
+	}
+	product.Ingredients = ingredients
+	// choicess_ := c.Request.FormValue("choices")
+	// if err := json.Unmarshal([]byte(choicess_), &product.Choices); err != nil {
+	// 	ContexJsonResponse(c, "Error on choices unmarshal", 500, nil, err)
+	// 	return
+	// }
+
+	// ingredientss_ := c.Request.FormValue("ingredients")
+	// if err := json.Unmarshal([]byte(ingredientss_), &product.Ingredients); err != nil {
+	// 	ContexJsonResponse(c, "Error on ingredients unmarshal", 500, nil, err)
+	// 	return
+	// }
+
+	product.Custom, _ = strconv.ParseBool(c.Request.FormValue("custom"))
+	product.Category_id, _ = strconv.ParseInt(c.Request.FormValue("category_id"), 10, 64)
 
 	default_ingredients_ := c.Request.FormValue("default_ingredients")
 	if err := json.Unmarshal([]byte(default_ingredients_), &product.Default_Ingredients); err != nil {
@@ -122,7 +157,7 @@ func GetSingleProductByIdHandler(c *gin.Context) {
 
 	var product models.Product
 
-	result := models.GORMDB.Preload("choices").Preload("ingredients").Table("products").First(&product, id)
+	result := models.GORMDB.Preload(clause.Associations).Table("products").First(&product, id)
 
 	if result.Error != nil {
 		ContexJsonResponse(c, "Internal server error on product fetch", 500, nil, result.Error)
@@ -159,48 +194,48 @@ func DeleteProductByIdHandler(c *gin.Context) {
 }
 
 // Update choices of product by id
-func AddChoiceToProductByIdHandler(c *gin.Context) {
-	if c.Request.Method != "PUT" {
-		fmt.Println("Only put requests here, nothing else!")
-		return
-	}
-	// db := models.OpenConnection()
-	// defer db.Close()
+// func AddChoiceToProductByIdHandler(c *gin.Context) {
+// 	if c.Request.Method != "PUT" {
+// 		fmt.Println("Only put requests here, nothing else!")
+// 		return
+// 	}
+// 	// db := models.OpenConnection()
+// 	// defer db.Close()
 
-	// Int in params :id
-	id := c.Param("id")
+// 	// Int in params :id
+// 	id := c.Param("id")
 
-	// JSON input
-	// choice_id: int
-	var input struct {
-		Choice_id int64 `json:"choice_id"`
-	}
-	err := c.ShouldBindJSON(&input)
-	if err != nil {
-		ContexJsonResponse(c, "Error on data parse", 500, nil, err)
-		return
-	}
+// 	// JSON input
+// 	// choice_id: int
+// 	var input struct {
+// 		Choice_id int64 `json:"choice_id"`
+// 	}
+// 	err := c.ShouldBindJSON(&input)
+// 	if err != nil {
+// 		ContexJsonResponse(c, "Error on data parse", 500, nil, err)
+// 		return
+// 	}
 
-	// Get product
-	var product models.Product
-	models.GORMDB.First(&product, id)
-	if product.ID == 0 {
-		ContexJsonResponse(c, "Product availability changed  failed, no such an ID available", 500, nil, nil)
-		return
-	}
+// 	// Get product
+// 	var product models.Product
+// 	models.GORMDB.First(&product, id)
+// 	if product.ID == 0 {
+// 		ContexJsonResponse(c, "Product availability changed  failed, no such an ID available", 500, nil, nil)
+// 		return
+// 	}
 
-	// Add choice id
-	product.Choices_id = append(product.Choices_id, input.Choice_id)
+// 	// Add choice id
+// 	product.Choices_id = append(product.Choices_id, input.Choice_id)
 
-	result := models.GORMDB.Save(&product)
-	if result.Error != nil {
-		ContexJsonResponse(c, "Internal server error on product update", 500, nil, result.Error)
-		return
-	}
+// 	result := models.GORMDB.Save(&product)
+// 	if result.Error != nil {
+// 		ContexJsonResponse(c, "Internal server error on product update", 500, nil, result.Error)
+// 		return
+// 	}
 
-	ContexJsonResponse(c, "Added new choice to product successfully", 200, product, nil)
+// 	ContexJsonResponse(c, "Added new choice to product successfully", 200, product, nil)
 
-}
+// }
 
 // Change Availability of product by id
 func ChangeAvailabilityOfProductByIdHandler(c *gin.Context) {
@@ -297,20 +332,46 @@ func UpdateProductValuesByIdHandler(c *gin.Context) {
 	product.Description = c.Request.FormValue("description")
 	product.Price, _ = strconv.ParseFloat(c.Request.FormValue("price"), 64)
 
+	// Get choices ids
+	var choice_ids []int64
 	choices_ := c.Request.FormValue("choices_id")
-	if err := json.Unmarshal([]byte(choices_), &product.Choices_id); err != nil {
+	if err := json.Unmarshal([]byte(choices_), &choice_ids); err != nil {
 		ContexJsonResponse(c, "Error on choices_id unmarshal", 500, nil, err)
 		return
 	}
+	var choices []models.Choice
+	// Find choices
+	if len(choice_ids) != 0 {
+		res := models.GORMDB.Table("choices").Find(&choices, choice_ids)
+		if res.Error != nil {
+			ContexJsonResponse(c, "Error on choices search", 500, nil, res.Error)
+			return
+		}
+	}
+	models.GORMDB.Model(&product).Association("Choices").Replace(choices)
 
-	product.Custom, _ = strconv.ParseBool(c.Request.FormValue("custom"))
-	product.Category_id, _ = strconv.ParseInt(c.Request.FormValue("category_id"), 10, 64)
+	// Get ingredients ids
+	var ingredient_ids []int64
 
 	ingredients_ := c.Request.FormValue("ingredients_id")
-	if err := json.Unmarshal([]byte(ingredients_), &product.Ingredients_id); err != nil {
+	if err := json.Unmarshal([]byte(ingredients_), &ingredient_ids); err != nil {
 		ContexJsonResponse(c, "Error on ingredients unmarshal", 500, nil, err)
 		return
 	}
+
+	var ingredients []models.Ingredient
+	// Find ingredients
+	if len(ingredient_ids) != 0 {
+		res := models.GORMDB.Table("ingredients").Find(&ingredients, ingredient_ids)
+		if res.Error != nil {
+			ContexJsonResponse(c, "Error on ingredients  search", 500, nil, res.Error)
+			return
+		}
+	}
+	models.GORMDB.Model(&product).Association("Ingredients").Replace(ingredients)
+
+	product.Custom, _ = strconv.ParseBool(c.Request.FormValue("custom"))
+	product.Category_id, _ = strconv.ParseInt(c.Request.FormValue("category_id"), 10, 64)
 
 	default_ingredients_ := c.Request.FormValue("default_ingredients")
 	if err := json.Unmarshal([]byte(default_ingredients_), &product.Default_Ingredients); err != nil {
@@ -322,7 +383,8 @@ func UpdateProductValuesByIdHandler(c *gin.Context) {
 
 	product.Price = math.Round((product.Price * 100) / 100)
 
-	result = models.GORMDB.Save(&product)
+	// result = models.GORMDB.Save(&product)
+	result = models.GORMDB.Session(&gorm.Session{FullSaveAssociations: true}).Save(&product)
 	if result.Error != nil {
 		ContexJsonResponse(c, "Internal server error on product update", 500, nil, result.Error)
 		return

@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { Button, Col, Form } from "react-bootstrap";
 import "../../css/Layout/general.css";
 import { connect } from "react-redux";
-import { updateUser } from "../../actions/user";
+import { updateUser, addUserAddress } from "../../actions/user";
 import GoogleMapReact from "google-map-react";
 
 import Marker from "../Layout/Marker";
@@ -63,6 +63,7 @@ class EditAddressModal extends Component {
   static propTypes = {
     userReducer: PropTypes.object.isRequired,
     updateUser: PropTypes.func.isRequired,
+    addUserAddress: PropTypes.func.isRequired,
   };
 
   onChange = (e) => {
@@ -127,16 +128,14 @@ class EditAddressModal extends Component {
     let zipcode = document.getElementById("formGridZipCode").value;
     // console.log(this.props.address);
     const data = {
-      id: this.props.userReducer.user.id,
-      address_id: "",
-      address: {
-        area_name: areaname,
-        address_name: addressname,
-        address_number: addressnumber,
-        zipcode: zipcode,
-      },
-      reason: "",
-      index: 0,
+      // user_id: sessionStorage.getItem("userID"),
+      area_name: areaname,
+      address_name: addressname,
+      address_number: addressnumber,
+      zipcode: zipcode,
+      longitude: this.state.center.lng,
+      latitude: this.state.center.lat,
+      city_name: "",
     };
     if (this.props.updateAddress) {
       //   {**UPDATE ADDRESS**}
@@ -147,7 +146,7 @@ class EditAddressModal extends Component {
       data.reason = "add_address";
     }
     console.log(data);
-    this.props.updateUser(data);
+    this.props.addUserAddress(data);
     this.setState({
       address: "",
       addressName: "",
@@ -277,4 +276,6 @@ const mapStateToProps = (state) => ({
   userReducer: state.userReducer,
 });
 
-export default connect(mapStateToProps, { updateUser })(EditAddressModal);
+export default connect(mapStateToProps, { updateUser, addUserAddress })(
+  EditAddressModal
+);

@@ -5,7 +5,7 @@ import { Button, Col, Modal, Row } from "react-bootstrap";
 import { Link, Redirect } from "react-router-dom";
 import "../../../css/Pages/accountpage.css";
 import { update_order } from "../../../actions/orders";
-import { getUser } from "../../../actions/user";
+import { getUser, getUserOrders } from "../../../actions/user";
 
 import StarBorderIcon from "@material-ui/icons/StarBorder";
 import Rating from "@material-ui/lab/Rating";
@@ -22,11 +22,13 @@ class UserOrders extends Component {
       comment_order_ids: [],
       rating: 4,
       showCommentModal: false,
+      loaded: false,
     };
   }
   static propTypes = {
     userReducer: PropTypes.object.isRequired,
     update_order: PropTypes.func.isRequired,
+    getUserOrders: PropTypes.func.isRequired,
   };
 
   showCommentModal = (bool, order) => {
@@ -55,15 +57,15 @@ class UserOrders extends Component {
     if (this.props.userReducer.isAuthenticated === false) {
       return <Redirect to="/home" />;
     }
-    let comment_ids = [];
-    for (var i in this.props.userReducer.user.comments) {
-      comment_ids.push(this.props.userReducer.user.comments[i].order_id);
+    if (this.state.loaded === false) {
+      this.props.getUserOrders(parseInt(sessionStorage.getItem("userID"), 10));
+      this.setState({
+        loaded: true,
+      });
     }
-    this.setState({ comment_order_ids: comment_ids });
   }
 
   onChange = (e) => {
-    // console.log(e.target.name);
     this.setState({ [e.target.name]: e.target.value });
   };
 
@@ -173,11 +175,11 @@ class UserOrders extends Component {
                 <span></span>
               </div>
               <div className="userOrdersColBody">
-                {this.props.userReducer.user.orders.length > 0 ? (
+                {this.props.userReducer.orders.length > 0 ? (
                   <div>
-                    {this.props.userReducer.user.orders.map((order, index) => {
+                    {this.props.userReducer.orders.map((order, index) => {
                       // console.log(order);
-                      var date = new Date(order.create_at);
+                      var date = new Date(order.CreatedAt);
                       return (
                         <Row className="orderRow" key={index}>
                           <Col className="orderRowCol dateCol">
@@ -190,11 +192,11 @@ class UserOrders extends Component {
                                 return (
                                   <li key={index}>
                                     <span className="listItemTitle">
-                                      x {product.quantity} {product.item.name}
+                                      x {product.quantity} {product.item_name}
                                     </span>
                                     <br />{" "}
                                     <span className="listItemSubTitle">
-                                      {product.optionAnswers.join() +
+                                      {product.option_answers.join() +
                                         `,${product.comment}`}
                                     </span>
                                   </li>
@@ -251,4 +253,8 @@ const mapStateToProps = (state) => ({
   userReducer: state.userReducer,
 });
 
-export default connect(mapStateToProps, { update_order, getUser })(UserOrders);
+export default connect(mapStateToProps, {
+  update_order,
+  getUser,
+  getUserOrders,
+})(UserOrders);
