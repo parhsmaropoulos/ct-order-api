@@ -6,7 +6,7 @@ import React, { Component } from "react";
 import { Image, Nav, Navbar } from "react-bootstrap";
 import { PersonCircle } from "react-bootstrap-icons";
 import { connect } from "react-redux";
-import { logout, refreshToken } from "../../actions/user";
+import { logout, refreshToken, logout_async } from "../../actions/user";
 import PropTypes from "prop-types";
 import "../../css/Layout/header.css";
 import logo from "../../assets/Images/transparent-logo.png";
@@ -21,6 +21,8 @@ import {
   Paper,
   Popper,
 } from "@material-ui/core";
+import { useContext } from "react";
+import { AuthContext } from "../../firebase/AuthProvider";
 
 class Header extends Component {
   constructor(props) {
@@ -40,6 +42,7 @@ class Header extends Component {
     // isAuthenticated: PropTypes.string.isRequired,
     logout: PropTypes.func.isRequired,
     products: PropTypes.array.isRequired,
+    logout_async: PropTypes.func.isRequired,
   };
 
   onClose = (e) => {
@@ -51,8 +54,8 @@ class Header extends Component {
     this.setState({ selectedLangeuage: lang });
   }
 
-  logOut() {
-    this.props.logout();
+  async logOut() {
+    this.props.logout_async();
   }
 
   handleToggle = () => {
@@ -68,14 +71,9 @@ class Header extends Component {
 
   render() {
     let autheticated = sessionStorage.getItem("isAuthenticated");
-    if (autheticated === "true") {
-      autheticated = true;
-    } else {
-      autheticated = false;
-    }
-    if (autheticated === "true" && this.props.user === null) {
-      this.props.refreshToken(this.props.refresh_token);
-    }
+    // if (autheticated === "true" && this.props.user === null) {
+    //   this.props.refreshToken(this.props.refresh_token);
+    // }
     if (window.location.href.endsWith("admin_login")) {
       return null;
     }
@@ -200,4 +198,6 @@ const mapStateToProps = (state) => ({
   products: state.productReducer.products,
 });
 
-export default connect(mapStateToProps, { logout, refreshToken })(Header);
+export default connect(mapStateToProps, { logout, refreshToken, logout_async })(
+  Header
+);

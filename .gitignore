@@ -5,3 +5,4 @@ admin-panel/utils/*
 .VSCodeCounter/*
 backend/vendor/*
 backend/.env
+backend/config/serviceAccountKey.json

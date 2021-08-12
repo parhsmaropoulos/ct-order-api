@@ -10,7 +10,8 @@
  */
 
 import axios from "axios";
-import { headers } from "../utils/axiosHeaders";
+import app from "../firebase/base";
+import { authHeaders, headers } from "../utils/axiosHeaders";
 import { current_url } from "../utils/util";
 import {
   CREATE_CATEGORY,
@@ -39,26 +40,39 @@ import { returnErrors } from "./messages";
 
 // GET ALL ITEMS
 export const get_items = () => (dispatch) => {
-  axios
-    .get(current_url + "products/all", headers)
-    .then((res) => {
-      console.log(res);
-      dispatch({
-        type: GET_ITEMS,
-        products: res.data.data,
-      });
-      dispatch({
-        type: SNACKBAR_SUCCESS,
-        message: "Products fetched successfully!",
-      });
+  app
+    .auth()
+    .currentUser.getIdToken(/* forceRefresh */ true)
+    .then(function (idToken) {
+      // Send token to your backend via HTTPS
+      // ...
+      let headers = authHeaders;
+      headers.Authorization = `Beare ${idToken}`;
+      console.log(idToken);
+      axios
+        .get(current_url + "products/all", headers)
+        .then((res) => {
+          console.log(res);
+          dispatch({
+            type: GET_ITEMS,
+            products: res.data.data,
+          });
+          dispatch({
+            type: SNACKBAR_SUCCESS,
+            message: "Products fetched successfully!",
+          });
+        })
+        .catch((err) => {
+          console.log(err.response);
+          dispatch({
+            type: SNACKBAR_ERROR,
+            message: err.response.data.message,
+          });
+          dispatch(returnErrors(err, err.status));
+        });
     })
-    .catch((err) => {
-      console.log(err.response);
-      dispatch({
-        type: SNACKBAR_ERROR,
-        message: err.response.data.message,
-      });
-      dispatch(returnErrors(err, err.status));
+    .catch(function (error) {
+      // Handle error
     });
 };
 

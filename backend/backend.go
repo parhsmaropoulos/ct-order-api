@@ -1,6 +1,7 @@
 package main
 
 import (
+	"GoProjects/CoffeeTwist/backend/config"
 	handlers "GoProjects/CoffeeTwist/backend/handlers"
 	"GoProjects/CoffeeTwist/backend/lib"
 	"GoProjects/CoffeeTwist/backend/middleware"
@@ -42,6 +43,13 @@ func main() {
 	// Initialize websocket pool
 	pool := websock.NewPool()
 	go pool.Start()
+
+	// configure firebase
+	firebaseAuth := config.SetupFirebase()
+
+	router.Use(func(c *gin.Context) {
+		c.Set("firebaseAuth", firebaseAuth)
+	})
 
 	// SSEE
 	// Make a new Broker instance
@@ -94,7 +102,7 @@ func main() {
 		users.POST("/register", handlers.RegisterHandler)
 		users.PUT("/:id/update_personal_info", handlers.UpdatePersonalInfoUserByIdHandler)
 		users.PUT("/:id/update_password", handlers.ChangeUserPasswordByIdHandler)
-		users.GET("/:id", middleware.TokenAuthMiddleware(), handlers.GetUserByIdHandler)
+		users.GET("/:id", middleware.AuthMiddleware(), handlers.GetUserByIdHandler)
 
 		//Add address
 		users.POST("/:id/add_address", handlers.RegisterAddressHandler)
@@ -120,7 +128,7 @@ func main() {
 	products := router.Group("/products/")
 	{
 		// GET ALL
-		products.GET("/all", handlers.GetAllProductsHandler)
+		products.GET("/all", middleware.AuthMiddleware(), handlers.GetAllProductsHandler)
 
 		// GET SINGLE
 		products.GET("/:id", handlers.GetSingleProductByIdHandler)

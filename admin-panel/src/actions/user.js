@@ -11,6 +11,8 @@
 
 import axios from "axios";
 import jwt from "jwt-decode";
+import { useDispatch } from "react-redux";
+import app from "../firebase/base";
 import { authHeaders, headers } from "../utils/axiosHeaders";
 import { current_url } from "../utils/util";
 import {
@@ -85,6 +87,76 @@ export const login = (email, password) => (dispatch) => {
         message: "Invalid credits",
       });
     });
+};
+
+export const login_async = (email, password) => async (dispatch) => {
+  // const dispatch = useDispatch();
+
+  try {
+    const credentials = await app
+      .auth()
+      .signInWithEmailAndPassword(email, password);
+    console.log(credentials);
+
+    sessionStorage.setItem("isAuthenticated", true);
+  } catch (error) {
+    alert(error);
+    dispatch({
+      type: LOGIN_FAIL,
+      error: error.response,
+    });
+    dispatch({
+      type: SNACKBAR_ERROR,
+      message: "Invalid credits",
+    });
+  }
+};
+
+export const register_async = (email, password) => async (dispatch) => {
+  try {
+    const credentials = await app
+      .auth()
+      .createUserWithEmailAndPassword(email, password);
+
+    const res = await axios.post(
+      current_url + "user/register",
+      credentials,
+      authHeaders
+    );
+    console.log(res);
+    // history.push("/");
+    console.log(credentials);
+    dispatch({
+      type: REGISTER_SUCCESS,
+    });
+    dispatch({
+      type: SNACKBAR_SUCCESS,
+      message: "User registered successfully",
+    });
+  } catch (error) {
+    alert(error);
+    dispatch({
+      type: REGISTER_FAIL,
+    });
+    dispatch({
+      type: SNACKBAR_ERROR,
+      message: error.response.data.message,
+    });
+  }
+};
+
+export const logout_async = () => async (dispatch) => {
+  try {
+    const credentials = await app.auth().signOut();
+    console.log(credentials);
+
+    sessionStorage.setItem("isAuthenticated", false);
+    dispatch({
+      type: LOGOUT_SUCCESS,
+    });
+  } catch (error) {
+    alert(error);
+  }
 };
 
 // LOGIN ADMIN
@@ -252,17 +324,8 @@ export const addUserAddress = (data) => (dispatch) => {
 
 // Get User by id
 export const getUser = (id) => (dispatch) => {
-  const token = sessionStorage.getItem("token");
-  // Headers
-  const config = {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  };
-
   axios
-    .get(`${current_url}user/${id}`, config)
+    .get(`${current_url}user/${id}`, authHeaders)
     .then((res) => {
       // console.log(res);
       dispatch({
@@ -299,7 +362,6 @@ export const register = (data) => (dispatch) => {
     })
     .catch((err) => {
       console.log(err.response);
-      dispatch(returnErrors(err, err.status));
       dispatch({
         type: REGISTER_FAIL,
       });

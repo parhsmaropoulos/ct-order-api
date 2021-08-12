@@ -29,20 +29,20 @@ const productReducer = (state = defaultState, action) => {
     case GET_ITEMS:
       return {
         ...state,
-        products: action.products,
+        products: action.data,
         isReady: true,
       };
     case GET_CATEGORIES:
       return {
         ...state,
-        categories: action.categories,
+        categories: action.data,
       };
     case GET_INGREDIENTS:
       let grouped_ingredients = [];
       let grouped;
       var _ = require("lodash");
-      if (action.ingredients.length > 0) {
-        grouped = _.groupBy(action.ingredients, "category");
+      if (action.data.ingredients.length > 0) {
+        grouped = _.groupBy(action.data.ingredients, "category");
 
         for (var i in grouped) {
           grouped_ingredients.push(grouped[i]);
@@ -52,35 +52,35 @@ const productReducer = (state = defaultState, action) => {
       return {
         ...state,
         ingredients: grouped_ingredients,
-        ingredientCategories: action.categories,
+        ingredientCategories: action.data.categories,
       };
     case GET_CHOICES:
       return {
         ...state,
-        choices: action.choices,
+        choices: action.data,
       };
     case CREATE_ITEM:
       return {
         ...state,
-        products: [...state.products, action.new_product],
+        products: [...state.products, action.data],
         isReady: false,
       };
     case CREATE_CATEGORY:
       return {
         ...state,
-        categories: [...state.categories, action.category],
+        categories: [...state.categories, action.data],
         isReady: false,
       };
     case CREATE_INGREDIENT:
       return {
         ...state,
-        ingredients: [...state.ingredients, action.ingredients],
+        ingredients: [...state.ingredients, action.data],
         isReady: false,
       };
     case CREATE_CHOICE:
       return {
         ...state,
-        choices: [...state.choices, action.choice],
+        choices: [...state.choices, action.data],
         isReady: false,
       };
     case UPDATE_ITEM:
@@ -88,11 +88,11 @@ const productReducer = (state = defaultState, action) => {
 
       var indexOfItemToUpdate = 0;
       for (i in newItems) {
-        if (newItems[i].id === action.new_item.id) {
+        if (newItems[i].id === action.data.id) {
           indexOfItemToUpdate = i;
         }
       }
-      newItems[indexOfItemToUpdate] = action.new_item;
+      newItems[indexOfItemToUpdate] = action.data;
       console.log(newItems);
       return {
         ...state,
@@ -101,18 +101,14 @@ const productReducer = (state = defaultState, action) => {
     case DELETE_PRODUCT:
       return {
         ...state,
-        products: [
-          ...state.products.filter((prod) => prod !== action.delete_product),
-        ],
+        products: [...state.products.filter((prod) => prod !== action.data)],
         isReady: false,
       };
     case DELETE_CATEGORY:
       return {
         ...state,
         categories: [
-          ...state.categories.filter(
-            (categ) => categ !== action.delete_category
-          ),
+          ...state.categories.filter((categ) => categ !== action.data),
         ],
         isReady: false,
       };
@@ -120,9 +116,7 @@ const productReducer = (state = defaultState, action) => {
       return {
         ...state,
         ingredients: [
-          ...state.ingredients.filter(
-            (ingred) => ingred !== action.delete_ingredient
-          ),
+          ...state.ingredients.filter((ingred) => ingred !== action.data),
         ],
         isReady: false,
       };
@@ -133,7 +127,7 @@ const productReducer = (state = defaultState, action) => {
       var indexOfIngredientToUpdate_inner = 0;
       for (i in newIngredients) {
         for (var j in newIngredients[i]) {
-          if (newIngredients[i][j].id === action.new_ingredient.id) {
+          if (newIngredients[i][j].id === action.data.id) {
             indexOfIngredientToUpdate_outer = i;
             indexOfIngredientToUpdate_inner = j;
           }
@@ -141,8 +135,8 @@ const productReducer = (state = defaultState, action) => {
       }
       newIngredients[indexOfIngredientToUpdate_outer][
         indexOfIngredientToUpdate_inner
-      ] = action.new_ingredient;
-      console.log(action.new_ingredient);
+      ] = action.data;
+      console.log(action.data);
       return {
         ...state,
         ingredients: newIngredients,

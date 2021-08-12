@@ -5,6 +5,8 @@ module GoProjects/CoffeeTwist/backend
 go 1.15
 
 require (
+	firebase.google.com/go v3.13.0+incompatible
+	firebase.google.com/go/v4 v4.6.0 // indirect
 	github.com/aws/aws-sdk-go v1.38.44 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-gonic/gin v1.7.1
@@ -28,6 +30,7 @@ require (
 	golang.org/x/net v0.0.0-20210428140749-89ef3d95e781 // indirect
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
+	google.golang.org/api v0.40.0
 	gopkg.in/stretchr/testify.v1 v1.2.2 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gorm.io/driver/postgres v1.1.0

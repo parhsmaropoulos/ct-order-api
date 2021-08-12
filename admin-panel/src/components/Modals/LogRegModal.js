@@ -3,7 +3,12 @@ import { Button, Tab, Tabs } from "react-bootstrap";
 import { Facebook, Google } from "react-bootstrap-icons";
 import { connect } from "react-redux";
 import "../../css/common/logregmodal.css";
-import { login, register } from "../../actions/user";
+import {
+  login,
+  register,
+  register_async,
+  login_async,
+} from "../../actions/user";
 import { returnErrors } from "../../actions/messages";
 import PropTypes from "prop-types";
 import {
@@ -14,6 +19,9 @@ import {
   TextField,
 } from "@material-ui/core";
 import { showErrorSnackbar } from "../../actions/snackbar";
+import { Redirect, withRouter } from "react-router-dom";
+import { useContext } from "react";
+import { AuthContext } from "../../firebase/AuthProvider";
 
 class LogRegModal extends Component {
   constructor(props) {
@@ -38,6 +46,8 @@ class LogRegModal extends Component {
     register: PropTypes.func.isRequired,
     isAuthenticated: PropTypes.bool,
     showErrorSnackbar: PropTypes.func.isRequired,
+    register_async: PropTypes.func.isRequired,
+    login_async: PropTypes.func.isRequired,
   };
 
   componentDidMount() {
@@ -47,22 +57,25 @@ class LogRegModal extends Component {
     });
   }
 
-  onSubmit(e) {
+  async onSubmit(e) {
     e.preventDefault();
     console.log(this.state.email, this.state.password);
-    this.props.login(this.state.email, this.state.password);
+    // this.props.login(this.state.email, this.state.password);
+    await this.props.login_async(this.state.email, this.state.password);
   }
 
-  onSubmitRegister(e) {
+  async onSubmitRegister(e) {
     e.preventDefault();
     if (this.state.reg_password !== this.state.reg_password2) {
       this.props.showErrorSnackbar("Passwords does not match");
     } else {
       const user = {
         email: this.state.email,
-        password: this.state.password,
+        password: this.state.reg_password,
       };
-      this.props.register(user);
+      let res = await this.props.register_async(user.email, user.password);
+      console.log(res);
+      // this.props.register(user);
     }
   }
 
@@ -88,9 +101,10 @@ class LogRegModal extends Component {
       this.setState({ ready: true });
     }
   };
+
   render() {
     let errorModal;
-    if (this.props.userReducer.LoadisLoadingng) {
+    if (this.props.userReducer.isLoading) {
       return (
         <div>
           <div className="loading-div">
@@ -98,9 +112,6 @@ class LogRegModal extends Component {
           </div>
         </div>
       );
-    }
-    if (sessionStorage.getItem("isAuthenticated") === "true") {
-      return null;
     }
     return (
       <Modal
@@ -264,9 +275,13 @@ const mapStateToProps = (state) => ({
   errorReducer: state.errorReducer,
 });
 
-export default connect(mapStateToProps, {
-  login,
-  register,
-  returnErrors,
-  showErrorSnackbar,
-})(LogRegModal);
+export default withRouter(
+  connect(mapStateToProps, {
+    login,
+    register,
+    returnErrors,
+    showErrorSnackbar,
+    register_async,
+    login_async,
+  })(LogRegModal)
+);

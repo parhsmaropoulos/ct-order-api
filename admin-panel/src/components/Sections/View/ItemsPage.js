@@ -6,10 +6,12 @@ import {
   get_ingredients,
   get_choices,
 } from "../../../actions/items";
+import { auth_get_request } from "../../../actions/lib";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import IngredientsComponent from "./Ingredients/IngredientsComponent";
 import ChoicesComponent from "./Choices/ChoicesComponent";
+import { GET_ITEMS } from "../../../actions/actions";
 
 class ItemsPage extends Component {
   static propTypes = {
@@ -22,15 +24,21 @@ class ItemsPage extends Component {
     choices: PropTypes.array.isRequired,
     isAuthenticated: PropTypes.bool,
     isReady: PropTypes.bool,
+    auth_get_request: PropTypes.func.isRequired,
   };
 
   componentDidMount() {
-    if (this.props.isReady === false) {
-      this.props.get_items();
-      this.props.get_categories();
-      this.props.get_ingredients();
-      this.props.get_choices();
-    }
+    // if (this.props.isReady === false) {
+    //   this.props.get_items();
+    //   this.props.get_categories();
+    //   this.props.get_ingredients();
+    //   this.props.get_choices();
+    // }
+    this.get_items();
+  }
+
+  async get_items() {
+    this.props.auth_get_request("products/all", GET_ITEMS);
   }
   render() {
     return (
@@ -65,4 +73,5 @@ export default connect(mapStateToProps, {
   get_categories,
   get_ingredients,
   get_choices,
+  auth_get_request,
 })(ItemsPage);
