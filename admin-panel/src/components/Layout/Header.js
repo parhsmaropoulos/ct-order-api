@@ -21,8 +21,6 @@ import {
   Paper,
   Popper,
 } from "@material-ui/core";
-import { useContext } from "react";
-import { AuthContext } from "../../firebase/AuthProvider";
 
 class Header extends Component {
   constructor(props) {
@@ -55,7 +53,7 @@ class Header extends Component {
   }
 
   async logOut() {
-    this.props.logout_async();
+    await this.props.logout_async();
   }
 
   handleToggle = () => {
@@ -71,9 +69,7 @@ class Header extends Component {
 
   render() {
     let autheticated = sessionStorage.getItem("isAuthenticated");
-    // if (autheticated === "true" && this.props.user === null) {
-    //   this.props.refreshToken(this.props.refresh_token);
-    // }
+
     if (window.location.href.endsWith("admin_login")) {
       return null;
     }

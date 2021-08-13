@@ -6,12 +6,9 @@ import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { send_order } from "../../../../actions/orders";
-import {
-  update_item,
-  change_item_availability,
-  update_ingredient,
-} from "../../../../actions/items";
 import { PencilFill } from "react-bootstrap-icons";
+import { auth_put_request } from "../../../../actions/lib";
+import { CHANGE_AVAILABILITY } from "../../../../actions/actions";
 
 class ItemsComponent extends Component {
   state = {
@@ -24,21 +21,14 @@ class ItemsComponent extends Component {
   };
 
   static propTypes = {
-    send_order: PropTypes.func.isRequired,
-    update_item: PropTypes.func.isRequired,
-    change_item_availability: PropTypes.func.isRequired,
+    auth_put_request: PropTypes.func.isRequired,
   };
 
   componentDidMount() {
-    this.setState({ user_id: this.props.user_Id });
-  }
+    }
 
-  changeAvailability(item) {
-    console.log("here");
-    this.props.change_item_availability(item.ID);
-  }
-  changeAvailabilityIngredient(item) {
-    this.props.update_ingredient(item.ID, item, "change_availability");
+  changeAvailability(id) {
+    this.props.auth_put_request(`products/${id}/change_availability`,null,CHANGE_AVAILABILITY);
   }
 
   render() {
@@ -119,7 +109,7 @@ class ItemsComponent extends Component {
                           <Form.Check
                             type="switch"
                             defaultChecked={item.available}
-                            onChange={() => this.changeAvailability(item)}
+                            onChange={() => this.changeAvailability(item.ID)}
                             id={item.ID}
                             label="Available"
                           />
@@ -150,7 +140,6 @@ class ItemsComponent extends Component {
 }
 
 const mapStateToProps = (state) => (
-  console.log(state.productReducer.categories),
   {
     isAuthenticated: state.userReducer.isAuthenticated,
     // user_id: state.userReducer.user.id,
@@ -163,7 +152,5 @@ const mapStateToProps = (state) => (
 );
 
 export default connect(mapStateToProps, {
-  update_item,
-  update_ingredient,
-  change_item_availability,
+  auth_put_request,
 })(ItemsComponent);

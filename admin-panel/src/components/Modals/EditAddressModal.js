@@ -67,27 +67,6 @@ class EditAddressModal extends Component {
   };
 
   onChange = (e) => {
-    // var newState = this.state;
-    // var newName = e.target.name;
-    // newState[newName] = e.target.value;
-
-    // var newAddress =
-    //   newState.addressName +
-    //   " " +
-    //   newState.addressNumber +
-    //   ", " +
-    //   newState.areaName +
-    //   " " +
-    //   newState.zipCode +
-    //   " , Greece";
-    // geocodeByAddress(newAddress)
-    //   .then((results) => getLatLng(results[0]))
-    //   .then(
-    //     (latLng) => (
-    //       (newState.center.lat = latLng.lat), (newState.center.lng = latLng.lng)
-    //     )
-    //   )
-    //   .then(this.setState(newState));
 
     this.setState({ [e.target.name]: e.target.value });
   };
@@ -95,30 +74,6 @@ class EditAddressModal extends Component {
   onSubmit = (e) => {
     e.preventDefault();
   };
-  // handleChange = (address) => {
-  //   console.log(this.props);
-  // };
-
-  //   handleSelect = (address) => {
-  //     geocodeByAddress(address)
-  //       .then((results) => this.saveResults(results))
-  //       .then((results) => getLatLng(results[0]))
-  //       .then((latLng) => console.log("Success", latLng))
-  //       .catch((error) => console.error("Error", error));
-  //   };
-
-  //   saveResults = (results) => {
-  //     console.log(results);
-  //     var opts = results[0].address_components;
-  //     this.setState({
-  //       address: results[0].formatted_address,
-  //       addressName: opts[1].long_name,
-  //       addressNumber: opts[0].short_name,
-  //       areaName: opts[2].long_name,
-  //       zipCode: opts[5].long_name,
-  //     });
-  //     return results;
-  //   };
 
   onAddAddress(e) {
     e.preventDefault();

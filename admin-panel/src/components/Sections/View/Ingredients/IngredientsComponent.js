@@ -7,6 +7,9 @@ import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { change_ingredient_availability } from "../../../../actions/items";
 import { PencilFill } from "react-bootstrap-icons";
+import { auth_put_request } from "../../../../actions/lib";
+import { CHANGE_AVAILABILITY } from "../../../../actions/actions";
+
 
 class IngredientsComponent extends Component {
   state = {
@@ -26,11 +29,11 @@ class IngredientsComponent extends Component {
   }
 
   static propTypes = {
-    change_ingredient_availability: PropTypes.func.isRequired,
+    auth_put_request: PropTypes.func.isRequired,
   };
 
-  changeAvailabilityIngredient(item) {
-    this.props.change_ingredient_availability(item.ID);
+  async changeAvailabilityIngredient(id) {
+    await this.props.auth_put_request(`ingredients/${id}/change_availability`,null,CHANGE_AVAILABILITY)
   }
 
   render() {
@@ -82,7 +85,7 @@ class IngredientsComponent extends Component {
                             type="switch"
                             checked={ingredient.available}
                             onChange={() =>
-                              this.changeAvailabilityIngredient(ingredient)
+                              this.changeAvailabilityIngredient(ingredient.ID)
                             }
                             id={ingredient.ID}
                             label="Available"
@@ -119,5 +122,5 @@ const mapStateToProps = (state) => ({
 });
 
 export default connect(mapStateToProps, {
-  change_ingredient_availability,
+  auth_put_request,
 })(IngredientsComponent);

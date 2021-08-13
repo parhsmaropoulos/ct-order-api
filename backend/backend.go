@@ -128,7 +128,7 @@ func main() {
 	products := router.Group("/products/")
 	{
 		// GET ALL
-		products.GET("/all", middleware.AuthMiddleware(), handlers.GetAllProductsHandler)
+		products.GET("/all", handlers.GetAllProductsHandler)
 
 		// GET SINGLE
 		products.GET("/:id", handlers.GetSingleProductByIdHandler)

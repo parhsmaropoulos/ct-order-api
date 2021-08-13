@@ -1,45 +1,46 @@
 import React, { Component } from "react";
 import ItemsComponent from "./Products/ItemsComponent";
-import {
-  get_items,
-  get_categories,
-  get_ingredients,
-  get_choices,
-} from "../../../actions/items";
 import { auth_get_request } from "../../../actions/lib";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import IngredientsComponent from "./Ingredients/IngredientsComponent";
 import ChoicesComponent from "./Choices/ChoicesComponent";
-import { GET_ITEMS } from "../../../actions/actions";
+import { GET_CATEGORIES, GET_CHOICES, GET_INGREDIENTS, GET_ITEMS } from "../../../actions/actions";
 
 class ItemsPage extends Component {
   static propTypes = {
-    get_items: PropTypes.func.isRequired,
-    get_categories: PropTypes.func.isRequired,
-    get_ingredients: PropTypes.func.isRequired,
     products: PropTypes.array.isRequired,
     categories: PropTypes.array.isRequired,
     ingredients: PropTypes.array.isRequired,
     choices: PropTypes.array.isRequired,
     isAuthenticated: PropTypes.bool,
-    isReady: PropTypes.bool,
     auth_get_request: PropTypes.func.isRequired,
+    isReady: PropTypes.bool,
   };
 
   componentDidMount() {
-    // if (this.props.isReady === false) {
-    //   this.props.get_items();
-    //   this.props.get_categories();
-    //   this.props.get_ingredients();
-    //   this.props.get_choices();
-    // }
+    if (this.props.isReady === false) {
+    }
     this.get_items();
+    this.get_choices();
+    this.get_categories();
+    this.get_ingredients();
   }
+  
 
   async get_items() {
-    this.props.auth_get_request("products/all", GET_ITEMS);
+    await this.props.auth_get_request("products/all", GET_ITEMS);
   }
+  async get_categories() {
+    await this.props.auth_get_request("product_category/all",GET_CATEGORIES)
+  }
+  async get_choices() {
+    await this.props.auth_get_request("product_choices/all",GET_CHOICES)
+  }
+  async get_ingredients() {
+    await this.props.auth_get_request("ingredients/all",GET_INGREDIENTS)
+  }
+
   render() {
     return (
       <div>
@@ -59,7 +60,8 @@ class ItemsPage extends Component {
     );
   }
 }
-const mapStateToProps = (state) => ({
+const mapStateToProps = (state) => (
+  console.log(state),{
   isAuthenticated: state.userReducer.isAuthenticated,
   categories: state.productReducer.categories,
   products: state.productReducer.products,
@@ -68,10 +70,5 @@ const mapStateToProps = (state) => ({
   isReady: state.productReducer.isReady,
 });
 
-export default connect(mapStateToProps, {
-  get_items,
-  get_categories,
-  get_ingredients,
-  get_choices,
-  auth_get_request,
-})(ItemsPage);
+export default connect(mapStateToProps,{auth_get_request}
+)(ItemsPage);

@@ -4,7 +4,8 @@ import PropTypes from "prop-types";
 import { Button, Col, Form, Row } from "react-bootstrap";
 import { Link, Redirect } from "react-router-dom";
 import "../../../css/Pages/accountpage.css";
-import { updateUser, getUser } from "../../../actions/user";
+import { auth_get_request, auth_put_request } from "../../../actions/lib";
+
 import { Grid, Container } from "@material-ui/core";
 
 class MainPage extends Component {
@@ -26,18 +27,15 @@ class MainPage extends Component {
 
   static propTypes = {
     userReducer: PropTypes.object.isRequired,
-    updateUser: PropTypes.func.isRequired,
-    getUser: PropTypes.func.isRequired,
+    auth_get_request: PropTypes.func.isRequired,
+    auth_put_request: PropTypes.func.isRequired,
+
   };
 
   componentDidMount() {
-    if (this.props.userReducer.isAuthenticated === false) {
-      return <Redirect to="/home" />;
-    }
     if (this.props.userReducer.hasLoaded === false) {
-      this.props.getUser(this.props.userReducer.user.ID);
+      this.props.auth_get_request(`user/${sessionStorage.getItem("userID")}`)
     }
-    console.log(this.props.userReducer);
     this.setState({
       name: this.props.userReducer.user.name,
       surname: this.props.userReducer.user.surname,
@@ -209,4 +207,4 @@ const mapStateToProps = (state) => (
   }
 );
 
-export default connect(mapStateToProps, { updateUser, getUser })(MainPage);
+export default connect(mapStateToProps, { auth_get_request, auth_put_request })(MainPage);

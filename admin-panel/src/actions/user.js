@@ -36,6 +36,7 @@ import {
   USER_LOADING,
 } from "./actions";
 import { returnErrors } from "./messages";
+import {auth_post_request} from "./lib"
 
 // LOGIN USER
 export const login = (email, password) => (dispatch) => {
@@ -96,9 +97,8 @@ export const login_async = (email, password) => async (dispatch) => {
     const credentials = await app
       .auth()
       .signInWithEmailAndPassword(email, password);
-    console.log(credentials);
-
-    sessionStorage.setItem("isAuthenticated", true);
+      console.log(credentials)
+    sessionStorage.setItem("userID", credentials.user.uid);
   } catch (error) {
     alert(error);
     dispatch({
@@ -118,14 +118,19 @@ export const register_async = (email, password) => async (dispatch) => {
       .auth()
       .createUserWithEmailAndPassword(email, password);
 
-    const res = await axios.post(
-      current_url + "user/register",
-      credentials,
-      authHeaders
-    );
-    console.log(res);
-    // history.push("/");
-    console.log(credentials);
+    const data = {
+      id: credentials.user.uid,
+      username: "",
+      email: email,
+      password:password,
+    }
+    await auth_post_request("user/register",data,REGISTER_SUCCESS)
+    // const res = await axios.post(
+    //   current_url + "user/register",
+    //   credentials,
+    //   authHeaders
+    // );
+    
     dispatch({
       type: REGISTER_SUCCESS,
     });

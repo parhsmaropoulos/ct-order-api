@@ -14,6 +14,8 @@ import PropTypes from "prop-types";
 import { FormHelperText, Grid, TextField } from "@material-ui/core";
 import { subscribe } from "../../actions/user";
 import { Link } from "react-router-dom";
+import { auth_post_request } from "../../actions/lib";
+import { SUBSCRIBE_USER } from "../../actions/actions";
 
 class Footer extends Component {
   /**
@@ -49,7 +51,7 @@ class Footer extends Component {
    * On email subscription check if mail is valid throught regex
    */
 
-  onSubscribe = () => {
+  async onSubscribe  () {
     const re =
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     if (re.test(this.state.newsletterEmail)) {
@@ -62,8 +64,9 @@ class Footer extends Component {
       const data = {
         email: this.state.newsletterEmail,
       };
-      this.props.subscribe(data);
-      // console.log("Email subscribed:" + this.state.newsletterEmail);
+      const res = await auth_post_request("subscribes/new", data, SUBSCRIBE_USER)
+      console.log(res)
+      // this.props.subscribe(data);
       this.setState({ newsletterEmail: "" });
     } else {
       document.getElementById("inputNewsLetterHelperText").style.display =

@@ -5,6 +5,7 @@ module GoProjects/CoffeeTwist/backend
 go 1.15
 
 require (
+	cloud.google.com/go/firestore v1.5.0 // indirect
 	firebase.google.com/go v3.13.0+incompatible
 	firebase.google.com/go/v4 v4.6.0 // indirect
 	github.com/aws/aws-sdk-go v1.38.44 // indirect
@@ -20,7 +21,7 @@ require (
 	github.com/lib/pq v1.10.2
 	github.com/myesui/uuid v1.0.0 // indirect
 	github.com/speps/go-hashids/v2 v2.0.1
-	github.com/steinfletcher/apitest v1.5.11
+	github.com/steinfletcher/apitest v1.5.11 // indirect
 	github.com/stretchr/testify v1.7.0 // indirect
 	github.com/twinj/uuid v1.0.0
 	github.com/ugorji/go v1.2.6 // indirect

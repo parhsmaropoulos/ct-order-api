@@ -2,8 +2,10 @@ import React, { Component } from "react";
 import { Form, Button } from "react-bootstrap";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import { create_ingredient } from "../../../actions/items";
+// import { create_ingredient } from "../../../actions/items";
+import { auth_post_request } from "../../../actions/lib";
 import "../../../css/Pages/createpage.css";
+import { CREATE_INGREDIENT } from "../../../actions/actions";
 
 class CreateIngredientForm extends Component {
   constructor(props) {
@@ -21,18 +23,18 @@ class CreateIngredientForm extends Component {
   static propTypes = {
     isAuthenticated: PropTypes.bool.isRequired,
     create_ingredient: PropTypes.func.isRequired,
-    categories: PropTypes.array.isRequired,
+    auth_post_request: PropTypes.array.isRequired,
   };
 
   componentDidMount() {
-    if (this.props.categories) {
+    if (this.props.categories.length>0) {
       this.setState({
         category: this.props.categories[0],
       });
     }
   }
 
-  onSubmit(event) {
+  async onSubmit(event) {
     event.preventDefault();
     const ingredient = {
       name: this.state.name.trim(),
@@ -40,7 +42,8 @@ class CreateIngredientForm extends Component {
       description: this.state.description,
       category: this.state.category.trim(),
     };
-    this.props.create_ingredient(ingredient);
+    await this.props.auth_post_request("ingredients/create_ingredient", ingredient, CREATE_INGREDIENT)
+    // this.props.create_ingredient(ingredient);
     this.setState({
       name: "",
       price: 0,
@@ -109,7 +112,7 @@ class CreateIngredientForm extends Component {
             onChange={this.onChange}
             required
           >
-            {this.props.categories ? (
+            {this.props.categories.length>0 ? (
               this.props.categories.map((category, index) => {
                 return <option key={index}>{category}</option>;
               })
@@ -123,6 +126,7 @@ class CreateIngredientForm extends Component {
           controlId="newcategory"
           style={{ display: this.state.display }}
         >
+
           <Form.Label>New Category </Form.Label>
           <Form.Control
             type="text"
@@ -144,6 +148,6 @@ const mapStateToProps = (state) => ({
   categories: state.productReducer.ingredientCategories,
 });
 
-export default connect(mapStateToProps, { create_ingredient })(
+export default connect(mapStateToProps, { auth_post_request })(
   CreateIngredientForm
 );

@@ -99,32 +99,6 @@ class AddressModal extends Component {
     };
     this.props.editAddress && this.props.editAddress(false, true, data.address);
 
-    // if (
-    //   this.state.addressName === "" ||
-    //   this.state.addressNumber === "" ||
-    //   this.state.zipCode === "" ||
-    //   this.state.address === ""
-    // ) {
-    //   this.setState({
-    //     showErrorModal: true,
-    //     errorMessage: "Invalid location",
-    //   });
-    // } else {
-    //   this.props.updateUser(data);
-    //   this.setState({
-    //     address: "",
-    //     addressName: "",
-    //     addressNumber: "",
-    //     zipCode: "",
-    //     cityName: "",
-    //     areaName: "",
-    //     latitude: 0,
-    //     longitude: 0,
-    //     showErrorModal: false,
-    //     errorMessage: "",
-    //   });
-    //   this.props.closeModal();
-    // }
   }
   showEditModal = () => {
     this.setState({ showEditModal: !this.state.showEditModal });

@@ -2,8 +2,10 @@ import { Checkbox, List, ListItem, ListItemText } from "@material-ui/core";
 import React, { Component } from "react";
 import { Button, Form, Modal, Col } from "react-bootstrap";
 import { connect } from "react-redux";
-import { create_choice } from "../../../actions/items";
+import { auth_post_request } from "../../../actions/lib";
+// import { create_choice } from "../../../actions/items";
 import PropTypes from "prop-types";
+import { CREATE_CHOICE } from "../../../actions/actions";
 
 class CreateChoiceForm extends Component {
   constructor(props) {
@@ -27,7 +29,7 @@ class CreateChoiceForm extends Component {
   }
 
   static propTypes = {
-    create_choice: PropTypes.func.isRequired,
+    auth_post_request: PropTypes.func.isRequired,
   };
 
   removeOption = (index) => {
@@ -69,8 +71,7 @@ class CreateChoiceForm extends Component {
       multiple: this.state.multiple,
       options: this.state.options,
     };
-    console.log(choice);
-    this.props.create_choice(choice);
+    this.props.auth_post_request("product_choices/new_product_choice",choice,CREATE_CHOICE);
   }
 
   render() {
@@ -183,4 +184,4 @@ class CreateChoiceForm extends Component {
   }
 }
 
-export default connect(null, { create_choice })(CreateChoiceForm);
+export default connect(null, { auth_post_request })(CreateChoiceForm);

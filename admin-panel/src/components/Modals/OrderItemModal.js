@@ -27,9 +27,7 @@ class OrderItemModal extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      // options: {},
       options: [],
-      choices: [],
       quantity: 1,
       comment: "",
       extraPrice: 0,
@@ -50,20 +48,9 @@ class OrderItemModal extends Component {
 
   componentDidMount() {
     if (this.props.update) {
-      let choices = [];
-      console.log(this.props.updateItem.base_product.choices_id);
-      for (var i in this.props.choices) {
-        if (
-          this.props.choices[i].id in
-          this.props.updateItem.base_product.choices_id
-        ) {
-          choices.append(this.props.choices[i]);
-        }
-      }
       // console.log(this.props);
       this.setState({
         options: this.props.updateItem.options,
-        choices: choices,
         quantity: this.props.updateItem.quantity,
         comment: this.props.updateItem.comment,
         extra_ingredients: this.props.updateItem.extra_ingredients,
@@ -71,19 +58,7 @@ class OrderItemModal extends Component {
           this.props.updateItem.totalPrice / this.props.updateItem.quantity -
           this.props.updateItem.item.price,
       });
-    } else {
-      let choices = [];
-      console.log(this.props.item);
-      for (i in this.props.choices) {
-        if (this.props.item.choices_id.includes(this.props.choices[i].id)) {
-          choices.push(this.props.choices[i]);
-        }
-      }
-      console.log(choices);
-      this.setState({
-        choices: choices,
-      });
-    }
+    } 
   }
 
   componentWillUnmount() {
@@ -291,8 +266,7 @@ class OrderItemModal extends Component {
             <Grid item xs={10}>
               <Form>
                 <Form.Group>
-                  {this.state.choices.map((choice, indx) => {
-                    choice = choice.base_choice;
+                  {this.props.item.choices.map((choice, indx) => {
                     return (
                       <Paper elevation={0} key={indx}>
                         <Typography className="modalChoiceName">

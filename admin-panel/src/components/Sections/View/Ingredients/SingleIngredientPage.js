@@ -1,8 +1,11 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { update_ingredient, delete_item } from "../../../../actions/items";
+// import { update_ingredient, delete_item } from "../../../../actions/items";
 import PropTypes from "prop-types";
 import { Button, Form } from "react-bootstrap";
+import { auth_delete_request,auth_put_request } from "../../../../actions/lib";
+import { UPDATE_ITEM } from "../../../../actions/actions";
+
 
 class SingleIngredientPage extends Component {
   constructor(props) {
@@ -21,11 +24,12 @@ class SingleIngredientPage extends Component {
 
   static propTypes = {
     isAuthenticated: PropTypes.bool.isRequired,
-    update_ingredient: PropTypes.func.isRequired,
+    auth_put_request: PropTypes.func.isRequired,
+    auth_delete_request: PropTypes.func.isRequired,
     categories: PropTypes.array.isRequired,
   };
 
-  onSubmit(event) {
+  async onSubmit(event) {
     event.preventDefault();
     const ingredient = {
       name: this.state.name.trim(),
@@ -35,7 +39,8 @@ class SingleIngredientPage extends Component {
     };
     // TODO change image
     // console.log(ingredient);
-    this.props.update_ingredient(this.state.id, ingredient);
+    await this.props.auth_put_request(`ingredients/${this.state.id}/update_values`,ingredient,UPDATE_ITEM)
+    // this.props.update_ingredient(this.state.id, ingredient);
   }
 
   showNewCat = (bool) => {
@@ -52,8 +57,7 @@ class SingleIngredientPage extends Component {
 
   onDelete = () => {
     const id = this.state.item.id;
-    const type = "ingredient";
-    this.props.delete_item(id, type);
+    this.props.auth_delete_request(`ingrediets/${id}`)
   };
 
   onChange = (e) => {
@@ -158,6 +162,6 @@ const mapStateToProps = (state) => ({
 });
 
 export default connect(mapStateToProps, {
-  update_ingredient,
-  delete_item,
+  auth_delete_request,
+  auth_put_request,
 })(SingleIngredientPage);

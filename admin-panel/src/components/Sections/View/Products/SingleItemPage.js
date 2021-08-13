@@ -15,6 +15,8 @@ import {
 } from "@material-ui/core";
 import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
+import { auth_put_request,auth_delete_request } from "../../../../actions/lib";
+import { UPDATE_ITEM } from "../../../../actions/actions";
 
 class SingleItemPage extends Component {
   constructor(props) {
@@ -80,14 +82,14 @@ class SingleItemPage extends Component {
 
   static propTypes = {
     isAuthenticated: PropTypes.bool.isRequired,
-    // get_categories: PropTypes.func.isRequired,
-    update_item: PropTypes.func.isRequired,
+    auth_delete_request: PropTypes.func.isRequired,
+    auth_put_request: PropTypes.func.isRequired,
     categories: PropTypes.array.isRequired,
     choices: PropTypes.array.isRequired,
     ingredients: PropTypes.array.isRequired,
   };
 
-  onSubmit(event) {
+   onSubmit(event) {
     event.preventDefault();
     const item = {
       id: this.state.id,
@@ -105,13 +107,25 @@ class SingleItemPage extends Component {
       item.default_ingredients[i] = item.default_ingredients[i].trim();
     }
 
-    // for (var i in this.state.checkedChoices) {
-    //   if (this.state.checkedChoices[i] !== -1) {
-    //     item.choices.push(this.props.choices[this.state.checkedChoices[i]]);
-    //   }
-    // }
-    console.log(item);
-    this.props.update_item(item.id, item, "update_product");
+    let body = new FormData();
+    // TODO update image
+    // body.append("file", image);
+    // body.append("file", image);
+    body.append("name", item.name);
+    body.append("description", item.description);
+    body.append("price", item.price);
+    body.append("choices_id", JSON.stringify(item.choices_id));
+    // body.append("choices", data.choices);
+    body.append("custom", item.custom);
+    body.append("category_id", item.category_id);
+    body.append("ingredients_id", JSON.stringify(item.ingredients_id));
+    // body.append("ingredients", data.ingredients);
+    body.append(
+      "default_ingredients",
+      JSON.stringify(item.default_ingredients)
+    );
+
+    this.props.auth_put_request(`products/${item.id}/update_values`,body,UPDATE_ITEM)
     this.setState({
       name: "",
       price: 0,
@@ -129,11 +143,12 @@ class SingleItemPage extends Component {
     });
   }
 
-  onDelete = () => {
-    const id = this.state.item.id;
-    const type = "product";
-    this.props.delete_item(id, type);
-  };
+  // async onDelete(){
+  //   const id = this.state.item.id;
+  //   const type = "product";
+  //   await this.props.auth_delete_request
+  //   // this.props.delete_item(id, type);
+  // };
 
   onChange = (e) => {
     this.setState({ [e.target.name]: e.target.value });
@@ -446,6 +461,6 @@ const mapStateToProps = (state) => ({
 });
 
 export default connect(mapStateToProps, {
-  update_item,
-  delete_item,
+  auth_put_request,
+  auth_delete_request
 })(SingleItemPage);

@@ -1,21 +1,14 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { CircularProgress, Container, Grid } from "@material-ui/core";
+import {  Container, Grid } from "@material-ui/core";
 import "../../../css/Pages/adminpage.css";
-import {
-  get_items,
-  get_categories,
-  get_choices,
-  get_ingredients,
-} from "../../../actions/items";
-
 import axios from "axios";
 import PropTypes from "prop-types";
 import Sidebar from "./Components/Sidebar";
 import { tabs } from "./Common/tabs";
 import RightContainer from "./Components/RightContainer";
-import { get_comments } from "../../../actions/comments";
-import { get_order, get_today_orders } from "../../../actions/orders";
+import { GET_CATEGORIES, GET_CHOICES, GET_INGREDIENTS, GET_ITEMS } from "../../../actions/actions";
+import { auth_get_request } from "../../../actions/lib";
 
 class AdminMainPage extends Component {
   constructor(props) {
@@ -34,16 +27,10 @@ class AdminMainPage extends Component {
   }
 
   static propTypes = {
-    get_items: PropTypes.func.isRequired,
-    get_order: PropTypes.func.isRequired,
-    get_categories: PropTypes.func.isRequired,
-    get_today_orders: PropTypes.func.isRequired,
-    get_choices: PropTypes.func.isRequired,
-    get_ingredients: PropTypes.func.isRequired,
-    get_comments: PropTypes.func.isRequired,
     orderReducer: PropTypes.object.isRequired,
     adminReducer: PropTypes.object.isRequired,
     productReducer: PropTypes.object.isRequired,
+    auth_get_request: PropTypes.func.isRequired
   };
 
   changeTab = (tab) => {
@@ -94,29 +81,28 @@ class AdminMainPage extends Component {
 
   componentDidMount() {
     this.eventSource.onmessage = (e) => this.recieveOrder(e);
+    this.get_items();
+    this.get_ingredients();
+    this.get_choices();
+    this.get_categories();
+  }
+
+  async get_items() {
+    await this.props.auth_get_request("products/all", GET_ITEMS);
+  }
+  async get_categories() {
+    await this.props.auth_get_request("product_category/all",GET_CATEGORIES)
+  }
+  async get_choices() {
+    await this.props.auth_get_request("product_choices/all",GET_CHOICES)
+  }
+  async get_ingredients() {
+    await this.props.auth_get_request("ingredients/all",GET_INGREDIENTS)
   }
   componentWillUnmount() {
     console.log("im getting outta here");
   }
-  static propTypes = {};
   render() {
-    if (this.props.productReducer.isReady === false) {
-      this.props.get_items();
-      this.props.get_choices();
-      this.props.get_ingredients();
-      this.props.get_categories();
-      if (this.props.adminReducer.orders_loaded_today === false) {
-        this.props.get_today_orders();
-      }
-      if (this.props.adminReducer.loaded === false) {
-        this.props.get_comments();
-      }
-      return (
-        <div className="loading-div">
-          <CircularProgress disableShrink />{" "}
-        </div>
-      );
-    }
     return (
       <Container className="adminPanel">
         <Grid container spacing={2}>
@@ -150,14 +136,8 @@ const mapStateToProps = (state) => ({
   productReducer: state.productReducer,
   adminReducer: state.adminReducer,
   orderReducer: state.orderReducer,
+  
 });
 
-export default connect(mapStateToProps, {
-  get_items,
-  get_categories,
-  get_choices,
-  get_ingredients,
-  get_comments,
-  get_order,
-  get_today_orders,
+export default connect(mapStateToProps, {auth_get_request
 })(AdminMainPage);

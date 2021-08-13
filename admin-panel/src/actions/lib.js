@@ -2,7 +2,7 @@ import axios from "axios";
 import app from "../firebase/base";
 import { authHeaders, config } from "../utils/axiosHeaders";
 import { current_url } from "../utils/util";
-import { SNACKBAR_ERROR } from "./actions";
+import { CREATE_CATEGORY, CREATE_ITEM, SNACKBAR_ERROR } from "./actions";
 
 export const auth_get_request = (url, dispatch_type) => async (dispatch) => {
   try {
@@ -11,8 +11,6 @@ export const auth_get_request = (url, dispatch_type) => async (dispatch) => {
       .currentUser.getIdToken(/* forceRefresh */ true);
     let auth_config = config;
     auth_config.headers.Authorization = `Bearer ${token}`;
-    console.log(token);
-    console.log("here", authHeaders);
     try {
       const res = await axios.get(current_url + url, auth_config);
       dispatch({
@@ -20,17 +18,103 @@ export const auth_get_request = (url, dispatch_type) => async (dispatch) => {
         data: res.data.data,
       });
     } catch (e) {
-      console.log("1");
-      console.log(e.response);
       dispatch({
         type: SNACKBAR_ERROR,
         message: "Error with get request",
       });
     }
   } catch (e) {
-    console.log("2");
+    //handle e
+    dispatch({
+      type: SNACKBAR_ERROR,
+      message: "Error with token",
+    });
+  }
+};
 
-    console.log(e.response.data);
+
+export const auth_post_request = (url, data,dispatch_type) => async (dispatch) => {
+
+  try {
+    const token = await app
+      .auth()
+      .currentUser.getIdToken(/* forceRefresh */ true);
+    let auth_config = config;
+    auth_config.headers.Authorization = `Bearer ${token}`;
+
+    if(dispatch_type === CREATE_ITEM || dispatch_type === CREATE_CATEGORY){
+      auth_config.headers["Content-Type"] ="multipart/form-data"
+    }
+
+    try {
+      const res = await axios.post(current_url + url, data,auth_config);
+      dispatch({
+        type: dispatch_type,
+        data: res.data.data,
+      });
+    } catch (e) {
+      dispatch({
+        type: SNACKBAR_ERROR,
+        message: "Error with get request",
+      });
+    }
+  } catch (e) {
+    //handle e
+    dispatch({
+      type: SNACKBAR_ERROR,
+      message: "Error with token",
+    });
+  }
+};
+
+export const auth_put_request = (url, data,dispatch_type) => async (dispatch) => {
+  try {
+    const token = await app
+      .auth()
+      .currentUser.getIdToken(/* forceRefresh */ true);
+    let auth_config = config;
+    auth_config.headers.Authorization = `Bearer ${token}`;
+    try {
+      const res = await axios.put(current_url + url, data,auth_config);
+      dispatch({
+        type: dispatch_type,
+        data: res.data.data,
+      });
+    } catch (e) {
+      dispatch({
+        type: SNACKBAR_ERROR,
+        message: "Error with get request",
+      });
+    }
+  } catch (e) {
+    //handle e
+    dispatch({
+      type: SNACKBAR_ERROR,
+      message: "Error with token",
+    });
+  }
+};
+
+export const auth_delete_request = (url,dispatch_type) => async (dispatch) => {
+  try {
+    const token = await app
+      .auth()
+      .currentUser.getIdToken(/* forceRefresh */ true);
+    let auth_config = config;
+    auth_config.headers.Authorization = `Bearer ${token}`;
+    try {
+      const res = await axios.delete(current_url + url,auth_config);
+      dispatch({
+        type: dispatch_type,
+        data: res.data.data,
+      });
+    } catch (e) {
+      dispatch({
+        type: SNACKBAR_ERROR,
+        message: "Error with get request",
+      });
+    }
+  } catch (e) {
     //handle e
     dispatch({
       type: SNACKBAR_ERROR,

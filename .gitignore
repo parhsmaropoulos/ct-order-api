@@ -1,4 +1,4 @@
-node_modules/*
+admin-panel/node_modules/*
 backend/assets
 Temp_DBS/*
 admin-panel/utils/*

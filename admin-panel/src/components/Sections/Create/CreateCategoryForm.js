@@ -4,7 +4,8 @@ import { connect } from "react-redux";
 import { create_category } from "../../../actions/items";
 import PropTypes from "prop-types";
 import Resizer from "react-image-file-resizer";
-
+import { auth_post_request } from "../../../actions/lib";
+import { CREATE_CATEGORY } from "../../../actions/actions";
 class CreateCategoryForm extends Component {
   constructor(props) {
     super(props);
@@ -20,8 +21,9 @@ class CreateCategoryForm extends Component {
   }
 
   static propTypes = {
-    isAuthenticated: PropTypes.bool.isRequired,
-    create_category: PropTypes.func.isRequired,
+    // isAuthenticated: PropTypes.bool.isRequired,
+    // create_category: PropTypes.func.isRequired,
+    auth_post_request: PropTypes.func.isRequired
   };
 
   onFileChange = (e) => {
@@ -52,15 +54,21 @@ class CreateCategoryForm extends Component {
       filename: e.target.files[0].name,
     });
   };
-  onSubmit(event) {
+  async onSubmit(event) {
     event.preventDefault();
     const category = {
       name: this.state.name,
       description: this.state.description,
     };
     const image = this.state.image;
-    // console.log(category);
-    this.props.create_category(category, image);
+    let body = new FormData();
+    body.append("file", image);
+    body.append("name", category.name);
+    body.append("description", category.description);
+
+    const res= await this.props.auth_post_request("product_category/create_product_category",body,CREATE_CATEGORY)
+
+    // this.props.create_category(category, image);
     this.setState({
       name: "",
       filename: "Choose category image *",
@@ -124,6 +132,6 @@ const mapStateToProps = (state) => ({
   // categories: state.productReducer.categories,
 });
 
-export default connect(mapStateToProps, { create_category })(
+export default connect(mapStateToProps, { create_category,auth_post_request })(
   CreateCategoryForm
 );

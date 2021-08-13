@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { update_choice } from "../../../../actions/items";
-import { PencilFill } from "react-bootstrap-icons";
+import { Check, PencilFill } from "react-bootstrap-icons";
 
 class ChoicesComponent extends Component {
   state = {
@@ -85,7 +85,7 @@ class ChoicesComponent extends Component {
                   {this.props.choices[this.state.selectedChoice].description}
                 </td>
                 <td>
-                  {this.props.choices[this.state.selectedChoice].required}
+                  {this.props.choices[this.state.selectedChoice].required ? <p><Check/></p>:<p></p> }
                 </td>
                 <td>
                   <Link

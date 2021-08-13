@@ -2,8 +2,9 @@ import { Checkbox, List, ListItem, ListItemText } from "@material-ui/core";
 import React, { Component } from "react";
 import { Button, Modal, Col, Form } from "react-bootstrap";
 import { connect } from "react-redux";
-import { update_choice } from "../../../../actions/items";
 import PropTypes from "prop-types";
+import { auth_put_request } from "../../../../actions/lib";
+import { UPDATE_CHOICE } from "../../../../actions/actions";
 
 class SingleChoicePage extends Component {
   constructor(props) {
@@ -40,7 +41,7 @@ class SingleChoicePage extends Component {
   }
 
   static propTypes = {
-    update_choice: PropTypes.func.isRequired,
+    auth_put_request: PropTypes.func.isRequired,
   };
 
   removeOption = (index) => {
@@ -81,8 +82,7 @@ class SingleChoicePage extends Component {
       multiple: this.state.multiple,
       options: this.state.options,
     };
-    console.log(choice);
-    this.props.update_choice(choice.id, choice);
+    this.props.auth_put_request(`product_choices/${choice.id}/update_product_choice` ,choice,UPDATE_CHOICE);
   }
 
   render() {
@@ -199,4 +199,4 @@ class SingleChoicePage extends Component {
 const mapStateToProps = (state) => ({
   isAuthenticated: state.userReducer.isAuthenticated,
 });
-export default connect(mapStateToProps, { update_choice })(SingleChoicePage);
+export default connect(mapStateToProps, { auth_put_request })(SingleChoicePage);

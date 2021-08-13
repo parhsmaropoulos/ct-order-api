@@ -33,6 +33,7 @@ class SearchBar extends Component {
     }
     document.getElementById("searchIcon").style.display = str;
   }
+  
   onChange = (e) => {
     if (e.target.value !== null) {
       this.setState({

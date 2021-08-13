@@ -2,7 +2,8 @@ import React, { Component } from "react";
 import { Form, Button, Container, Image, Col, Row } from "react-bootstrap";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import { create_product } from "../../../actions/items";
+// import { create_product } from "../../../actions/items";
+import { auth_post_request } from "../../../actions/lib";
 import Resizer from "react-image-file-resizer";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
@@ -12,6 +13,7 @@ import Checkbox from "@material-ui/core/Checkbox";
 import { Collapse, FormControlLabel, ListSubheader } from "@material-ui/core";
 import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
+import { CREATE_ITEM } from "../../../actions/actions";
 
 class CreateItemForm extends Component {
   constructor(props) {
@@ -47,7 +49,7 @@ class CreateItemForm extends Component {
 
   static propTypes = {
     isAuthenticated: PropTypes.bool.isRequired,
-    create_product: PropTypes.func.isRequired,
+    auth_post_request: PropTypes.func.isRequired,
     ingredients: PropTypes.array.isRequired,
     choices: PropTypes.array.isRequired,
     categories: PropTypes.array.isRequired,
@@ -78,17 +80,21 @@ class CreateItemForm extends Component {
         item.choices.push(choice);
       }
     });
-    // this.props.ingredients.forEach(function (ingredient) {
-    //   console.log(item.ingredients_id.includes(ingredient.ID));
-    //   if (item.ingredients_id.includes(ingredient.ID)) {
-    //     item.ingredients.push(ingredient);
-    //   }
-    // });
-    // console.log(this.props);
-    // console.log(item.ingredients);
+
     const image = this.state.image;
     console.log(item);
-    this.props.create_product(item, image);
+    let body = new FormData();
+  body.append("file", image);
+  body.append("name", item.name);
+  body.append("description", item.description);
+  body.append("price", item.price);
+  body.append("choices_id", JSON.stringify(item.choices_id));
+  body.append("custom", item.custom);
+  body.append("category_id", item.category_id);
+  body.append("ingredients_id", JSON.stringify(item.ingredients_id));
+  body.append("default_ingredients", JSON.stringify(item.default_ingredients));
+
+    this.props.auth_post_request("products/create_product", body, CREATE_ITEM)
     this.setState({
       name: "",
       price: 0,
@@ -458,4 +464,4 @@ const mapStateToProps = (state) => (
     categories: state.productReducer.categories,
   }
 );
-export default connect(mapStateToProps, { create_product })(CreateItemForm);
+export default connect(mapStateToProps, { auth_post_request })(CreateItemForm);

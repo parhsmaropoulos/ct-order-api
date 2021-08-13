@@ -3,13 +3,10 @@ import { connect } from "react-redux";
 import "../../../css/Pages/createpage.css";
 import CreateForm from "./CreateForm";
 import { CreateOptionsData } from "./CreateOptionsData";
-import {
-  get_items,
-  get_categories,
-  get_ingredients,
-  get_choices,
-} from "../../../actions/items";
+
+import { auth_get_request } from "../../../actions/lib";
 import PropTypes from "prop-types";
+import { GET_CATEGORIES, GET_CHOICES, GET_INGREDIENTS, GET_ITEMS } from "../../../actions/actions";
 
 class CreatePage extends Component {
   state = {
@@ -19,20 +16,28 @@ class CreatePage extends Component {
     this.setState({ selectedOption: name });
   };
   static propTypes = {
-    get_items: PropTypes.func.isRequired,
-    get_categories: PropTypes.func.isRequired,
-    get_ingredients: PropTypes.func.isRequired,
-    get_choices: PropTypes.func.isRequired,
     productReducer: PropTypes.object.isRequired,
+    auth_get_request: PropTypes.func.isRequired,
     isAuthenticated: PropTypes.bool,
   };
   componentDidMount() {
-    if (!this.props.productReducer.isReady) {
-      this.props.get_items();
-      this.props.get_categories();
-      this.props.get_ingredients();
-      this.props.get_choices();
-    }
+    this.get_items();
+    this.get_choices();
+    this.get_categories();
+    this.get_ingredients();
+  }
+
+  async get_items() {
+    await this.props.auth_get_request("products/all", GET_ITEMS);
+  }
+  async get_categories() {
+    await this.props.auth_get_request("product_category/all",GET_CATEGORIES)
+  }
+  async get_choices() {
+    await this.props.auth_get_request("product_choices/all",GET_CHOICES)
+  }
+  async get_ingredients() {
+    await this.props.auth_get_request("ingredients/all",GET_INGREDIENTS)
   }
   render() {
     return (
@@ -64,9 +69,5 @@ class CreatePage extends Component {
 const mapStateToProps = (state) => ({
   productReducer: state.productReducer,
 });
-export default connect(mapStateToProps, {
-  get_items,
-  get_categories,
-  get_ingredients,
-  get_choices,
+export default connect(mapStateToProps, {auth_get_request
 })(CreatePage);

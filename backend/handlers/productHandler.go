@@ -21,7 +21,7 @@ func GetAllProductsHandler(c *gin.Context) {
 
 	var products []models.Product
 
-	result := models.GORMDB.Preload(clause.Associations).Find(&products)
+	result := models.GORMDB.Preload("Choices.Options").Preload(clause.Associations).Find(&products)
 	if result.Error != nil {
 		ContexJsonResponse(c, "Error on products search", 500, nil, result.Error)
 		return

@@ -61,6 +61,7 @@ func RegisterHandler(c *gin.Context) {
 	input.Password = password
 
 	user := models.User{}
+
 	user.Username = input.Username
 	user.Password = password
 	user.Email = input.Email
