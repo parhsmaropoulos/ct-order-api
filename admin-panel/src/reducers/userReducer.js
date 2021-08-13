@@ -49,10 +49,9 @@ const userReducer = (state = defaultState, action) => {
         error: "",
       };
     case GET_USER:
-      console.log(action.payload);
       return {
         ...state,
-        user: action.payload.user,
+        user: action.data,
         hasLoaded: true,
         error: "",
       };
@@ -66,17 +65,10 @@ const userReducer = (state = defaultState, action) => {
       };
     case LOGIN_SUCCESS:
       sessionStorage.setItem("isAuthenticated", true);
-      sessionStorage.setItem("token", action.token);
-      sessionStorage.setItem("refreshToken", action.refresh_token);
-      sessionStorage.setItem("userID", action.user.ID);
-      // sessionStorage.setItem("isAuthenticated", true);
-      // console.log(action);
       return {
         ...state,
-        ...action.payload,
         isAuthenticated: true,
         isLoading: false,
-        user: action.user,
         error: "",
       };
     case LOGIN_FAIL:
@@ -96,8 +88,6 @@ const userReducer = (state = defaultState, action) => {
         user: action.user,
       };
     case LOGOUT_SUCCESS:
-      sessionStorage.removeItem("token");
-      sessionStorage.removeItem("refreshToken");
       sessionStorage.removeItem("isAuthenticated");
       sessionStorage.removeItem("userID");
       return {
@@ -121,9 +111,10 @@ const userReducer = (state = defaultState, action) => {
         isLoading: false,
       };
     case GET_USER_ORDERS:
+      console.log(action)
       return {
         ...state,
-        orders: action.payload.data,
+        orders: action.data,
       };
     case GET_USER_ADDRESSES:
       return {

@@ -2,16 +2,15 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { Button, Col, Modal, Row } from "react-bootstrap";
-import { Link, Redirect } from "react-router-dom";
+import { Link } from "react-router-dom";
 import "../../../css/Pages/accountpage.css";
-import { update_order } from "../../../actions/orders";
-import { getUser, getUserOrders } from "../../../actions/user";
-
 import StarBorderIcon from "@material-ui/icons/StarBorder";
 import Rating from "@material-ui/lab/Rating";
 import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
 import { CircularProgress, Grid, Container } from "@material-ui/core";
+import { auth_get_request,auth_put_request } from "../../../actions/lib";
+import { GET_USER, GET_USER_ORDERS } from "../../../actions/actions";
 
 class UserOrders extends Component {
   constructor(props) {
@@ -27,8 +26,8 @@ class UserOrders extends Component {
   }
   static propTypes = {
     userReducer: PropTypes.object.isRequired,
-    update_order: PropTypes.func.isRequired,
-    getUserOrders: PropTypes.func.isRequired,
+    auth_get_request: PropTypes.func.isRequired,
+    auth_put_request: PropTypes.func.isRequired,
   };
 
   showCommentModal = (bool, order) => {
@@ -54,11 +53,9 @@ class UserOrders extends Component {
   };
 
   componentDidMount() {
-    if (this.props.userReducer.isAuthenticated === false) {
-      return <Redirect to="/home" />;
-    }
     if (this.state.loaded === false) {
-      this.props.getUserOrders(parseInt(sessionStorage.getItem("userID"), 10));
+      this.props.auth_get_request(`user/${sessionStorage.getItem("userID")}`,GET_USER)
+      this.props.auth_get_request(`user/${sessionStorage.getItem("userID")}/orders`,GET_USER_ORDERS)
       this.setState({
         loaded: true,
       });
@@ -129,11 +126,10 @@ class UserOrders extends Component {
           </Modal.Footer>
         </Modal>
       );
-    if (authenticated === false) {
-      return <Redirect to="/home" />;
-    }
     if (authenticated === true && this.props.userReducer.hasLoaded === false) {
-      this.props.getUser(sessionStorage.getItem("userID"));
+
+      this.props.auth_get_request(`user/${sessionStorage.getItem("userID")}`,GET_USER)
+
       return (
         <div className="loading-div">
           <CircularProgress disableShrink />{" "}
@@ -254,7 +250,6 @@ const mapStateToProps = (state) => ({
 });
 
 export default connect(mapStateToProps, {
-  update_order,
-  getUser,
-  getUserOrders,
+  auth_get_request,
+  auth_put_request
 })(UserOrders);

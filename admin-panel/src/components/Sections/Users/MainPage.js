@@ -7,6 +7,7 @@ import "../../../css/Pages/accountpage.css";
 import { auth_get_request, auth_put_request } from "../../../actions/lib";
 
 import { Grid, Container } from "@material-ui/core";
+import { GET_USER, UPDATE_USER } from "../../../actions/actions";
 
 class MainPage extends Component {
   constructor(props) {
@@ -34,8 +35,19 @@ class MainPage extends Component {
 
   componentDidMount() {
     if (this.props.userReducer.hasLoaded === false) {
-      this.props.auth_get_request(`user/${sessionStorage.getItem("userID")}`)
+       this.get_user(); 
+    }else{
+      this.setState({
+        name: this.props.userReducer.user.name,
+        surname: this.props.userReducer.user.surname,
+        phone: this.props.userReducer.user.phone,
+        email: this.props.userReducer.user.email,
+        user: this.props.userReducer.user,
+      });
     }
+  }
+  async get_user(){
+    let user = await this.props.auth_get_request(`user/${sessionStorage.getItem("userID")}`,GET_USER)
     this.setState({
       name: this.props.userReducer.user.name,
       surname: this.props.userReducer.user.surname,
@@ -52,26 +64,21 @@ class MainPage extends Component {
   onChangePasswordSubmit(e) {
     e.preventDefault();
     const data = {
-      id: this.state.user.ID,
       password: this.state.newPassword,
-      reason: "change_password",
     };
-    this.props.updateUser(data);
+    this.props.auth_put_request("user/0/update_password",data,UPDATE_USER)
+    // this.props.updateUser(data);
   }
 
   onUpdateSubmit(e) {
     e.preventDefault();
-    console.log(this.state);
     const data = {
-      id: this.state.user.ID,
-      user: {
         name: this.state.name,
         surname: this.state.surname,
         phone: this.state.phone,
-      },
-      reason: "update_user",
     };
-    this.props.updateUser(data);
+    this.props.auth_put_request("user/0/update_personal_info",data,UPDATE_USER)
+
   }
 
   onSubmit(e) {

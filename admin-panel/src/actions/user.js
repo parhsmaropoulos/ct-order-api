@@ -99,6 +99,11 @@ export const login_async = (email, password) => async (dispatch) => {
       .signInWithEmailAndPassword(email, password);
       console.log(credentials)
     sessionStorage.setItem("userID", credentials.user.uid);
+    sessionStorage.setItem("isAuthenticated", true);
+    dispatch({
+      type: LOGIN_SUCCESS,
+      
+    })
   } catch (error) {
     alert(error);
     dispatch({

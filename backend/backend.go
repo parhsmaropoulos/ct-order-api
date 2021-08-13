@@ -100,18 +100,18 @@ func main() {
 
 		// User actions
 		users.POST("/register", handlers.RegisterHandler)
-		users.PUT("/:id/update_personal_info", handlers.UpdatePersonalInfoUserByIdHandler)
-		users.PUT("/:id/update_password", handlers.ChangeUserPasswordByIdHandler)
+		users.PUT("/:id/update_personal_info", middleware.AuthMiddleware(), handlers.UpdatePersonalInfoUserByIdHandler)
+		users.PUT("/:id/update_password", middleware.AuthMiddleware(), handlers.ChangeUserPasswordByIdHandler)
 		users.GET("/:id", middleware.AuthMiddleware(), handlers.GetUserByIdHandler)
 
 		//Add address
-		users.POST("/:id/add_address", handlers.RegisterAddressHandler)
+		users.POST("/:id/add_address", middleware.AuthMiddleware(), handlers.RegisterAddressHandler)
 		// User orders
-		users.GET("/:id/orders", handlers.GetAllOrdersByUserIdHandler)
+		users.GET("/:id/orders", middleware.AuthMiddleware(), handlers.GetAllOrdersByUserIdHandler)
 		// User addresses
-		users.GET("/:id/addresses", handlers.GetUserAddressessByIdHandler)
+		users.GET("/:id/addresses", middleware.AuthMiddleware(), handlers.GetUserAddressessByIdHandler)
 		// User ratings
-		users.GET("/:id/comments", handlers.GetUserCommentsByIdHandler)
+		users.GET("/:id/comments", middleware.AuthMiddleware(), handlers.GetUserCommentsByIdHandler)
 
 	}
 	subscribes := router.Group("/subscribes/")

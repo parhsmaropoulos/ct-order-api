@@ -86,14 +86,13 @@ func GetUserByIdHandler(c *gin.Context) {
 	// db := models.OpenConnection()
 
 	// Int in params :id
-	id := c.Param("id")
+	email := c.GetString("Email")
 
 	var user models.User
 
-	models.GORMDB.Find(&user, id)
+	models.GORMDB.Table("users").Where("email = ?", email).Find(&user)
 
 	user.Password = ""
-
 	ContexJsonResponse(c, "User fetched successfully", 200, user, nil)
 
 }
@@ -107,7 +106,8 @@ func UpdatePersonalInfoUserByIdHandler(c *gin.Context) {
 	// db := models.OpenConnection()
 
 	// Int in params :id
-	id := c.Param("id")
+	// id := c.Param("id")
+	email := c.GetString("Email")
 
 	// JSON input from request
 	// name: ""
@@ -125,7 +125,7 @@ func UpdatePersonalInfoUserByIdHandler(c *gin.Context) {
 
 	// Get user
 	var user models.User
-	models.GORMDB.First(&user, id)
+	models.GORMDB.Where("email = ? ", email).First(&user)
 
 	user.Name = input.Name
 	user.Surname = input.Surname
@@ -149,7 +149,8 @@ func ChangeUserPasswordByIdHandler(c *gin.Context) {
 	}
 
 	// Int in params :id
-	id := c.Param("id")
+	// id := c.Param("id")
+	email := c.GetString("Email")
 
 	// JSON input from request
 	// password: ""
@@ -173,7 +174,7 @@ func ChangeUserPasswordByIdHandler(c *gin.Context) {
 
 	// Get user
 	var user models.User
-	models.GORMDB.First(&user, id)
+	models.GORMDB.Where("email = ?", email).First(&user)
 	user.Password = password
 
 	models.GORMDB.Save(&user)

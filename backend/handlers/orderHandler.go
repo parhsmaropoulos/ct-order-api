@@ -62,11 +62,17 @@ func GetAllOrdersByUserIdHandler(c *gin.Context) {
 	}
 	// db := models.OpenConnection()
 
-	id := c.Param("id")
+	// id := c.Param("id")
+
+	email := c.GetString("Email")
+
+	var user models.User
+
+	result := models.GORMDB.Where("email = ?", email).First(&user)
 
 	var orders []models.Order
 
-	result := models.GORMDB.Where("user_id = ?", id).Find(&orders)
+	result = models.GORMDB.Where("user_id = ?", user.ID).Find(&orders)
 	if result.Error != nil {
 		ContexJsonResponse(c, "Error on orders search", http.StatusInternalServerError, nil, result.Error)
 		return
