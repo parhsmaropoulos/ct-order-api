@@ -61,11 +61,11 @@ export default function OrdersCatalog(props) {
               return (
                 <ListItem key={index} className={classes.orderRow}>
                   <OrderUserDetailsRow
-                    time={order.create_at}
+                    time={order.CreatedAt}
                     total_price={order.pre_discount_price}
                     payment_type={order.payment_type}
                     user_details={order.user_details}
-                    ID={order.id}
+                    ID={order.ID}
                     order={order}
                     delivery_time={order.delivery_time}
                     type={props.selectedCategory}
@@ -80,11 +80,11 @@ export default function OrdersCatalog(props) {
               return (
                 <ListItem key={index} className={classes.orderRow}>
                   <OrderUserDetailsRow
-                    time={order.create_at}
+                    time={order.CreatedAt}
                     total_price={order.pre_discount_price}
                     payment_type={order.payment_type}
                     user_details={order.user_details}
-                    ID={order.id}
+                    ID={order.ID}
                     order={order}
                     delivery_time={order.delivery_time}
                     type={props.selectedCategory}
@@ -99,11 +99,11 @@ export default function OrdersCatalog(props) {
               return (
                 <ListItem key={index} className={classes.orderRow}>
                   <OrderUserDetailsRow
-                    time={order.create_at}
+                    time={order.CreatedAt}
                     total_price={order.pre_discount_price}
                     payment_type={order.payment_type}
                     user_details={order.user_details}
-                    ID={order.id}
+                    ID={order.ID}
                     order={order}
                     type={props.selectedCategory}
                     delivery_time={order.delivery_time}

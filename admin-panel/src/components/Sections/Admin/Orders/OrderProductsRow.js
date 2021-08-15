@@ -56,21 +56,30 @@ export default function OrderProductsRow(props) {
             <Paper className={classes.productRow} key={index}>
               <ListItem className={classes.listItem}>
                 <ListItemText
-                  primary={product.item.name}
+                  primary={product.item_name}
                   className={classes.leftText}
                 />
                 <ListItemText
                   primary={
                     product.quantity +
                     " X " +
-                    product.totalPrice / product.quantity +
+                    product.total_price / product.quantity +
                     "€"
                   }
                   className={classes.rightText}
                 />
               </ListItem>
               <List>
-                {product.options.length > 0
+                {!!product.option_answers
+                  ? product.option_answers.map((option, op_index) => {
+                      return (
+                        <ListItem key={op_index}>
+                          <ListItemText primary={"+ " + option} />
+                        </ListItem>
+                      );
+                    })
+                  : null}
+                {/* {product.options.length > 0
                   ? product.options.map((option, op_index) => {
                       return (
                         <ListItem
@@ -85,8 +94,8 @@ export default function OrderProductsRow(props) {
                         </ListItem>
                       );
                     })
-                  : null}
-                {product.extra_ingredients.length > 0
+                  : null} */}
+                {!!product.extra_ingredients
                   ? product.extra_ingredients.map((ingredient, op_index) => {
                       return (
                         <ListItem

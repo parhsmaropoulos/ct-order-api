@@ -100,19 +100,20 @@ class App extends Component {
         {/* <AlertsOverlay /> */}
         <Container id="Panel">
           <Switch>
-            {/* {routes.map((route, i) => (
-                  <RouteWithSubRoutes key={i} {...route} />
-                ))} */}
             {/* PUBLIC ROUTES */}
             <Route path="/home" component={HomePage} />
             <PrivateRoute path="/items" component={ItemsPage} />
-            <Route path="/ingredients" component={ItemsPage} />
-            <Route path="/choices" component={ItemsPage} />
+            <PrivateRoute path="/ingredients" component={ItemsPage} />
+            <PrivateRoute path="/choices" component={ItemsPage} />
+            <Route path="/login" component={LogRegModal} />
             <Route exact path="/">
               <Redirect to="/home" />
             </Route>
-            <Route exact path="/order" component={OrderMainPage} />
-            <Route path="/pre_complete/:id" component={PreCompleteOrderPage} />
+            <PrivateRoute exact path="/order" component={OrderMainPage} />
+            <PrivateRoute
+              path="/pre_complete/:id"
+              component={PreCompleteOrderPage}
+            />
             <Route path="/search/:string" component={OrderMainPage} />
             {/* ADMIN ROUTES */}
             <Route path="/admin_login" component={AdminLogInPage} />
@@ -120,13 +121,16 @@ class App extends Component {
             {/* <Route path="/orders" component={OrdersPage} /> */}
             {/* <Route path="/users" component={UsersPage} /> */}
 
-            <Route path="/single_item" component={SingleItemPage} />
-            <Route path="/single_ingredient" component={SingleIngredientPage} />
-            <Route path="/single_choice" component={SingleChoicePage} />
+            <PrivateRoute path="/single_item" component={SingleItemPage} />
+            <PrivateRoute
+              path="/single_ingredient"
+              component={SingleIngredientPage}
+            />
+            <PrivateRoute path="/single_choice" component={SingleChoicePage} />
             <Route path="/document/:type" component={TextPage} />
-            <Route path="/comments" component={AllComents} />
+            <PrivateRoute path="/comments" component={AllComents} />
             <Route path="/stats/:id" component={StatsPage} />
-            <Route path="/create_item" component={CreatePage} />
+            <PrivateRoute path="/create_item" component={CreatePage} />
             <Route path="/all_users" component={AllUsersPage} />
             {/* PRIVATE ROUTES */}
             {/* <Route path="/order_menu" component={OrderMenuPage} /> */}

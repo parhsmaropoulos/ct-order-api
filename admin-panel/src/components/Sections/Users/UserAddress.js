@@ -2,14 +2,20 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { Button, Modal, Table } from "react-bootstrap";
-import { Link, Redirect } from "react-router-dom";
+import { Link } from "react-router-dom";
 import "../../../css/Pages/accountpage.css";
 import { PencilFill } from "react-bootstrap-icons";
 import EditAddressModal from "../../Modals/EditAddressModal";
-import { getUser, updateUser, getUserAddresses } from "../../../actions/user";
+// import { getUser, updateUser, getUserAddresses } from "../../../actions/user";
+import {
+  auth_get_request,
+  auth_put_request,
+  auth_delete_request,
+} from "../../../actions/lib";
 import AddressModal from "../../Modals/AddressModal";
 import { MdRemoveCircle } from "react-icons/md";
 import { CircularProgress, Grid, Container } from "@material-ui/core";
+import { GET_USER, GET_USER_ADDRESSES } from "../../../actions/actions";
 
 // const columns = [
 //   {
@@ -39,9 +45,9 @@ class UserAdress extends Component {
   }
   static propTypes = {
     userReducer: PropTypes.object.isRequired,
-    getUser: PropTypes.func.isRequired,
-    updateUser: PropTypes.func.isRequired,
-    getUserAddresses: PropTypes.func.isRequired,
+    auth_get_request: PropTypes.func.isRequired,
+    auth_put_request: PropTypes.func.isRequired,
+    auth_delete_request: PropTypes.func.isRequired,
   };
 
   selectEditAddressModal = (info) => {
@@ -72,24 +78,32 @@ class UserAdress extends Component {
 
   removeAddress = () => {
     // e.preventDefault();
-    let data = {
-      id: this.props.userReducer.user.id,
-      reason: "remove_address",
-      address_id: this.state.selectedAddress.id,
-    };
-    this.props.updateUser(data);
+    // let data = {
+    //   id: this.props.userReducer.user.id,
+    //   reason: "remove_address",
+    //   address_id: this.state.selectedAddress.id,
+    // };
+    //
+    this.props.auth_delete_request(
+      `user/${sessionStorage.getItem("userID")}/delete_address/${
+        this.state.selectedAddress.ID
+      }`
+    );
     this.showRemoveAddressDialog(false, null);
   };
 
   componentDidMount() {
-    if (this.props.userReducer.isAuthenticated === false) {
-      return <Redirect to="/home" />;
-    }
     if (this.props.userReducer.hasLoaded === false) {
-      this.props.getUser(this.props.userReducer.user.id);
+      this.props.auth_get_request(
+        `user/${sessionStorage.getItem("userID")}`,
+        GET_USER
+      );
     }
     if (this.state.loaded === false) {
-      this.props.getUserAddresses(sessionStorage.getItem("userID"));
+      this.props.auth_get_request(
+        `user/${sessionStorage.getItem("userID")}/addresses`,
+        GET_USER_ADDRESSES
+      );
       this.setState({
         loaded: true,
       });
@@ -108,8 +122,7 @@ class UserAdress extends Component {
     let editAddressModal;
     let addAddressModal;
     let removeAddressdialog;
-    let authenticated =
-      sessionStorage.getItem("isAuthenticated") === "true" ? true : false;
+    let authenticated = sessionStorage.getItem("isAuthenticated");
     if (this.state.showRemoveAddressDialog) {
       removeAddressdialog = (
         <Modal
@@ -164,11 +177,11 @@ class UserAdress extends Component {
       );
     }
 
-    if (authenticated === false) {
-      return <Redirect to="/home" />;
-    }
     if (authenticated === true && this.props.userReducer.hasLoaded === false) {
-      this.props.getUser(sessionStorage.getItem("userID"));
+      this.props.auth_get_request(
+        `user/${sessionStorage.getItem("uid")}`,
+        GET_USER
+      );
       return (
         <div className="loading-div">
           <CircularProgress disableShrink />{" "}
@@ -276,15 +289,12 @@ class UserAdress extends Component {
   }
 }
 
-const mapStateToProps = (state) => (
-  console.log(state.userReducer),
-  {
-    userReducer: state.userReducer,
-  }
-);
+const mapStateToProps = (state) => ({
+  userReducer: state.userReducer,
+});
 
 export default connect(mapStateToProps, {
-  getUser,
-  updateUser,
-  getUserAddresses,
+  auth_get_request,
+  auth_put_request,
+  auth_delete_request,
 })(UserAdress);

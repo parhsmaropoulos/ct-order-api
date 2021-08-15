@@ -96,13 +96,13 @@ export default function OrderUserDetailsRow(props) {
   };
   // console.log(props);
   const address =
-    props.user_details.Address.address_name +
+    props.order.address.address_name +
     " " +
-    props.user_details.Address.address_number +
+    props.order.address.address_number +
     " ," +
-    props.user_details.Address.area_name +
+    props.order.address.area_name +
     "," +
-    props.user_details.Address.zipcode;
+    props.order.address.zipcode;
   return (
     <Container className={classes.root}>
       <Grid item xs={9}>
@@ -123,23 +123,18 @@ export default function OrderUserDetailsRow(props) {
           <ListItem className={classes.userDetailsItem}>
             <ListItemText
               primary={
-                "Πελάτης : " +
-                props.user_details.Name +
-                " " +
-                props.user_details.Surname
+                "Πελάτης : " + props.order.name + " " + props.order.surname
               }
             />
           </ListItem>
           <ListItem className={classes.userDetailsItem}>
-            <ListItemText primary={"Τηλέφωνο : " + props.user_details.Phone} />
+            <ListItemText primary={"Τηλέφωνο : " + props.order.phone} />
           </ListItem>
           <ListItem className={classes.userDetailsItem}>
-            <ListItemText primary={"Όροφος : " + props.user_details.Floor} />
+            <ListItemText primary={"Όροφος : " + props.order.floor} />
           </ListItem>
           <ListItem className={classes.userDetailsItem}>
-            <ListItemText
-              primary={"Κουδούνι : " + props.user_details.Bell_name}
-            />
+            <ListItemText primary={"Κουδούνι : " + props.order.bell_name} />
           </ListItem>
           <ListItem>
             <ListItemText primary={"Σύνολο : " + props.total_price + "€"} />
@@ -177,7 +172,7 @@ export default function OrderUserDetailsRow(props) {
               ))}
             </TextField>
             <Button
-              id={`accept_buton_${props.order.id}`}
+              id={`accept_buton_${props.order.ID}`}
               onClick={() => dispatch(accept_order(props.order, time))}
               className={classes.acceptButton}
             >
@@ -185,7 +180,7 @@ export default function OrderUserDetailsRow(props) {
               Accept
             </Button>
             <Button
-              id={`reject_buton_${props.order.id}`}
+              id={`reject_buton_${props.order.ID}`}
               onClick={() => dispatch(reject_order(props.order, time))}
               className={classes.rejectButton}
             >
@@ -204,9 +199,9 @@ export default function OrderUserDetailsRow(props) {
               <span>Αποδεχτή</span>
             )}
             <Button
-              id={`complete_buton_${props.order.id}`}
+              id={`complete_buton_${props.order.ID}`}
               className={classes.compleButton}
-              onClick={() => dispatch(complete_order(props.order.id))}
+              onClick={() => dispatch(complete_order(props.order.ID))}
             >
               Ολοκλήρωση
             </Button>

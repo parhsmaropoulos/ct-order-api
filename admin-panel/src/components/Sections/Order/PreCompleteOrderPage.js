@@ -30,6 +30,8 @@ import ListItemText from "@material-ui/core/ListItemText";
 import EditAddressModal from "../../Modals/EditAddressModal";
 import { showErrorSnackbar } from "../../../actions/snackbar";
 import { FormLabel } from "react-bootstrap";
+import { auth_get_request, auth_post_request } from "../../../actions/lib";
+import { GET_USER, SEND_ORDER } from "../../../actions/actions";
 
 const availableTipOptions = [0.5, 1.0, 1.5, 2.0, 5.0, 10.0];
 
@@ -82,6 +84,8 @@ class PreCompleteOrderPage extends Component {
     userReducer: PropTypes.object.isRequired,
     orderReducer: PropTypes.object.isRequired,
     clearReducer: PropTypes.func.isRequired,
+    auth_get_request: PropTypes.func.isRequired,
+    auth_post_request: PropTypes.func.isRequired,
   };
   handleTipsChange(tip) {
     this.setState({ tips: tip });
@@ -147,31 +151,84 @@ class PreCompleteOrderPage extends Component {
     // });
   };
 
-  sendOrder = (e) => {
+  // Convert order products to our form
+
+  convertToOrderProducts = (products) => {
+    let orderProducts = [];
+
+    products.forEach(function (product) {
+      let orderProduct = {
+        comment: product.comment,
+        price: product.item.price,
+        extra_price: product.extraPrice,
+        extra_ingredientes: product.extra_ingredientes,
+        item_name: product.item.name,
+        option_answers: product.optionAnswers,
+        quantity: product.quantity,
+        total_price: product.totalPrice,
+      };
+      orderProducts.push(orderProduct);
+    });
+
+    return orderProducts;
+  };
+
+  async sendOrder(e) {
     // check input requirements
     const order = {
-      products: this.props.orderReducer.products,
-      user_id: this.props.userReducer.user.id,
+      products: this.convertToOrderProducts(this.props.orderReducer.products),
+      user_id: this.props.userReducer.user.ID,
+      // user_id: sessionStorage.getItem("userID"),
       delivery_type: this.state.deliveryOption,
       pre_discount_price: this.props.orderReducer.totalPrice,
+      after_discount_price: this.props.orderReducer.totalPrice,
       payment_type: this.state.payment_type,
       tips: parseFloat(this.state.tips),
       comments: this.state.comments,
-      user_details: {
-        name: this.props.userReducer.user.name,
-        surname: this.props.userReducer.user.surname,
-        address: this.state.selectedAddress,
-        phone: this.state.phone,
-        bell_name: this.state.userDetails.bellName,
-        floor: this.state.userDetails.floor,
-      },
+      discounts: [],
+      // user_details: {
+      name: this.props.userReducer.user.name,
+      surname: this.props.userReducer.user.surname,
+      address: this.state.selectedAddress,
+      phone: parseInt(this.state.phone),
+      bell_name: this.state.userDetails.bellName,
+      floor: this.state.userDetails.floor,
+      delivery_time: 40,
+      comment: {},
+      accepted: false,
+      completed: false,
+      canceled: false,
+      // },
     };
+    console.log(order);
 
     if (this.validateFields(order)) {
-      this.props.send_order(order);
-      // console.log(order);
+      let SSEdata = {
+        id: null,
+        order: null,
+        from: null,
+        user_details: null,
+      };
+      const res = await this.props.auth_post_request(
+        `orders/new_order`,
+        order,
+        SEND_ORDER
+      );
+      console.log(res);
+      let newOrder = res.data.data;
+      SSEdata.id = String(newOrder.ID);
+      SSEdata.order = newOrder;
+      SSEdata.from = String(sessionStorage.getItem("userID"));
+      SSEdata.user_details = {};
+
+      const resp = await this.props.auth_post_request(
+        `sse/sendorder/${SSEdata.from}`,
+        SSEdata,
+        null
+      );
+      console.log(resp);
     }
-  };
+  }
 
   validateFields = (order) => {
     const mobilePhoneRegex = new RegExp(/^69[0-9]{8}/);
@@ -182,19 +239,16 @@ class PreCompleteOrderPage extends Component {
     } else if (order.payment_type === "") {
       this.props.showErrorSnackbar("Please select payment type");
       return false;
-    } else if (order.user_details.address === "") {
+    } else if (order.address === "") {
       this.props.showErrorSnackbar("Please select an adress");
       return false;
-    } else if (
-      order.user_details.floor === "" ||
-      order.user_details.bell_name === ""
-    ) {
+    } else if (order.floor === "" || order.bell_name === "") {
       this.props.showErrorSnackbar("Please enter floor and bell name");
       return false;
     } else if (
-      (mobilePhoneRegex.test(order.user_details.phone) === false &&
-        homePhoneRegex.test(order.user_details.phone) === false) ||
-      order.user_details.length > 10
+      (mobilePhoneRegex.test(order.phone) === false &&
+        homePhoneRegex.test(order.phone) === false) ||
+      order.length > 10
     ) {
       this.props.showErrorSnackbar("Please enter valid phone number");
       return false;
@@ -247,11 +301,11 @@ class PreCompleteOrderPage extends Component {
       if (this.props.userReducer.user.last_order !== null) {
         let newDetails = this.state.userDetails;
         let last = this.props.userReducer.user.last_order;
-        newDetails.bellName = last.user_details.Bell_name;
-        newDetails.floor = last.user_details.Floor;
+        newDetails.bellName = last.Bell_name;
+        newDetails.floor = last.Floor;
         this.setState({
           userDetails: newDetails,
-          phone: last.user_details.Phone,
+          phone: last.Phone,
         });
       }
     }
@@ -271,10 +325,16 @@ class PreCompleteOrderPage extends Component {
   render() {
     let addAddressModal;
     let editAddressModal;
-    let authenticated =
-      sessionStorage.getItem("isAuthenticated") === "true" ? true : false;
-    if (!authenticated) {
-      return <Redirect to="/order" />;
+    if (this.props.userReducer.user === null) {
+      this.props.auth_get_request(
+        `user/${sessionStorage.getItem("userID")}`,
+        GET_USER
+      );
+      return (
+        <div className="loading-div">
+          <CircularProgress disableShrink />{" "}
+        </div>
+      );
     }
     if (this.state.showAddressModal) {
       addAddressModal = (
@@ -298,7 +358,6 @@ class PreCompleteOrderPage extends Component {
       );
     }
     if (this.props.orderReducer.pending && !this.props.orderReducer.recieved) {
-      console.log("3");
       return (
         <div className="loading-div">
           <CircularProgress disableShrink />{" "}
@@ -579,4 +638,6 @@ export default connect(mapStateToProps, {
   order_accepted,
   clearReducer,
   getUser,
+  auth_get_request,
+  auth_post_request,
 })(PreCompleteOrderPage);

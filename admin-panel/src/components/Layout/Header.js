@@ -188,8 +188,6 @@ class Header extends Component {
 }
 
 const mapStateToProps = (state) => ({
-  userID: sessionStorage.getItem("userID"),
-  refresh_token: sessionStorage.getItem("refreshToken"),
   user: state.userReducer.user,
   products: state.productReducer.products,
 });

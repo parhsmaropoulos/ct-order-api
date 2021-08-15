@@ -17,13 +17,13 @@ type OrderProduct struct {
 	Extra_Ingredients pq.StringArray `json:"extra_ingredients" gorm:"type:varchar[]"`
 	Item_Name         string         `json:"item_name"`
 	Option_Answers    pq.StringArray `json:"option_answers" gorm:"type:varchar[]"`
+	Quantity          int32          `json:"quantity"`
+	Total_Price       float64        `json:"total_price"`
 	// Options []struct {
 	// 	Name   string  `json:"name"`
 	// 	Choice string  `json:"choice"`
 	// 	Price  float64 `json:"price"`
 	// } `json:"options" gorm:"json[]"`
-	Quantity    int32   `json:"quantity"`
-	Total_Price float64 `json:"total_price"`
 }
 
 func (c OrderProduct) Value() (driver.Value, error) {
@@ -66,12 +66,12 @@ type Order struct {
 	Tips     float64 `json:"tips"`
 	Comments string  `json:"comments"`
 
-	Name      string `json:"name"`
-	Surname   string `json:"surname"`
-	Phone     int64  `json:"phone"`
-	Bell_name string `json:"bell_name"`
-	Floor     string `json:"floor"`
-	// Address   Address `json:"address"`
+	Name      string  `json:"name"`
+	Surname   string  `json:"surname"`
+	Phone     int64   `json:"phone"`
+	Bell_name string  `json:"bell_name"`
+	Floor     string  `json:"floor"`
+	Address   Address `json:"address"`
 
 	Delivery_time int32   `json:"delivery_time"`
 	Comment       Comment `json:"comment"`

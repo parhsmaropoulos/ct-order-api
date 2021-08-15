@@ -3,7 +3,12 @@ import PropTypes from "prop-types";
 import { Button, Col, Form } from "react-bootstrap";
 import "../../css/Layout/general.css";
 import { connect } from "react-redux";
-import { updateUser, addUserAddress } from "../../actions/user";
+// import { updateUser, addUserAddress } from "../../actions/user";
+import {
+  auth_get_request,
+  auth_put_request,
+  auth_post_request,
+} from "../../actions/lib";
 import GoogleMapReact from "google-map-react";
 
 import Marker from "../Layout/Marker";
@@ -62,12 +67,12 @@ class EditAddressModal extends Component {
 
   static propTypes = {
     userReducer: PropTypes.object.isRequired,
-    updateUser: PropTypes.func.isRequired,
-    addUserAddress: PropTypes.func.isRequired,
+    auth_put_request: PropTypes.func.isRequired,
+    auth_get_request: PropTypes.func.isRequired,
+    auth_post_request: PropTypes.func.isRequired,
   };
 
   onChange = (e) => {
-
     this.setState({ [e.target.name]: e.target.value });
   };
 
@@ -81,7 +86,6 @@ class EditAddressModal extends Component {
     let addressnumber = document.getElementById("formGridAddressNumber").value;
     let areaname = document.getElementById("formGridAreaName").value;
     let zipcode = document.getElementById("formGridZipCode").value;
-    // console.log(this.props.address);
     const data = {
       // user_id: sessionStorage.getItem("userID"),
       area_name: areaname,
@@ -94,14 +98,21 @@ class EditAddressModal extends Component {
     };
     if (this.props.updateAddress) {
       //   {**UPDATE ADDRESS**}
-      data.reason = "update_address";
       data.address_id = this.props.address.id;
+      this.props.auth_put_request(
+        `user/${sessionStorage.getItem("userID")}/update_address`,
+        data,
+        null
+      );
     } else {
       //   {**ADD ADDRESS**}
-      data.reason = "add_address";
+      this.props.auth_post_request(
+        `user/${sessionStorage.getItem("userID")}/add_address`,
+        data,
+        null
+      );
     }
     console.log(data);
-    this.props.addUserAddress(data);
     this.setState({
       address: "",
       addressName: "",
@@ -231,6 +242,8 @@ const mapStateToProps = (state) => ({
   userReducer: state.userReducer,
 });
 
-export default connect(mapStateToProps, { updateUser, addUserAddress })(
-  EditAddressModal
-);
+export default connect(mapStateToProps, {
+  auth_get_request,
+  auth_put_request,
+  auth_post_request,
+})(EditAddressModal);

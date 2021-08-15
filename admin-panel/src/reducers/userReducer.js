@@ -111,15 +111,16 @@ const userReducer = (state = defaultState, action) => {
         isLoading: false,
       };
     case GET_USER_ORDERS:
-      console.log(action)
+      console.log(action);
       return {
         ...state,
         orders: action.data,
       };
     case GET_USER_ADDRESSES:
+      console.log(action);
       return {
         ...state,
-        addresses: action.payload.data,
+        addresses: action.data,
       };
     default:
       return state;

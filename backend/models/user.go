@@ -2,6 +2,10 @@
 package models
 
 import (
+	"database/sql/driver"
+	"encoding/json"
+	"errors"
+
 	"gorm.io/gorm"
 )
 
@@ -21,6 +25,18 @@ type Address struct {
 	Latitude      float64 `json:"latitude"`
 	Longitude     float64 `json:"longitude"`
 	UserID        int64   `json:"user_id"`
+}
+
+func (c Address) Value() (driver.Value, error) {
+	return json.Marshal(c)
+}
+
+func (c *Address) Scan(value interface{}) error {
+	b, ok := value.([]byte)
+	if !ok {
+		return errors.New("type assertion to []byte failed")
+	}
+	return json.Unmarshal(b, &c)
 }
 
 type User struct {

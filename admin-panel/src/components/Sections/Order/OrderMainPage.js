@@ -27,7 +27,12 @@ import {
 } from "@material-ui/core";
 import { orange } from "@material-ui/core/colors";
 import { auth_get_request } from "../../../actions/lib";
-import { GET_CATEGORIES, GET_CHOICES, GET_INGREDIENTS, GET_ITEMS } from "../../../actions/actions";
+import {
+  GET_CATEGORIES,
+  GET_CHOICES,
+  GET_INGREDIENTS,
+  GET_ITEMS,
+} from "../../../actions/actions";
 // import { Link } from "react-router-dom";
 
 var _ = require("lodash");
@@ -78,7 +83,7 @@ class OrderMainPage extends Component {
     isReady: PropTypes.bool.isRequired,
     update_cart: PropTypes.func.isRequired,
     showInfoSnackbar: PropTypes.func.isRequired,
-    auth_get_request: PropTypes.func.isRequired
+    auth_get_request: PropTypes.func.isRequired,
   };
   changeCategory = (category, drawer) => {
     this.setState({ selectedCategory: category });
@@ -255,11 +260,11 @@ class OrderMainPage extends Component {
   };
 
   componentDidMount() {
-    if (!this.props.isReady) {
+    if (this.props.isReady === false) {
       this.get_items();
-    this.get_choices();
-    this.get_categories();
-    this.get_ingredients();
+      this.get_choices();
+      this.get_categories();
+      this.get_ingredients();
     }
     if (this.props.orderReducer.products.length > 0) {
       let grouped = _.groupBy(this.props.products, "category");
@@ -284,13 +289,13 @@ class OrderMainPage extends Component {
     await this.props.auth_get_request("products/all", GET_ITEMS);
   }
   async get_categories() {
-    await this.props.auth_get_request("product_category/all",GET_CATEGORIES)
+    await this.props.auth_get_request("product_category/all", GET_CATEGORIES);
   }
   async get_choices() {
-    await this.props.auth_get_request("product_choices/all",GET_CHOICES)
+    await this.props.auth_get_request("product_choices/all", GET_CHOICES);
   }
   async get_ingredients() {
-    await this.props.auth_get_request("ingredients/all",GET_INGREDIENTS)
+    await this.props.auth_get_request("ingredients/all", GET_INGREDIENTS);
   }
 
   render() {
@@ -432,17 +437,10 @@ class OrderMainPage extends Component {
                 />
                 <ListGroup variant="flush">
                   {this.props.products.map((item, index) => {
-                    if (
-                      item.category_id ===
-                      this.state.selectedCategory
-                    ) {
+                    if (item.category_id === this.state.selectedCategory) {
                       if (item.available === false) {
                         return (
-                          <ListGroup.Item
-                            key={index}
-                            disabled
-                            id={item.name}
-                          >
+                          <ListGroup.Item key={index} disabled id={item.name}>
                             <Card border="light">
                               <Row className="itemCardRow">
                                 {item.image === "" ? (
@@ -467,14 +465,11 @@ class OrderMainPage extends Component {
                                     <Card.Subtitle className="text-muted">
                                       {/* {item.description} */}
                                       {item.default_ingredientes &&
-                                      item.default_ingredientes
-                                        .length > 0
+                                      item.default_ingredientes.length > 0
                                         ? item.default_ingredientes.join()
                                         : item.description}
                                     </Card.Subtitle>
-                                    <Card.Text>
-                                      {item.price} €
-                                    </Card.Text>
+                                    <Card.Text>{item.price} €</Card.Text>
                                   </Card.Body>
                                 </Col>
                               </Row>
@@ -509,19 +504,14 @@ class OrderMainPage extends Component {
                                 </Hidden>
                                 <Col sm={8}>
                                   <Card.Body>
-                                    <Card.Title>
-                                      {item.name}
-                                    </Card.Title>
+                                    <Card.Title>{item.name}</Card.Title>
                                     <Card.Subtitle className="text-muted">
                                       {item.default_ingredients &&
-                                      item.default_ingredients
-                                        .length > 0
+                                      item.default_ingredients.length > 0
                                         ? item.default_ingredients.join()
                                         : item.description}
                                     </Card.Subtitle>
-                                    <Card.Text>
-                                      {item.price} €
-                                    </Card.Text>
+                                    <Card.Text>{item.price} €</Card.Text>
                                   </Card.Body>
                                 </Col>
                               </Row>
@@ -736,5 +726,5 @@ const mapStateToProps = (state) => (
 export default connect(mapStateToProps, {
   update_cart,
   showInfoSnackbar,
-  auth_get_request
+  auth_get_request,
 })(OrderMainPage);

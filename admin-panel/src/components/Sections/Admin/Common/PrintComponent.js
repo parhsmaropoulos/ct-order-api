@@ -113,7 +113,7 @@ class PrintComponent extends Component {
           <Typography>ΠΡΟΣΟΧΗ ΔΕΝ ΕΙΝΑΙ ΑΠΟΔΕΙΞΗ!</Typography>
           <Typography>***** ΠΑΡΑΓΓΕΛΕΙΑ *****</Typography>
           <Typography>
-            ***** {order.create_at.slice(0, 10)} {order.create_at.slice(11, 19)}
+            ***** {order.CreatedAt.slice(0, 10)} {order.CreatedAt.slice(11, 19)}
             *****
           </Typography>
           <Typography>*** ΠΑΡΑΓΓΕΛΕΙΑ {order.id} ***</Typography>
@@ -127,27 +127,35 @@ class PrintComponent extends Component {
               </ListItem>
             ) : null}
             {order.products.map((product, index) => {
+              // console.log(product);
               return (
                 <Paper key={index} elevation={0}>
                   <ListItem>
                     <ListItemText
-                      primary={product.quantity + " X " + product.item.name}
+                      primary={product.quantity + " X " + product.name}
                     />
                     <ListItemText
                       primary={product.totalPrice / product.quantity + "€"}
                     />
                   </ListItem>
                   <List>
-                    {product.options.length > 0
-                      ? product.options.map((option, op_index) => {
+                    {!!product.option_answers
+                      ? product.option_answers.map((option, op_index) => {
                           return (
                             <ListItem key={op_index}>
-                              <ListItemText primary={"+ " + option.Choice} />
+                              <ListItemText primary={"+ " + option} />
                             </ListItem>
                           );
                         })
-                      : null}
-                    {product.extra_ingredients.length > 0
+                      : // product.options.map((option, op_index) => {
+                        //     return (
+                        //       <ListItem key={op_index}>
+                        //         <ListItemText primary={"+ " + option.Choice} />
+                        //       </ListItem>
+                        //     );
+                        //   })
+                        null}
+                    {!!product.extra_ingredients
                       ? product.extra_ingredients.map(
                           (ingredient, op_index) => {
                             return (
@@ -176,34 +184,30 @@ class PrintComponent extends Component {
           <List>
             <ListItem>
               <ListItemText
-                primary={`ΟΝ/ΜΟ :${order.user_details.Name}  ${order.user_details.Surname} `}
+                primary={`ΟΝ/ΜΟ :${order.name}  ${order.surname} `}
               />
             </ListItem>
             <ListItem>
-              <ListItemText primary={`ΚΙΝΗΤΟ :${order.user_details.Phone} `} />
+              <ListItemText primary={`ΚΙΝΗΤΟ :${order.phone} `} />
             </ListItem>
             <ListItem>
               <ListItemText
-                primary={`ΟΔΟΣ :${order.user_details.Address.address_name}  ${order.user_details.Address.address_number} `}
-              />
-            </ListItem>
-            <ListItem>
-              <ListItemText
-                primary={`ΠΟΛΗ :${order.user_details.Address.area_name}  ${order.user_details.Address.city_name} `}
+                primary={`ΟΔΟΣ :${order.address.address_name}  ${order.address.address_number} `}
               />
             </ListItem>
             <ListItem>
               <ListItemText
-                primary={`TK :${order.user_details.Address.zipcode} `}
+                primary={`ΠΟΛΗ :${order.address.area_name}  ${order.address.city_name} `}
               />
             </ListItem>
             <ListItem>
-              <ListItemText primary={`ΟΡΟΦΟΣ :${order.user_details.Floor} `} />
+              <ListItemText primary={`TK :${order.address.zipcode} `} />
             </ListItem>
             <ListItem>
-              <ListItemText
-                primary={`ΚΟΥΔΟΥΝΙ :${order.user_details.Bell_name} `}
-              />
+              <ListItemText primary={`ΟΡΟΦΟΣ :${order.floor} `} />
+            </ListItem>
+            <ListItem>
+              <ListItemText primary={`ΚΟΥΔΟΥΝΙ :${order.bell_name} `} />
             </ListItem>
           </List>
           <Typography>ΣΧΟΛΙΑ: {order.comments}</Typography>

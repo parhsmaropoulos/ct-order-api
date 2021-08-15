@@ -10,50 +10,42 @@ class UserRatings extends Component {
     userReducer: PropTypes.object.isRequired,
   };
 
-  componentDidMount() {
-    if (this.props.userReducer.isAuthenticated === false) {
-      return <Redirect to="/home" />;
-    }
-  }
+  componentDidMount() {}
 
   render() {
-    if (this.props.userReducer.isAuthenticated === false) {
-      return <Redirect to="/home" />;
-    } else {
-      return (
-        <Container className="accountMainPage">
-          <Row className="headerRow">
-            <Grid spacing={3} container>
-              <Grid item lg={3} md={3} sm={6} xs={12}>
-                <Link className="nav-text" to="/account">
-                  Ο λογαριασμός μου
-                </Link>
-              </Grid>
-              <Grid item lg={3} md={3} sm={6} xs={12}>
-                <Link className="nav-text" to="/account/orders">
-                  Οι παραγγελίες μου
-                </Link>
-              </Grid>
-              <Grid item lg={2} md={2} sm={6} xs={12}>
-                <Link className="nav-text" to="/account/addresses">
-                  Διευθύνσεις
-                </Link>
-              </Grid>
-
-              <Grid item lg={2} md={2} sm={6} xs={12}>
-                <Link
-                  className="nav-text  nav-text-activated"
-                  to="/account/ratings"
-                >
-                  Βαθμολογίες
-                </Link>
-              </Grid>
+    return (
+      <Container className="accountMainPage">
+        <Row className="headerRow">
+          <Grid spacing={3} container>
+            <Grid item lg={3} md={3} sm={6} xs={12}>
+              <Link className="nav-text" to="/account">
+                Ο λογαριασμός μου
+              </Link>
             </Grid>
-          </Row>
-          <Row className="userRatingsRow bodyRow"></Row>
-        </Container>
-      );
-    }
+            <Grid item lg={3} md={3} sm={6} xs={12}>
+              <Link className="nav-text" to="/account/orders">
+                Οι παραγγελίες μου
+              </Link>
+            </Grid>
+            <Grid item lg={2} md={2} sm={6} xs={12}>
+              <Link className="nav-text" to="/account/addresses">
+                Διευθύνσεις
+              </Link>
+            </Grid>
+
+            <Grid item lg={2} md={2} sm={6} xs={12}>
+              <Link
+                className="nav-text  nav-text-activated"
+                to="/account/ratings"
+              >
+                Βαθμολογίες
+              </Link>
+            </Grid>
+          </Grid>
+        </Row>
+        <Row className="userRatingsRow bodyRow"></Row>
+      </Container>
+    );
   }
 }
 

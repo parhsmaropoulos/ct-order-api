@@ -115,7 +115,16 @@ func AcceptOrderByIdHandler(c *gin.Context) {
 	var order models.Order
 	models.GORMDB.First(&order, id)
 
+	var input struct {
+		Delivery_time int64 `json:"delivery_time"`
+	}
+	if err := c.ShouldBindJSON(&input); err != nil {
+		ContexJsonResponse(c, "Error on data parse.", http.StatusBadRequest, nil, err)
+		return
+	}
+
 	order.Accepted = true
+	order.Delivery_time = int32(input.Delivery_time)
 
 	if order.ID == 0 {
 		ContexJsonResponse(c, "Order acceptance  failed, no such an ID available", 500, nil, nil)

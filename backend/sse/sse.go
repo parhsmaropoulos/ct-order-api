@@ -218,6 +218,8 @@ func AcceptOrder(b *Broker, c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "message": err})
 		return
 	}
+	fmt.Println("From :")
+	fmt.Println(input.From)
 
 	id = input.From
 

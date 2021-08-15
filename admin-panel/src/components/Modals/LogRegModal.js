@@ -20,8 +20,6 @@ import {
 } from "@material-ui/core";
 import { showErrorSnackbar } from "../../actions/snackbar";
 import { Redirect, withRouter } from "react-router-dom";
-import { useContext } from "react";
-import { AuthContext } from "../../firebase/AuthProvider";
 
 class LogRegModal extends Component {
   constructor(props) {
@@ -60,7 +58,6 @@ class LogRegModal extends Component {
   async onSubmit(e) {
     e.preventDefault();
     console.log(this.state.email, this.state.password);
-    // this.props.login(this.state.email, this.state.password);
     await this.props.login_async(this.state.email, this.state.password);
   }
 
@@ -112,6 +109,9 @@ class LogRegModal extends Component {
           </div>
         </div>
       );
+    }
+    if (sessionStorage.getItem("isAuthenticated")) {
+      return <Redirect to="/" />;
     }
     return (
       <Modal

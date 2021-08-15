@@ -106,10 +106,15 @@ func main() {
 
 		//Add address
 		users.POST("/:id/add_address", middleware.AuthMiddleware(), handlers.RegisterAddressHandler)
-		// User orders
-		users.GET("/:id/orders", middleware.AuthMiddleware(), handlers.GetAllOrdersByUserIdHandler)
 		// User addresses
 		users.GET("/:id/addresses", middleware.AuthMiddleware(), handlers.GetUserAddressessByIdHandler)
+		// Update user address
+		users.PUT("/:id/update_address", middleware.AuthMiddleware(), handlers.EditUserAddressHandlers)
+		// Delete user address
+		users.DELETE("/:id/delete_address/:address_id", middleware.AuthMiddleware(), handlers.DeleteAddressHandler)
+
+		// User orders
+		users.GET("/:id/orders", middleware.AuthMiddleware(), handlers.GetAllOrdersByUserIdHandler)
 		// User ratings
 		users.GET("/:id/comments", middleware.AuthMiddleware(), handlers.GetUserCommentsByIdHandler)
 
@@ -216,7 +221,7 @@ func main() {
 		orders.GET("/:id", handlers.GetSingleOrderByIdHandler)
 
 		// CREATE ORDER
-		orders.POST("/new_order", handlers.RegisterOrderHandler)
+		orders.POST("/new_order", middleware.AuthMiddleware(), handlers.RegisterOrderHandler)
 
 	}
 	admin := router.Group("/admin/")

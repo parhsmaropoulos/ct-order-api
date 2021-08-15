@@ -168,33 +168,35 @@ export const get_today_orders = () => (dispatch) => {
 export const accept_order = (order, time_input) => (dispatch) => {
   console.log(order);
   let data = {
-    id: order.id,
+    id: String(order.ID),
     accepted: true,
     time: parseInt(time_input),
-    from: order.user_id,
+    from: String(order.user_id),
   };
   let data_2 = {
     delivery_time: parseInt(time_input),
   };
   axios
-    .put(`${current_url}admin/${order.id}/accept_order`, data_2, headers)
+    .put(`${current_url}admin/orders/${order.ID}/accept_order`, data_2, headers)
     .then((res) => {
-      console.log(res);
-      axios.post(`${current_url}sse/acceptorder`, data).then((res) => {
-        console.log(data);
-        dispatch({
-          type: ACCEPT_ORDER,
-          accepted_id: order.id,
-          time: time_input,
-        });
-        dispatch({
-          type: SNACKBAR_SUCCESS,
-          message: "Order accepted successfuly!",
-        });
-      });
+      axios
+        .post(`${current_url}sse/acceptorder`, data)
+        .then((res) => {
+          console.log(data);
+          dispatch({
+            type: ACCEPT_ORDER,
+            accepted_id: order.ID,
+            time: time_input,
+          });
+          dispatch({
+            type: SNACKBAR_SUCCESS,
+            message: "Order accepted successfuly!",
+          });
+        })
+        .catch((err) => console.log(err.response));
     })
     .catch((err) => {
-      console.log(err.response);
+      console.log(err);
       dispatch({
         type: SNACKBAR_ERROR,
         message: err.response,
@@ -205,7 +207,7 @@ export const accept_order = (order, time_input) => (dispatch) => {
 // Complete an order
 
 export const complete_order = (id) => (dispatch) => {
-  axios.put(`${current_url}admin/${id}/complete_order`).then((res) => {
+  axios.put(`${current_url}admin/orders/${id}/complete_order`).then((res) => {
     console.log(id);
     dispatch({
       type: COMPLETE_ORDER,
@@ -216,7 +218,7 @@ export const complete_order = (id) => (dispatch) => {
 
 export const reject_order = (order, time_input) => (dispatch) => {
   let data = {
-    id: order.id,
+    id: order.ID,
     accepted: false,
     time: parseInt(time_input),
     from: order.from,
@@ -225,11 +227,13 @@ export const reject_order = (order, time_input) => (dispatch) => {
     console.log(res);
     dispatch({
       type: REJECT_ORDER,
-      accepted_id: order.id,
+      accepted_id: order.ID,
     });
-    axios.put(`${current_url}admin/${order.id}/cancel_order`).then((res) => {
-      console.log(res);
-    });
+    axios
+      .put(`${current_url}admin/orders/${order.ID}/cancel_order`)
+      .then((res) => {
+        console.log(res);
+      });
   });
 };
 

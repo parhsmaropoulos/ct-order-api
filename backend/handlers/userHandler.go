@@ -8,6 +8,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm/clause"
 )
 
 // Get all users
@@ -90,7 +91,7 @@ func GetUserByIdHandler(c *gin.Context) {
 
 	var user models.User
 
-	models.GORMDB.Table("users").Where("email = ?", email).Find(&user)
+	models.GORMDB.Table("users").Preload(clause.Associations).Where("email = ?", email).Find(&user)
 
 	user.Password = ""
 	ContexJsonResponse(c, "User fetched successfully", 200, user, nil)

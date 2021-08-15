@@ -91,7 +91,7 @@ const adminReducer = (state = defaultState, action) => {
       // Append the new order
       // to the pending orders
       let newPendingOrders = state.orders;
-      newPendingOrders.pending_orders.push(action.new_order.order);
+      newPendingOrders.pending_orders.push(action.new_order);
       return {
         ...state,
         orders: newPendingOrders,
@@ -140,18 +140,19 @@ const adminReducer = (state = defaultState, action) => {
         orders: newCompletedOrders,
       };
     case TODAY_ORDERS:
+      let orders = action.data;
       let newTodayOrders = state.orders;
       newTodayOrders.accepted_orders = [];
       newTodayOrders.pending_orders = [];
       newTodayOrders.finished_orders = [];
-      for (i in action.orders) {
-        if (action.orders[i].completed) {
-          newTodayOrders.finished_orders.push(action.orders[i]);
+      for (i in orders) {
+        if (orders[i].completed) {
+          newTodayOrders.finished_orders.push(orders[i]);
         } else {
-          if (action.orders[i].accepted || action.orders[i].canceled) {
-            newTodayOrders.accepted_orders.push(action.orders[i]);
+          if (orders[i].accepted || orders[i].canceled) {
+            newTodayOrders.accepted_orders.push(orders[i]);
           } else {
-            newTodayOrders.pending_orders.push(action.orders[i]);
+            newTodayOrders.pending_orders.push(orders[i]);
           }
         }
       }
