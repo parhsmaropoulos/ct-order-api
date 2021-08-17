@@ -712,16 +712,13 @@ class OrderMainPage extends Component {
   }
 }
 
-const mapStateToProps = (state) => (
-  console.log(state),
-  {
-    orderReducer: state.orderReducer,
-    products: state.productReducer.products,
-    categories: state.productReducer.categories,
-    userReducer: state.userReducer,
-    isReady: state.productReducer.isReady,
-  }
-);
+const mapStateToProps = (state) => ({
+  orderReducer: state.orderReducer,
+  products: state.productReducer.products,
+  categories: state.productReducer.categories,
+  userReducer: state.userReducer,
+  isReady: state.productReducer.isReady,
+});
 
 export default connect(mapStateToProps, {
   update_cart,

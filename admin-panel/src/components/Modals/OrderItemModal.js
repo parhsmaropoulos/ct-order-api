@@ -21,7 +21,6 @@ import {
   IconButton,
   Divider,
 } from "@material-ui/core";
-import { range } from "lodash";
 
 class OrderItemModal extends Component {
   constructor(props) {
@@ -58,7 +57,7 @@ class OrderItemModal extends Component {
           this.props.updateItem.totalPrice / this.props.updateItem.quantity -
           this.props.updateItem.item.price,
       });
-    } 
+    }
   }
 
   componentWillUnmount() {

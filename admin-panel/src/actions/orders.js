@@ -171,7 +171,7 @@ export const accept_order = (order, time_input) => (dispatch) => {
     id: String(order.ID),
     accepted: true,
     time: parseInt(time_input),
-    from: String(order.user_id),
+    from: order.from_id,
   };
   let data_2 = {
     delivery_time: parseInt(time_input),

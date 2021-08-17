@@ -5,7 +5,12 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import IngredientsComponent from "./Ingredients/IngredientsComponent";
 import ChoicesComponent from "./Choices/ChoicesComponent";
-import { GET_CATEGORIES, GET_CHOICES, GET_INGREDIENTS, GET_ITEMS } from "../../../actions/actions";
+import {
+  GET_CATEGORIES,
+  GET_CHOICES,
+  GET_INGREDIENTS,
+  GET_ITEMS,
+} from "../../../actions/actions";
 
 class ItemsPage extends Component {
   static propTypes = {
@@ -26,19 +31,18 @@ class ItemsPage extends Component {
     this.get_categories();
     this.get_ingredients();
   }
-  
 
   async get_items() {
     await this.props.auth_get_request("products/all", GET_ITEMS);
   }
   async get_categories() {
-    await this.props.auth_get_request("product_category/all",GET_CATEGORIES)
+    await this.props.auth_get_request("product_category/all", GET_CATEGORIES);
   }
   async get_choices() {
-    await this.props.auth_get_request("product_choices/all",GET_CHOICES)
+    await this.props.auth_get_request("product_choices/all", GET_CHOICES);
   }
   async get_ingredients() {
-    await this.props.auth_get_request("ingredients/all",GET_INGREDIENTS)
+    await this.props.auth_get_request("ingredients/all", GET_INGREDIENTS);
   }
 
   render() {
@@ -60,8 +64,7 @@ class ItemsPage extends Component {
     );
   }
 }
-const mapStateToProps = (state) => (
-  console.log(state),{
+const mapStateToProps = (state) => ({
   isAuthenticated: state.userReducer.isAuthenticated,
   categories: state.productReducer.categories,
   products: state.productReducer.products,
@@ -70,5 +73,4 @@ const mapStateToProps = (state) => (
   isReady: state.productReducer.isReady,
 });
 
-export default connect(mapStateToProps,{auth_get_request}
-)(ItemsPage);
+export default connect(mapStateToProps, { auth_get_request })(ItemsPage);

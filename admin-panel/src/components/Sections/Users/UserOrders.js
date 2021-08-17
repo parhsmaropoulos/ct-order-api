@@ -9,8 +9,16 @@ import Rating from "@material-ui/lab/Rating";
 import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
 import { CircularProgress, Grid, Container } from "@material-ui/core";
-import { auth_get_request,auth_put_request } from "../../../actions/lib";
-import { GET_USER, GET_USER_ORDERS } from "../../../actions/actions";
+import {
+  auth_get_request,
+  auth_put_request,
+  auth_post_request,
+} from "../../../actions/lib";
+import {
+  GET_USER,
+  GET_USER_ORDERS,
+  UPDATE_ORDER,
+} from "../../../actions/actions";
 
 class UserOrders extends Component {
   constructor(props) {
@@ -28,6 +36,7 @@ class UserOrders extends Component {
     userReducer: PropTypes.object.isRequired,
     auth_get_request: PropTypes.func.isRequired,
     auth_put_request: PropTypes.func.isRequired,
+    auth_post_request: PropTypes.func.isRequired,
   };
 
   showCommentModal = (bool, order) => {
@@ -37,25 +46,33 @@ class UserOrders extends Component {
     });
   };
 
-  commentOrder = () => {
+  async commentOrder() {
     let data = {
-      order_id: this.state.selectedOrder.id,
-      reason: "comment_order",
-      comment_text: this.state.comment,
-      user_name: this.props.userReducer.user.name,
-      rating: {
-        rate: parseFloat(this.state.rating),
-        user_id: this.props.userReducer.user.id,
-      },
+      order_id: this.state.selectedOrder.ID,
+      text: this.state.comment,
+      // user_name: this.props.userReducer.user.name,
+      user_id: this.props.userReducer.user.ID,
+      rate: parseFloat(this.state.rating),
     };
-    this.props.update_order(data);
+    console.log(data);
+    await this.props.auth_post_request(
+      `comments/new_comment`,
+      data,
+      UPDATE_ORDER
+    );
     console.log(this.state);
-  };
+  }
 
   componentDidMount() {
     if (this.state.loaded === false) {
-      this.props.auth_get_request(`user/${sessionStorage.getItem("userID")}`,GET_USER)
-      this.props.auth_get_request(`user/${sessionStorage.getItem("userID")}/orders`,GET_USER_ORDERS)
+      this.props.auth_get_request(
+        `user/${sessionStorage.getItem("userID")}`,
+        GET_USER
+      );
+      this.props.auth_get_request(
+        `user/${sessionStorage.getItem("userID")}/orders`,
+        GET_USER_ORDERS
+      );
       this.setState({
         loaded: true,
       });
@@ -127,8 +144,10 @@ class UserOrders extends Component {
         </Modal>
       );
     if (authenticated === true && this.props.userReducer.hasLoaded === false) {
-
-      this.props.auth_get_request(`user/${sessionStorage.getItem("userID")}`,GET_USER)
+      this.props.auth_get_request(
+        `user/${sessionStorage.getItem("userID")}`,
+        GET_USER
+      );
 
       return (
         <div className="loading-div">
@@ -192,8 +211,11 @@ class UserOrders extends Component {
                                     </span>
                                     <br />{" "}
                                     <span className="listItemSubTitle">
-                                      {product.option_answers.join() +
-                                        `,${product.comment}`}
+                                      {!!product.option_answers &&
+                                      product.option_answers.length > 0
+                                        ? product.option_answers.join() + ","
+                                        : null}
+                                      {product.comment}
                                     </span>
                                   </li>
                                 );
@@ -204,19 +226,7 @@ class UserOrders extends Component {
                             {/* {console.log(this.state.comment_order_ids)}
                             {console.log(order.id)} */}
                             {this.state.comment_order_ids.includes(order.id) ? (
-                              <span>
-                                {/* Comment:{" "}
-                                {
-                                  this.props.userReducer.user.comments[order.id]
-                                    .comment_text
-                                }
-                                , Rate:{" "}
-                                {
-                                  this.props.userReducer.user.comments[order.id]
-                                    .rate
-                                } */}
-                                Commented
-                              </span>
+                              <span>Commented</span>
                             ) : (
                               <button
                                 className="commentButton"
@@ -251,5 +261,6 @@ const mapStateToProps = (state) => ({
 
 export default connect(mapStateToProps, {
   auth_get_request,
-  auth_put_request
+  auth_put_request,
+  auth_post_request,
 })(UserOrders);

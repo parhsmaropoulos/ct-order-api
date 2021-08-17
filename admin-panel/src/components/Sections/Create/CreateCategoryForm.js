@@ -23,7 +23,7 @@ class CreateCategoryForm extends Component {
   static propTypes = {
     // isAuthenticated: PropTypes.bool.isRequired,
     // create_category: PropTypes.func.isRequired,
-    auth_post_request: PropTypes.func.isRequired
+    auth_post_request: PropTypes.func.isRequired,
   };
 
   onFileChange = (e) => {
@@ -66,7 +66,11 @@ class CreateCategoryForm extends Component {
     body.append("name", category.name);
     body.append("description", category.description);
 
-    const res= await this.props.auth_post_request("product_category/create_product_category",body,CREATE_CATEGORY)
+    await this.props.auth_post_request(
+      "product_category/create_product_category",
+      body,
+      CREATE_CATEGORY
+    );
 
     // this.props.create_category(category, image);
     this.setState({
@@ -132,6 +136,6 @@ const mapStateToProps = (state) => ({
   // categories: state.productReducer.categories,
 });
 
-export default connect(mapStateToProps, { create_category,auth_post_request })(
+export default connect(mapStateToProps, { create_category, auth_post_request })(
   CreateCategoryForm
 );

@@ -5,11 +5,9 @@ import { Form } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import { change_ingredient_availability } from "../../../../actions/items";
 import { PencilFill } from "react-bootstrap-icons";
 import { auth_put_request } from "../../../../actions/lib";
 import { CHANGE_AVAILABILITY } from "../../../../actions/actions";
-
 
 class IngredientsComponent extends Component {
   state = {
@@ -33,7 +31,11 @@ class IngredientsComponent extends Component {
   };
 
   async changeAvailabilityIngredient(id) {
-    await this.props.auth_put_request(`ingredients/${id}/change_availability`,null,CHANGE_AVAILABILITY)
+    await this.props.auth_put_request(
+      `ingredients/${id}/change_availability`,
+      null,
+      CHANGE_AVAILABILITY
+    );
   }
 
   render() {

@@ -84,17 +84,20 @@ class CreateItemForm extends Component {
     const image = this.state.image;
     console.log(item);
     let body = new FormData();
-  body.append("file", image);
-  body.append("name", item.name);
-  body.append("description", item.description);
-  body.append("price", item.price);
-  body.append("choices_id", JSON.stringify(item.choices_id));
-  body.append("custom", item.custom);
-  body.append("category_id", item.category_id);
-  body.append("ingredients_id", JSON.stringify(item.ingredients_id));
-  body.append("default_ingredients", JSON.stringify(item.default_ingredients));
+    body.append("file", image);
+    body.append("name", item.name);
+    body.append("description", item.description);
+    body.append("price", item.price);
+    body.append("choices_id", JSON.stringify(item.choices_id));
+    body.append("custom", item.custom);
+    body.append("category_id", item.category_id);
+    body.append("ingredients_id", JSON.stringify(item.ingredients_id));
+    body.append(
+      "default_ingredients",
+      JSON.stringify(item.default_ingredients)
+    );
 
-    this.props.auth_post_request("products/create_product", body, CREATE_ITEM)
+    this.props.auth_post_request("products/create_product", body, CREATE_ITEM);
     this.setState({
       name: "",
       price: 0,
@@ -454,14 +457,11 @@ class CreateItemForm extends Component {
   }
 }
 
-const mapStateToProps = (state) => (
-  console.log(state),
-  {
-    isAuthenticated: state.userReducer.isAuthenticated,
-    ingredients: state.productReducer.ingredients,
-    ingredientCategories: state.productReducer.ingredientCategories,
-    choices: state.productReducer.choices,
-    categories: state.productReducer.categories,
-  }
-);
+const mapStateToProps = (state) => ({
+  isAuthenticated: state.userReducer.isAuthenticated,
+  ingredients: state.productReducer.ingredients,
+  ingredientCategories: state.productReducer.ingredientCategories,
+  choices: state.productReducer.choices,
+  categories: state.productReducer.categories,
+});
 export default connect(mapStateToProps, { auth_post_request })(CreateItemForm);

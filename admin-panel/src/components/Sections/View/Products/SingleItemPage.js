@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { update_item, delete_item } from "../../../../actions/items";
 import PropTypes from "prop-types";
 import { Button, Form } from "react-bootstrap";
 import {
@@ -15,7 +14,7 @@ import {
 } from "@material-ui/core";
 import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
-import { auth_put_request,auth_delete_request } from "../../../../actions/lib";
+import { auth_put_request, auth_delete_request } from "../../../../actions/lib";
 import { UPDATE_ITEM } from "../../../../actions/actions";
 
 class SingleItemPage extends Component {
@@ -89,7 +88,7 @@ class SingleItemPage extends Component {
     ingredients: PropTypes.array.isRequired,
   };
 
-   onSubmit(event) {
+  onSubmit(event) {
     event.preventDefault();
     const item = {
       id: this.state.id,
@@ -125,7 +124,11 @@ class SingleItemPage extends Component {
       JSON.stringify(item.default_ingredients)
     );
 
-    this.props.auth_put_request(`products/${item.id}/update_values`,body,UPDATE_ITEM)
+    this.props.auth_put_request(
+      `products/${item.id}/update_values`,
+      body,
+      UPDATE_ITEM
+    );
     this.setState({
       name: "",
       price: 0,
@@ -462,5 +465,5 @@ const mapStateToProps = (state) => ({
 
 export default connect(mapStateToProps, {
   auth_put_request,
-  auth_delete_request
+  auth_delete_request,
 })(SingleItemPage);

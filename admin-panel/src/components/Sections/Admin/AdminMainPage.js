@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Container, Grid } from "@material-ui/core";
 import "../../../css/Pages/adminpage.css";
-import axios from "axios";
 import PropTypes from "prop-types";
 import Sidebar from "./Components/Sidebar";
 import { tabs } from "./Common/tabs";
@@ -74,7 +73,7 @@ class AdminMainPage extends Component {
       time: this.state.selected_time,
       from: order.from,
     };
-    const res = await this.props.post_request(
+    await this.props.post_request(
       `http://localhost:8080/sse/acceptorder`,
       data,
       ACCEPT_ORDER
@@ -93,7 +92,7 @@ class AdminMainPage extends Component {
       time: 0,
       from: order.from,
     };
-    const res = await this.props.post_request(
+    await this.props.post_request(
       `http://localhost:8080/sse/acceptorder`,
       data,
       ACCEPT_ORDER

@@ -5,7 +5,6 @@ import "../css/App/App.css";
 
 // Routing
 import PrivateRoute from "./Sections/Common/PrivateRoute";
-import AdminRoute from "./Sections/Common/AdminRoute";
 import {
   Route,
   // BrowserRouter as Router,

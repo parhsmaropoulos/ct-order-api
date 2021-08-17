@@ -142,6 +142,13 @@ export default function OrderUserDetailsRow(props) {
           <ListItem>
             <ListItemText primary={"Πληρωμή : " + props.payment_type} />
           </ListItem>
+          {props.order.tips > 0 ? (
+            <ListItem>
+              <ListItemText
+                primary={"Tip διανομέα : " + props.order.tips + "€"}
+              />
+            </ListItem>
+          ) : null}
         </List>
       </Grid>
       <Grid item xs={3}>

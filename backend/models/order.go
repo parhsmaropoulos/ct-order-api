@@ -56,6 +56,7 @@ type Order struct {
 	gorm.Model
 	Products      OrderProducts `json:"products"`
 	UserID        int           `json:"user_id" gorm:"index:usr_indx"`
+	FromID        string        `json:"from_id"`
 	Delivery_type string        `json:"delivery_type"`
 
 	Pre_Discount_Price   float64    `json:"pre_discount_price"`

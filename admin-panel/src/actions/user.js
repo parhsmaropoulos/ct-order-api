@@ -11,7 +11,6 @@
 
 import axios from "axios";
 import jwt from "jwt-decode";
-import { useDispatch } from "react-redux";
 import app from "../firebase/base";
 import { authHeaders, headers } from "../utils/axiosHeaders";
 import { current_url } from "../utils/util";
@@ -36,7 +35,7 @@ import {
   USER_LOADING,
 } from "./actions";
 import { returnErrors } from "./messages";
-import {auth_post_request} from "./lib"
+import { auth_post_request } from "./lib";
 
 // LOGIN USER
 export const login = (email, password) => (dispatch) => {
@@ -97,13 +96,12 @@ export const login_async = (email, password) => async (dispatch) => {
     const credentials = await app
       .auth()
       .signInWithEmailAndPassword(email, password);
-      console.log(credentials)
+    console.log(credentials);
     sessionStorage.setItem("userID", credentials.user.uid);
     sessionStorage.setItem("isAuthenticated", true);
     dispatch({
       type: LOGIN_SUCCESS,
-      
-    })
+    });
   } catch (error) {
     alert(error);
     dispatch({
@@ -127,15 +125,15 @@ export const register_async = (email, password) => async (dispatch) => {
       id: credentials.user.uid,
       username: "",
       email: email,
-      password:password,
-    }
-    await auth_post_request("user/register",data,REGISTER_SUCCESS)
+      password: password,
+    };
+    await auth_post_request("user/register", data, REGISTER_SUCCESS);
     // const res = await axios.post(
     //   current_url + "user/register",
     //   credentials,
     //   authHeaders
     // );
-    
+
     dispatch({
       type: REGISTER_SUCCESS,
     });
