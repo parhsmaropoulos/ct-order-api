@@ -1,0 +1,76 @@
+.footerContainer {
+  padding-left: 0;
+  padding-right: 0;
+  flex-shrink: 0;
+  min-height: 15vh;
+  /* height: relat; */
+  width: 100%;
+  margin-top: 50px;
+  bottom: 0;
+  /* position: relative; */
+}
+
+.socialIcon {
+  height: 25;
+  width: 25;
+}
+
+.footerLogo {
+  background-color: aqua;
+  justify-content: center;
+  text-align: center;
+  max-height: 80px;
+}
+
+.logoCol {
+  /* background-color: antiquewhite; */
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+}
+
+.menu1Col {
+  /* background-color: rgb(136, 102, 58); */
+}
+
+/* .menu1Col ul li :hover {
+  background-color: black;
+} */
+
+.menu2Col {
+  /* background-color: rgb(160, 110, 45); */
+}
+
+.subFooterRow {
+  /* background-color: beige; */
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+}
+
+.subFooterContent {
+  text-align: center;
+  justify-content: center;
+}
+
+.subFooterText {
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+}
+
+.newsLetter {
+  flex: 1;
+  flex-direction: column;
+}
+
+.newsLetterTitle {
+  text-align: center;
+}
+
+.newsLetterInput {
+  text-align: center;
+  justify-content: center;
+}

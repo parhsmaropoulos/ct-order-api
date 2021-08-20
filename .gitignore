@@ -1,0 +1,13 @@
+.VSCodeCounter
+Temp_DBS
+
+admin-panel/node_modules
+admin-panel/utils
+admin-panel/.env
+
+Design
+
+backend/assets
+backend/vendor
+backend/.env
+backend/config/serviceAccountKey.json
