@@ -357,3 +357,37 @@
 .menu-categories-list-button:focus {
   outline: 0;
 }
+
+.root-accordion {
+  width: 100%;
+  padding-bottom: 0.5em;
+}
+
+.heading-secondary-accordion {
+  color:blue;
+}
+
+.icon-accordion {
+  vertical-align: bottom;
+  height: 20;
+  width: 20;
+}
+
+.details-accordion {
+  align-items: 'center';
+}
+
+.column-accordion {
+}
+.helper-accordion {
+  border-left: 2px solid black;
+  padding: 1 2;
+}
+
+.link-accordion {
+  text-decoration: none;
+  color:pink;
+}
+.link-accordion:hover {
+  text-decoration: underline;
+}
