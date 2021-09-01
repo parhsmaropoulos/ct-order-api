@@ -24,12 +24,6 @@ class HomePage extends Component {
   }
 
   componentDidMount() {
-    // if (this.props.productReducer.isReady === false) {
-    //   this.props.get_items();
-    //   this.props.get_categories();
-    //   this.props.get_ingredients();
-    //   this.props.get_choices();
-    // }
     this.setState({
       id: uuidv4(),
     });

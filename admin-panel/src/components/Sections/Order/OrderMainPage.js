@@ -55,6 +55,7 @@ class OrderMainPage extends Component {
     this.showModal = this.showModal.bind(this);
     this.showAlert = this.showAlert.bind(this);
     this.toggleDrawer = this.toggleDrawer.bind(this);
+    this.onSearchChange = this.onSearchChange.bind(this)
   }
   state = {
     cart: [],
@@ -298,6 +299,14 @@ class OrderMainPage extends Component {
     await this.props.auth_get_request("ingredients/all", GET_INGREDIENTS);
   }
 
+  onSearchChange = (product) => {
+    console.log("change")
+    console.log(product)
+    if(product){
+      this.changeCategory(product.category_id)
+    }
+  }
+
   render() {
     let modal;
     let alertModal;
@@ -414,13 +423,11 @@ class OrderMainPage extends Component {
                   id="search-product"
                   options={this.props.products}
                   getOptionLabel={(option) => option.name}
-                  // disableClearables={false}
-                  autoComplete
+                  onChange={(event,option)=> this.onSearchChange(option)}
                   onClose={(e) => this.showSearchResults(e)}
                   renderOption={(option, index) => (
                     <Typography
                       noWrap
-                      // onClick={(e) => console.log(e)}
                       key={index}
                     >
                       {option.name}
@@ -431,7 +438,7 @@ class OrderMainPage extends Component {
                       {...params}
                       label="Search product"
                       variant="outlined"
-                      InputProps={{ ...params.InputProps, type: "search" }}
+                      InputProps={{ ...params.InputProps}}
                     />
                   )}
                 />

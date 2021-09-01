@@ -1,9 +1,14 @@
 package handlers
 
 import (
+	"GoProjects/CoffeeTwist/backend/lib"
 	"GoProjects/CoffeeTwist/backend/models"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"net/http"
+	"net/url"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -221,4 +226,56 @@ func GetTodayOrdersHandler(c *gin.Context) {
 	}
 
 	ContexJsonResponse(c, "Orders fetched successfully", 200, orders, nil)
+}
+
+// Create a new payment
+func NewPAymentHandler(c *gin.Context) {
+	if c.Request.Method != "POST" {
+		fmt.Println("Only post requests here, nothing else!")
+		return
+	}
+
+	var input struct {
+		Token       string `json:"token"`
+		Amount      string `json:"amount"`
+		Description string `json:"description"`
+	}
+
+	if err := c.ShouldBindJSON(&input); err != nil {
+		ContexJsonResponse(c, "Error on data parse.", http.StatusBadRequest, nil, err)
+		return
+	}
+
+	//Get env api key
+	var auth = lib.GoDotEnvVariable("EVERYPAY_PRIVATE_KEY")
+
+	log.Println(input)
+	//Create the post form
+	form := url.Values{}
+	form.Add("token", input.Token)
+	form.Add("amount", input.Amount)
+	form.Add("description", input.Description)
+
+	req, _ := http.NewRequest("POST", "https://sandbox-api.everypay.gr/payments", strings.NewReader(form.Encode()))
+	//Set headers and basic auth for everypay api
+	req.SetBasicAuth(auth, "")
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+
+	//Make the request
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Println("Error on response.\n[ERROR] -", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Println("Error while reading the response bytes:", err)
+	}
+	log.Println(string([]byte(body)))
+
+	// TODO Save payments in db.
+	ContexJsonResponse(c, "Order created successfully", 200, input, nil)
+
 }

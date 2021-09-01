@@ -32,6 +32,7 @@ import { showErrorSnackbar } from "../../../actions/snackbar";
 import { FormLabel } from "react-bootstrap";
 import { auth_get_request, auth_post_request } from "../../../actions/lib";
 import { GET_USER, SEND_ORDER } from "../../../actions/actions";
+import EveryPayForm from "./EveryPayForm";
 
 const availableTipOptions = [0.5, 1.0, 1.5, 2.0, 5.0, 10.0];
 
@@ -310,6 +311,13 @@ class PreCompleteOrderPage extends Component {
         });
       }
     }
+
+    // const script = document.createElement("script");
+
+    // script.src = "https://sandbox-js.everypay.gr/v3";
+    // script.async = true;
+
+    // document.body.appendChild(script);
   }
   componentWillUnmount() {
     if (this.props.orderReducer.sent && !this.props.orderReducer.pending) {
@@ -520,6 +528,7 @@ class PreCompleteOrderPage extends Component {
                     }
                     label="Credit Card"
                   />
+                  <EveryPayForm/>
                 </div>
                 <div className="pre-order-col-subdiv">
                   <FormControlLabel

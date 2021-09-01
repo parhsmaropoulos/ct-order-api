@@ -10,10 +10,8 @@ class SearchBar extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectedLangeuage: "EN",
       searchText: "",
       focus: false,
-      isAuthenticated: false,
       results: [],
     };
   }
@@ -33,6 +31,11 @@ class SearchBar extends Component {
     }
     document.getElementById("searchIcon").style.display = str;
   }
+
+  onItemClick = (item) => {
+    item.preventDefault();
+    console.log(item);
+  }
   
   onChange = (e) => {
     if (e.target.value !== null) {
@@ -46,11 +49,9 @@ class SearchBar extends Component {
         results: [],
       });
     }
-    console.log(this.state.results);
   };
 
   static propTypes = {
-    isAuthenticated: PropTypes.bool.isRequired,
     products: PropTypes.array.isRequired,
   };
   render() {
@@ -77,12 +78,12 @@ class SearchBar extends Component {
         </div>
         {this.state.results.length > 0 ? (
           <div className="searchResults">
-            <Dropdown>
+            <Dropdown container="body">
               {this.state.results.map((item, index) => {
                 if (index < 5) {
                   return (
-                    <Dropdown.Item key={index}>
-                      <p>{item.name}</p>
+                    <Dropdown.Item key={index} >
+                      <p onClick={()=>this.onItemClick(item)}>{item.name}</p>
                     </Dropdown.Item>
                   );
                 } else {
@@ -100,7 +101,6 @@ class SearchBar extends Component {
 }
 
 const mapStateToProps = (state) => ({
-  isAuthenticated: state.userReducer.isAuthenticated,
   products: state.productReducer.products,
 });
 

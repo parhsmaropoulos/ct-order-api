@@ -27,23 +27,18 @@ const defaultState = {
 const productReducer = (state = defaultState, action) => {
   switch (action.type) {
     case GET_ITEMS:
-      console.log(action)
       return {
         ...state,
         products: action.data,
         isReady: true,
       };
     case GET_CATEGORIES:
-      console.log("2")
-      console.log(action)
 
       return {
         ...state,
         categories: action.data,
       };
     case GET_INGREDIENTS:
-      console.log("3")
-      console.log(action)
 
       let grouped_ingredients = [];
       let grouped;
@@ -55,16 +50,12 @@ const productReducer = (state = defaultState, action) => {
           grouped_ingredients.push(grouped[i]);
         }
       }
-      console.log(grouped_ingredients);
       return {
         ...state,
         ingredients: grouped_ingredients,
         ingredientCategories: action.data.categories,
       };
     case GET_CHOICES:
-      console.log("4")
-      console.log(action)
-
       return {
         ...state,
         choices: action.data,
@@ -103,7 +94,6 @@ const productReducer = (state = defaultState, action) => {
         }
       }
       newItems[indexOfItemToUpdate] = action.data;
-      console.log(newItems);
       return {
         ...state,
         products: newItems,
@@ -146,7 +136,6 @@ const productReducer = (state = defaultState, action) => {
       newIngredients[indexOfIngredientToUpdate_outer][
         indexOfIngredientToUpdate_inner
       ] = action.data;
-      console.log(action.data);
       return {
         ...state,
         ingredients: newIngredients,
