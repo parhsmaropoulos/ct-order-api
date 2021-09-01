@@ -36,7 +36,7 @@ func init() {
 	}
 	fmt.Println("DATABASE CONNECTION ESTABLISHED")
 
-	GORMDB.AutoMigrate(&User{}, &Ingredient{}, &Product{}, &Subscribe{}, &Choice{}, &ChoiceOption{}, &Order{}, &Product_Category{}, &Address{}, &Comment{})
+	GORMDB.AutoMigrate(&User{}, &Ingredient{}, &Product{}, &Subscribe{}, &Choice{}, &ChoiceOption{}, &Order{}, &Product_Category{}, &Address{}, &Comment{}, &Payment{})
 
 	fmt.Println("DATABASE MIGRATION COMPLETED")
 }

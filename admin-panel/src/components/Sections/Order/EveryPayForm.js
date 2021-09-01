@@ -23,7 +23,7 @@ function EveryPayForm() {
                 amount: '1000',
                 description: 'order id xxxxxx'
             }
-            const res = await axios.post(current_url + "orders/new_payment", body, authHeaders)
+            const res = await axios.post(current_url + "payments", body, authHeaders)
         }
         // if (r.onLoad) {
         //     setLoading(false);

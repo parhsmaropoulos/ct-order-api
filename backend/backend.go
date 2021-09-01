@@ -223,10 +223,14 @@ func main() {
 		// CREATE ORDER
 		orders.POST("/new_order", middleware.AuthMiddleware(), handlers.RegisterOrderHandler)
 
-		// NEW PAYMENT
-		orders.POST("/new_payment", handlers.NewPAymentHandler)
-
 	}
+
+	payments := router.Group("/payments/")
+	{
+		// CREATE NEW
+		payments.POST("/", handlers.NewPaymentHandler)
+	}
+
 	admin := router.Group("/admin/")
 	{
 		// Auth actions
