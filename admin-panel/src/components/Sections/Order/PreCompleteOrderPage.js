@@ -220,24 +220,24 @@ class PreCompleteOrderPage extends Component {
         from: null,
         user_details: null,
       };
-      const res = await this.props.auth_post_request(
-        `orders/new_order`,
-        order,
-        SEND_ORDER
-      );
-      console.log(res);
-      let newOrder = res.data.data;
-      SSEdata.id = String(newOrder.ID);
-      SSEdata.order = newOrder;
-      SSEdata.from = String(sessionStorage.getItem("userID"));
-      SSEdata.user_details = {};
+      // const res = await this.props.auth_post_request(
+      //   `orders/new_order`,
+      //   order,
+      //   SEND_ORDER
+      // );
+      // console.log(res);
+      // let newOrder = res.data.data;
+      // SSEdata.id = String(newOrder.ID);
+      // SSEdata.order = newOrder;
+      // SSEdata.from = String(sessionStorage.getItem("userID"));
+      // SSEdata.user_details = {};
 
-      const resp = await this.props.auth_post_request(
-        `sse/sendorder/${SSEdata.from}`,
-        SSEdata,
-        null
-      );
-      console.log(resp);
+      // const resp = await this.props.auth_post_request(
+      //   `sse/sendorder/${SSEdata.from}`,
+      //   SSEdata,
+      //   null
+      // );
+      // console.log(resp);
     }
   }
 
@@ -320,13 +320,6 @@ class PreCompleteOrderPage extends Component {
         });
       }
     }
-
-    // const script = document.createElement("script");
-
-    // script.src = "https://sandbox-js.everypay.gr/v3";
-    // script.async = true;
-
-    // document.body.appendChild(script);
   }
   componentWillUnmount() {
     if (this.props.orderReducer.sent && !this.props.orderReducer.pending) {
@@ -495,10 +488,6 @@ class PreCompleteOrderPage extends Component {
               </AccordionDetails>
               <Divider />
               <AccordionActions>
-              {/* <Button size="small">Cancel</Button>
-              <Button size="small" color="primary">
-                Save
-              </Button> */}
             </AccordionActions>
               </Accordion>
             </div>
@@ -556,8 +545,45 @@ class PreCompleteOrderPage extends Component {
           <Grid item xs={4}>
             <div className="root-accordion">
             <Accordion defaultExpanded>
-            <AccordionSummary></AccordionSummary>
-            <AccordionDetails></AccordionDetails>
+            <AccordionSummary>3. Ολοκλήρωση Παραγγελίας</AccordionSummary>
+            <AccordionDetails>
+            <div className="pre-order-col-subdiv">
+                  <span>Σύνολο: {this.props.orderReducer.totalPrice} €</span>
+                 <br />
+                 <Button
+                    className="complete-order-button"
+                    variant="contained"
+                    color="primary"
+                    type="submit"
+                    onClick={this.sendOrder}
+                  >
+                    Αποστολή{" "}
+                  </Button>
+                </div>
+                <div className="pre-order-col-subdiv">
+                  <List className="pre-order-item-list">
+                    {this.props.orderReducer.products.map((prod, index) => {
+                      return (
+                        <ListItem
+                          key={index}
+                          disabled
+                          className="pre-order-item-list-item"
+                        >
+                          <ListItemText
+                            type="li"
+                            primary={`${prod.quantity} x ${prod.item.name}`}
+                            secondary={`${prod.optionAnswers.join()} , ${
+                              prod.comment
+                            }`}
+                          />
+                        </ListItem>
+                      );
+                    })}
+                  </List>
+                  <span>payment-details</span>
+                  <br />
+                </div>
+            </AccordionDetails>
             <Divider/>
             <AccordionActions></AccordionActions>
             </Accordion>
