@@ -57,7 +57,6 @@ class LogRegModal extends Component {
 
   async onSubmit(e) {
     e.preventDefault();
-    console.log(this.state.email, this.state.password);
     await this.props.login_async(this.state.email, this.state.password);
   }
 
@@ -70,7 +69,11 @@ class LogRegModal extends Component {
         email: this.state.email,
         password: this.state.reg_password,
       };
-      let res = await this.props.register_async(user.email, user.password);
+      let res = await this.props.register_async(
+        user.email,
+        user.password,
+        "email"
+      );
       console.log(res);
       // this.props.register(user);
     }

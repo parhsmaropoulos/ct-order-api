@@ -33,6 +33,7 @@ class Header extends Component {
       isAuthenticated: "",
       results: [],
       open: false,
+      logedIn: false,
     };
   }
 
@@ -68,8 +69,9 @@ class Header extends Component {
   };
 
   render() {
-    let autheticated = sessionStorage.getItem("isAuthenticated");
-
+    let authenticated =
+      this.props.userReducer.isAuthenticated ||
+      sessionStorage.getItem("isAuthenticated");
     if (window.location.href.endsWith("admin_login")) {
       return null;
     }
@@ -100,7 +102,7 @@ class Header extends Component {
                     EN
                   </NavDropdown.Item>
                 </NavDropdown> */}
-                {autheticated ? (
+                {authenticated ? (
                   <Grid item xs={3}>
                     <Button
                       color="primary"
@@ -168,7 +170,6 @@ class Header extends Component {
                     </Popper>
                   </Grid>
                 ) : (
-                  // <Row style={{ marginLeft: 10 }}>
                   <Nav.Link
                     onClick={(e) => {
                       this.onClose(e);
@@ -188,7 +189,7 @@ class Header extends Component {
 }
 
 const mapStateToProps = (state) => ({
-  user: state.userReducer.user,
+  userReducer: state.userReducer,
   products: state.productReducer.products,
 });
 

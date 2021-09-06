@@ -82,8 +82,6 @@ func GetUserByIdHandler(c *gin.Context) {
 		fmt.Println("Only post requests here, nothing else!")
 		return
 	}
-	fmt.Print("here")
-
 	// db := models.OpenConnection()
 
 	// Int in params :id

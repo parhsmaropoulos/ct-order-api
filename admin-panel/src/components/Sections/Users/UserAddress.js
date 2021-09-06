@@ -51,7 +51,6 @@ class UserAdress extends Component {
   };
 
   selectEditAddressModal = (info) => {
-    console.log("here");
     this.setState({ showEditAddressModal: !this.state.showEditAddressModal });
   };
 
@@ -164,7 +163,6 @@ class UserAdress extends Component {
         />
       );
     }
-    console.log(this.state.showAddressModal);
     if (this.state.showAddressModal) {
       addAddressModal = (
         <AddressModal

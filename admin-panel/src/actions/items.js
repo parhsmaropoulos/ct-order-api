@@ -446,7 +446,6 @@ export const delete_item = (id, type) => (dispatch) => {
   };
   switch (body.type) {
     case "product":
-      console.log("here");
       axios
         .delete(`${current_url}products/product/${id}`, headers)
         .then((res) => {
@@ -469,7 +468,6 @@ export const delete_item = (id, type) => (dispatch) => {
         });
       return;
     case "category":
-      console.log("here");
       axios
         .delete(`${current_url}product_category/delete/${id}`, headers)
         .then((res) => {
@@ -514,7 +512,6 @@ export const delete_item = (id, type) => (dispatch) => {
         });
       return;
     case "choice":
-      console.log("here");
       axios
         .delete(`${current_url}products/choice/${id}`, headers)
         .then((res) => {

@@ -350,8 +350,8 @@
   .pre-order-container-body {
     flex-direction: column;
   }
-  .pre-order-container {
-    width: 100%;
+  .pre-order-row {
+    width: 100vh;
   }
 }
 .menu-categories-list-button:focus {
@@ -364,7 +364,7 @@
 }
 
 .heading-secondary-accordion {
-  color:blue;
+  color: blue;
 }
 
 .icon-accordion {
@@ -374,7 +374,7 @@
 }
 
 .details-accordion {
-  align-items: 'center';
+  align-items: "center";
 }
 
 .column-accordion {
@@ -386,7 +386,7 @@
 
 .link-accordion {
   text-decoration: none;
-  color:pink;
+  color: pink;
 }
 .link-accordion:hover {
   text-decoration: underline;

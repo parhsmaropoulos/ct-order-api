@@ -12,6 +12,8 @@ import {
   UNSUBSCRIBE_USER,
   GET_USER_ORDERS,
   GET_USER_ADDRESSES,
+  ADD_ADDRESS,
+  EDIT_ADDRESS,
 } from "../actions/actions";
 
 const defaultState = {
@@ -61,6 +63,7 @@ const userReducer = (state = defaultState, action) => {
         ...state,
         isAuthenticated: true,
         isLoading: false,
+        hadLoaded: true,
         user: action.user,
       };
     case LOGIN_SUCCESS:
@@ -79,7 +82,6 @@ const userReducer = (state = defaultState, action) => {
         error: action.error,
       };
     case REGISTER_SUCCESS:
-      sessionStorage.setItem("token", action.payload.token);
       return {
         ...state,
         ...action.payload,
@@ -100,7 +102,6 @@ const userReducer = (state = defaultState, action) => {
         isLoading: false,
       };
     case REGISTER_FAIL:
-      sessionStorage.removeItem("token");
       return {
         ...state,
         token: null,
@@ -121,6 +122,16 @@ const userReducer = (state = defaultState, action) => {
       return {
         ...state,
         addresses: action.data,
+      };
+    case ADD_ADDRESS:
+      return {
+        ...state,
+        hasLoaded: false,
+      };
+    case EDIT_ADDRESS:
+      return {
+        ...state,
+        hasLoaded: false,
       };
     default:
       return state;

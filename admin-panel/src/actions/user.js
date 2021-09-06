@@ -11,6 +11,7 @@
 
 import axios from "axios";
 import jwt from "jwt-decode";
+import { provider } from "../firebase/base";
 import app from "../firebase/base";
 import { authHeaders, headers } from "../utils/axiosHeaders";
 import { current_url } from "../utils/util";
@@ -90,13 +91,10 @@ export const login = (email, password) => (dispatch) => {
 };
 
 export const login_async = (email, password) => async (dispatch) => {
-  // const dispatch = useDispatch();
-
   try {
     const credentials = await app
       .auth()
       .signInWithEmailAndPassword(email, password);
-    console.log(credentials);
     sessionStorage.setItem("userID", credentials.user.uid);
     sessionStorage.setItem("isAuthenticated", true);
     dispatch({
@@ -115,11 +113,16 @@ export const login_async = (email, password) => async (dispatch) => {
   }
 };
 
-export const register_async = (email, password) => async (dispatch) => {
+export const register_async = (email, password, type) => async (dispatch) => {
   try {
-    const credentials = await app
-      .auth()
-      .createUserWithEmailAndPassword(email, password);
+    let credentials;
+    if (type === "email") {
+      credentials = await app
+        .auth()
+        .createUserWithEmailAndPassword(email, password);
+    } else if (type === "gmail") {
+      credentials = await app.auth().signInWithPopup(provider);
+    }
 
     const data = {
       id: credentials.user.uid,
@@ -127,12 +130,7 @@ export const register_async = (email, password) => async (dispatch) => {
       email: email,
       password: password,
     };
-    await auth_post_request("user/register", data, REGISTER_SUCCESS);
-    // const res = await axios.post(
-    //   current_url + "user/register",
-    //   credentials,
-    //   authHeaders
-    // );
+    await axios.post(current_url + "user/register", data, authHeaders);
 
     dispatch({
       type: REGISTER_SUCCESS,
@@ -148,7 +146,7 @@ export const register_async = (email, password) => async (dispatch) => {
     });
     dispatch({
       type: SNACKBAR_ERROR,
-      message: error.response.data.message,
+      message: error.response,
     });
   }
 };

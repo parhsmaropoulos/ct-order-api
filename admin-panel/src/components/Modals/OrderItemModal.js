@@ -21,6 +21,7 @@ import {
   IconButton,
   Divider,
 } from "@material-ui/core";
+import { showInfoSnackbar } from "../../actions/snackbar";
 
 class OrderItemModal extends Component {
   constructor(props) {
@@ -110,21 +111,36 @@ class OrderItemModal extends Component {
     if (this.props.update) {
       item.extra_ingredients = this.state.extra_ingredients;
     }
-    // console.log(item);
-    if (this.props.update) {
-      this.props.onUpdate &&
-        this.props.onUpdate(item, this.state.quantity, this.props.index);
-    } else {
-      this.props.onAdd && this.props.onAdd(item, this.state.quantity);
-    }
-    this.props.onClose && this.props.onClose(e);
-    this.setState({
-      options: {},
-      quantity: 1,
-      comment: "",
-      extraPrice: 0,
-      extraIngredients: [""],
+    // Chcek if needed options are answered
+    let found = false;
+    item.item.choices.forEach((c) => {
+      if (c.required) {
+        item.options.forEach((o) => {
+          if (c.name === o.name) {
+            found = true;
+          }
+        });
+        if (found === false) {
+          alert(`Please select a choice for option: ${c.name}`);
+        }
+      }
     });
+    if (found) {
+      if (this.props.update) {
+        this.props.onUpdate &&
+          this.props.onUpdate(item, this.state.quantity, this.props.index);
+      } else {
+        this.props.onAdd && this.props.onAdd(item, this.state.quantity);
+      }
+      this.props.onClose && this.props.onClose(e);
+      this.setState({
+        options: {},
+        quantity: 1,
+        comment: "",
+        extraPrice: 0,
+        extraIngredients: [""],
+      });
+    }
   }
 
   onChangeChoice = (choiceName, selectedOption) => {
@@ -144,8 +160,9 @@ class OrderItemModal extends Component {
         oldPrice = old_option.price;
         old_option.choice = selectedOption.name;
         old_option.price = selectedOption.price;
+        // old_option.ID = selectedOption.ID;
         found = true;
-        console.log("found");
+        // console.log("found");
       }
     }
     // Else it adds the option
@@ -165,7 +182,7 @@ class OrderItemModal extends Component {
         extraPrice: newPrice,
       });
     }
-    console.log(currentOptions);
+    // console.log(currentOptions);
   };
 
   onChange = (e) => {
@@ -609,4 +626,4 @@ const mapStateToProps = (state) =>
     choices: state.productReducer.choices,
   });
 
-export default connect(mapStateToProps, {})(OrderItemModal);
+export default connect(mapStateToProps, { showInfoSnackbar })(OrderItemModal);

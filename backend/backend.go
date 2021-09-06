@@ -228,7 +228,7 @@ func main() {
 	payments := router.Group("/payments/")
 	{
 		// CREATE NEW
-		payments.POST("/", handlers.NewPaymentHandler)
+		payments.POST("/new_payment", handlers.NewPaymentHandler)
 	}
 
 	admin := router.Group("/admin/")

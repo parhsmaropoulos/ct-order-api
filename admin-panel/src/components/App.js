@@ -104,10 +104,14 @@ class App extends Component {
             <PrivateRoute path="/items" component={ItemsPage} />
             <PrivateRoute path="/ingredients" component={ItemsPage} />
             <PrivateRoute path="/choices" component={ItemsPage} />
-            <Route path="/login" component={LogRegModal} />
             <Route exact path="/">
               <Redirect to="/home" />
             </Route>
+            <PrivateRoute
+              exact
+              path="/order/:category_name"
+              component={OrderMainPage}
+            />
             <PrivateRoute exact path="/order" component={OrderMainPage} />
             <PrivateRoute
               path="/pre_complete/:id"

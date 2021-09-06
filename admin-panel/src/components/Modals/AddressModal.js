@@ -84,7 +84,6 @@ class AddressModal extends Component {
   onAddAddress(e) {
     e.preventDefault();
     // console.log(this.props);
-
     const data = {
       id: sessionStorage.getItem("userID"),
       address: {
@@ -98,7 +97,6 @@ class AddressModal extends Component {
       reason: "add_address",
     };
     this.props.editAddress && this.props.editAddress(false, true, data.address);
-
   }
   showEditModal = () => {
     this.setState({ showEditModal: !this.state.showEditModal });

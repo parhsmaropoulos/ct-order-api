@@ -41,7 +41,7 @@ import { FormLabel } from "react-bootstrap";
 import { auth_get_request, auth_post_request } from "../../../actions/lib";
 import { GET_USER, SEND_ORDER } from "../../../actions/actions";
 import EveryPayForm from "./EveryPayForm";
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 
 const availableTipOptions = [0.5, 1.0, 1.5, 2.0, 5.0, 10.0];
 
@@ -102,13 +102,8 @@ class PreCompleteOrderPage extends Component {
   }
 
   recieveOrder(response) {
-    // console.log("here");
     let data = JSON.parse(response.data);
     console.log(data);
-    // let orderStatus = this.state.orderStatus;
-    // orderStatus.accepted = data.accepted;
-    // orderStatus.awaiting = false;
-    // orderStatus.timeToDelivery = data.time;
     this.props.order_accepted(data.time);
   }
 
@@ -212,7 +207,7 @@ class PreCompleteOrderPage extends Component {
       // },
     };
     console.log(order);
-
+    window.everypay.onClick();
     if (this.validateFields(order)) {
       let SSEdata = {
         id: null,
@@ -220,24 +215,24 @@ class PreCompleteOrderPage extends Component {
         from: null,
         user_details: null,
       };
-      // const res = await this.props.auth_post_request(
-      //   `orders/new_order`,
-      //   order,
-      //   SEND_ORDER
-      // );
-      // console.log(res);
-      // let newOrder = res.data.data;
-      // SSEdata.id = String(newOrder.ID);
-      // SSEdata.order = newOrder;
-      // SSEdata.from = String(sessionStorage.getItem("userID"));
-      // SSEdata.user_details = {};
+      const res = await this.props.auth_post_request(
+        `orders/new_order`,
+        order,
+        SEND_ORDER
+      );
+      console.log(res);
+      let newOrder = res.data.data;
+      SSEdata.id = String(newOrder.ID);
+      SSEdata.order = newOrder;
+      SSEdata.from = String(sessionStorage.getItem("userID"));
+      SSEdata.user_details = {};
 
-      // const resp = await this.props.auth_post_request(
-      //   `sse/sendorder/${SSEdata.from}`,
-      //   SSEdata,
-      //   null
-      // );
-      // console.log(resp);
+      const resp = await this.props.auth_post_request(
+        `sse/sendorder/${SSEdata.from}`,
+        SSEdata,
+        null
+      );
+      console.log(resp);
     }
   }
 
@@ -257,9 +252,10 @@ class PreCompleteOrderPage extends Component {
       this.props.showErrorSnackbar("Please enter floor and bell name");
       return false;
     } else if (
-      (mobilePhoneRegex.test(order.phone) === false &&
+      (!!order.phone &&
+        mobilePhoneRegex.test(order.phone) === false &&
         homePhoneRegex.test(order.phone) === false) ||
-      order.length > 10
+      order.phone.length > 10
     ) {
       this.props.showErrorSnackbar("Please enter valid phone number");
       return false;
@@ -300,6 +296,12 @@ class PreCompleteOrderPage extends Component {
     });
   };
 
+  onAddAddress = (address) => {
+    this.setState({
+      selectedAddress: address,
+    });
+  };
+
   componentDidMount() {
     this.eventSource.onmessage = (e) => this.recieveOrder(e);
     console.log(this.props);
@@ -336,7 +338,10 @@ class PreCompleteOrderPage extends Component {
   render() {
     let addAddressModal;
     let editAddressModal;
-    if (this.props.userReducer.user === null) {
+    if (
+      this.props.userReducer.user === null ||
+      this.props.userReducer.hasLoaded === false
+    ) {
       this.props.auth_get_request(
         `user/${sessionStorage.getItem("userID")}`,
         GET_USER
@@ -352,6 +357,7 @@ class PreCompleteOrderPage extends Component {
         <AddressModal
           displayModal={this.state.showAddressModal}
           closeModal={() => this.selectAddressModal(false, false, "")}
+          addAdress={(address) => this.onAddAddress(address)}
           editAddress={(showAdd, showEdit, address) =>
             this.selectAddressModal(showAdd, showEdit, address)
           }
@@ -395,41 +401,79 @@ class PreCompleteOrderPage extends Component {
       );
     } else {
       return (
-        <Grid container spacing={3}>
-          <Grid item xs={4}>
+        <Grid container spacing={3} className="pre-order-container-body">
+          <Grid item xs={12} md={4} className="pre-order-row">
             <div className="root-accordion">
               <Accordion expanded={true}>
-              <AccordionSummary
-                // expandIcon={<ExpandMoreIcon />}
-                aria-controls="panel1c-content"
-                id="panel1c-header"
-              >
-                <div className="column-accordion">
-                  <Typography className="heading-accordion">1.Τρόπος Παραγγελίας</Typography>
-                </div>
-              </AccordionSummary>
-              <AccordionDetails className="details-accordion">
-              <form className="pre-order-info-form">
-                  <FormControl className="selectDeliveryControl">
-                    <InputLabel id="selectDeliveryLabel">
-                      Τρόπος παραγγελίας
-                    </InputLabel>
-                    <Select
-                      labelId="selectDeliveryLabel"
-                      id="selectDelivery"
-                      name="deliveryOption"
-                      onChange={this.onSelectChange}
-                      required
-                      defaultValue="Delivery"
-                    >
-                      <MenuItem value="Delivery">Delivery</MenuItem>
-                      <MenuItem value="TakeAway">
-                        Παραλαβή απο το κατάστημα
-                      </MenuItem>
-                    </Select>
-                  </FormControl>
-                  
-                     <div className="pre-order-info-form-row">
+                <AccordionSummary
+                  // expandIcon={<ExpandMoreIcon />}
+                  aria-controls="panel1c-content"
+                  id="panel1c-header"
+                >
+                  <div className="column-accordion">
+                    <Typography className="heading-accordion">
+                      1.Στοιχεία Παραγγελίας
+                    </Typography>
+                  </div>
+                </AccordionSummary>
+                <AccordionDetails className="details-accordion">
+                  <form className="pre-order-info-form">
+                    <FormControl className="selectAddressControl">
+                      <InputLabel id="selectAddressLabel">
+                        Select Address
+                      </InputLabel>
+                      <Select
+                        labelId="selectAddressLabel"
+                        id="selectAddress"
+                        name="selectedAddress"
+                        value={
+                          this.props.userReducer.user.addresses.length > 0
+                            ? "0"
+                            : ""
+                        }
+                        onChange={this.onAddressChange}
+                        required
+                      >
+                        {this.props.userReducer.user.addresses.map(
+                          (address, index) => {
+                            return (
+                              <MenuItem value={index} key={index}>
+                                {address.address_name} {address.address_number},{" "}
+                                {address.area_name}
+                              </MenuItem>
+                            );
+                          }
+                        )}
+                        <MenuItem
+                          onClick={() =>
+                            this.selectAddressModal(true, false, "")
+                          }
+                        >
+                          Add new
+                        </MenuItem>
+                      </Select>
+                    </FormControl>
+
+                    <FormControl className="selectDeliveryControl">
+                      <InputLabel id="selectDeliveryLabel">
+                        Τρόπος παραγγελίας
+                      </InputLabel>
+                      <Select
+                        labelId="selectDeliveryLabel"
+                        id="selectDelivery"
+                        name="deliveryOption"
+                        onChange={this.onSelectChange}
+                        required
+                        defaultValue="Delivery"
+                      >
+                        <MenuItem value="Delivery">Delivery</MenuItem>
+                        <MenuItem value="TakeAway">
+                          Παραλαβή απο το κατάστημα
+                        </MenuItem>
+                      </Select>
+                    </FormControl>
+
+                    <div className="pre-order-info-form-row">
                       <TextField
                         id="bellName"
                         name="bellName"
@@ -485,110 +529,117 @@ class PreCompleteOrderPage extends Component {
                       />
                     </div>
                   </form>
-              </AccordionDetails>
-              <Divider />
-              <AccordionActions>
-            </AccordionActions>
+                </AccordionDetails>
+                <Divider />
+                <AccordionActions></AccordionActions>
               </Accordion>
             </div>
           </Grid>
-          <Grid item xs={4}>
+          <Grid item xs={12} md={4}>
             <div className="root-accordion">
               <Accordion expanded={false}>
                 <AccordionSummary>
-                <div className="column-accordion">
-                  <Typography className="heading-accordion">2. Τρόπος πληρωμής</Typography>
-                </div>
+                  <div className="column-accordion">
+                    <Typography className="heading-accordion">
+                      2. Τρόπος πληρωμής
+                    </Typography>
+                  </div>
                 </AccordionSummary>
               </Accordion>
             </div>
             <div className="root-accordion">
               <Accordion defaultExpanded={false}>
                 <AccordionSummary>
-                <div className="column-accordion">
-                  <Typography className="heading-accordion">Credit</Typography>
-                </div>
+                  <div className="column-accordion">
+                    <Typography className="heading-accordion">
+                      Credit
+                    </Typography>
+                  </div>
                 </AccordionSummary>
                 <AccordionDetails className="details-accordion">
-                  <EveryPayForm/>
-              </AccordionDetails>
-              <Divider />
+                  <EveryPayForm />
+                </AccordionDetails>
+                <Divider />
               </Accordion>
             </div>
             <div className="root-accordion">
               <Accordion defaultExpanded={false}>
-              <AccordionSummary>
-              <div className="column-accordion">
-                  <Typography className="heading-accordion">Paypal</Typography>
-                </div>
+                <AccordionSummary>
+                  <div className="column-accordion">
+                    <Typography className="heading-accordion">
+                      Paypal
+                    </Typography>
+                  </div>
                 </AccordionSummary>
                 <AccordionDetails className="details-accordion">
                   Pay with paypal
-              </AccordionDetails>
-              <Divider />
+                </AccordionDetails>
+                <Divider />
               </Accordion>
             </div>
             <div className="root-accordion">
               <Accordion defaultExpanded={false}>
-              <AccordionSummary>
-              <div className="column-accordion">
-                  <Typography className="heading-accordion">Cash</Typography>
-                </div>
+                <AccordionSummary>
+                  <div className="column-accordion">
+                    <Typography className="heading-accordion">Cash</Typography>
+                  </div>
                 </AccordionSummary>
                 <AccordionDetails className="details-accordion">
                   Pay with cash
-              </AccordionDetails>
-              <Divider />
+                </AccordionDetails>
+                <Divider />
               </Accordion>
             </div>
           </Grid>
-          <Grid item xs={4}>
+          <Grid item xs={12} md={4}>
             <div className="root-accordion">
-            <Accordion defaultExpanded>
-            <AccordionSummary>3. Ολοκλήρωση Παραγγελίας</AccordionSummary>
-            <AccordionDetails>
-            <div className="pre-order-col-subdiv">
-                  <span>Σύνολο: {this.props.orderReducer.totalPrice} €</span>
-                 <br />
-                 <Button
-                    className="complete-order-button"
-                    variant="contained"
-                    color="primary"
-                    type="submit"
-                    onClick={this.sendOrder}
-                  >
-                    Αποστολή{" "}
-                  </Button>
-                </div>
-                <div className="pre-order-col-subdiv">
-                  <List className="pre-order-item-list">
-                    {this.props.orderReducer.products.map((prod, index) => {
-                      return (
-                        <ListItem
-                          key={index}
-                          disabled
-                          className="pre-order-item-list-item"
-                        >
-                          <ListItemText
-                            type="li"
-                            primary={`${prod.quantity} x ${prod.item.name}`}
-                            secondary={`${prod.optionAnswers.join()} , ${
-                              prod.comment
-                            }`}
-                          />
-                        </ListItem>
-                      );
-                    })}
-                  </List>
-                  <span>payment-details</span>
-                  <br />
-                </div>
-            </AccordionDetails>
-            <Divider/>
-            <AccordionActions></AccordionActions>
-            </Accordion>
+              <Accordion defaultExpanded>
+                <AccordionSummary>3. Ολοκλήρωση Παραγγελίας</AccordionSummary>
+                <AccordionDetails>
+                  <div className="pre-order-col-subdiv">
+                    <span>Σύνολο: {this.props.orderReducer.totalPrice} €</span>
+                    <br />
+                    <Button
+                      className="complete-order-button"
+                      variant="contained"
+                      color="primary"
+                      type="submit"
+                      onClick={this.sendOrder}
+                    >
+                      Αποστολή{" "}
+                    </Button>
+                  </div>
+                  <div className="pre-order-col-subdiv">
+                    <List className="pre-order-item-list">
+                      {this.props.orderReducer.products.map((prod, index) => {
+                        return (
+                          <ListItem
+                            key={index}
+                            disabled
+                            className="pre-order-item-list-item"
+                          >
+                            <ListItemText
+                              type="li"
+                              primary={`${prod.quantity} x ${prod.item.name}`}
+                              secondary={`${prod.optionAnswers.join()} , ${
+                                prod.comment
+                              }`}
+                            />
+                          </ListItem>
+                        );
+                      })}
+                    </List>
+                    <span>payment-details</span>
+                    <br />
+                  </div>
+                </AccordionDetails>
+                <Divider />
+                <AccordionActions></AccordionActions>
+              </Accordion>
             </div>
           </Grid>
+          {addAddressModal}
+          {editAddressModal}
         </Grid>
         // <div className="pre-order-container">
         //   <div className="pre-order-container-body">
@@ -826,8 +877,7 @@ class PreCompleteOrderPage extends Component {
         //       </div>
         //     </div>
         //   </div>
-        //   {addAddressModal}
-        //   {editAddressModal}
+
         // </div>
       );
     }

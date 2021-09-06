@@ -20,8 +20,9 @@ require (
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/lib/pq v1.10.2
 	github.com/myesui/uuid v1.0.0 // indirect
+	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/speps/go-hashids/v2 v2.0.1
-	github.com/steinfletcher/apitest v1.5.11 // indirect
+	github.com/steinfletcher/apitest v1.5.11
 	github.com/stretchr/testify v1.7.0 // indirect
 	github.com/twinj/uuid v1.0.0
 	github.com/ugorji/go v1.2.6 // indirect

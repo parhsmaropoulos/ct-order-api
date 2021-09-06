@@ -125,7 +125,6 @@ export const empty_cart = () => (dispatch) => {
 
 // Empty the order accepted
 export const order_accepted = (time) => (dispatch) => {
-  console.log("here");
   dispatch({
     type: ORDER_ACCEPTED,
     time: time,

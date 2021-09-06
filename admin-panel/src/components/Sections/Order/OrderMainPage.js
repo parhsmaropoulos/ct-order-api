@@ -33,6 +33,7 @@ import {
   GET_INGREDIENTS,
   GET_ITEMS,
 } from "../../../actions/actions";
+import { Link } from "react-router-dom";
 // import { Link } from "react-router-dom";
 
 var _ = require("lodash");
@@ -55,7 +56,7 @@ class OrderMainPage extends Component {
     this.showModal = this.showModal.bind(this);
     this.showAlert = this.showAlert.bind(this);
     this.toggleDrawer = this.toggleDrawer.bind(this);
-    this.onSearchChange = this.onSearchChange.bind(this)
+    this.onSearchChange = this.onSearchChange.bind(this);
   }
   state = {
     cart: [],
@@ -300,12 +301,12 @@ class OrderMainPage extends Component {
   }
 
   onSearchChange = (product) => {
-    console.log("change")
-    console.log(product)
-    if(product){
-      this.changeCategory(product.category_id)
+    console.log("change");
+    console.log(product);
+    if (product) {
+      this.changeCategory(product.category_id);
     }
-  }
+  };
 
   render() {
     let modal;
@@ -391,17 +392,23 @@ class OrderMainPage extends Component {
                     <ListGroup className="categoriesListGroup">
                       {this.props.categories.map((categ, index) => {
                         let selected = false;
-                        if (this.state.selectedCategory === categ.ID) {
+                        if (
+                          this.props.match.params.category_name === categ.name
+                        ) {
                           selected = true;
                         }
                         return (
-                          <ListGroup.Item
-                            key={index}
-                            onClick={() => this.changeCategory(categ.ID, false)}
-                            active={selected}
-                          >
-                            {categ.name}
-                          </ListGroup.Item>
+                          <Link to={`/order/${categ.name}`}>
+                            <ListGroup.Item
+                              key={index}
+                              onClick={() =>
+                                this.changeCategory(categ.ID, false)
+                              }
+                              active={selected}
+                            >
+                              {categ.name}
+                            </ListGroup.Item>
+                          </Link>
                         );
                       })}
                     </ListGroup>
@@ -423,13 +430,10 @@ class OrderMainPage extends Component {
                   id="search-product"
                   options={this.props.products}
                   getOptionLabel={(option) => option.name}
-                  onChange={(event,option)=> this.onSearchChange(option)}
+                  onChange={(event, option) => this.onSearchChange(option)}
                   onClose={(e) => this.showSearchResults(e)}
                   renderOption={(option, index) => (
-                    <Typography
-                      noWrap
-                      key={index}
-                    >
+                    <Typography noWrap key={index}>
                       {option.name}
                     </Typography>
                   )}
@@ -438,7 +442,7 @@ class OrderMainPage extends Component {
                       {...params}
                       label="Search product"
                       variant="outlined"
-                      InputProps={{ ...params.InputProps}}
+                      InputProps={{ ...params.InputProps }}
                     />
                   )}
                 />
@@ -719,13 +723,16 @@ class OrderMainPage extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  orderReducer: state.orderReducer,
-  products: state.productReducer.products,
-  categories: state.productReducer.categories,
-  userReducer: state.userReducer,
-  isReady: state.productReducer.isReady,
-});
+const mapStateToProps = (state) => (
+  console.log(state),
+  {
+    orderReducer: state.orderReducer,
+    products: state.productReducer.products,
+    categories: state.productReducer.categories,
+    userReducer: state.userReducer,
+    isReady: state.productReducer.isReady,
+  }
+);
 
 export default connect(mapStateToProps, {
   update_cart,

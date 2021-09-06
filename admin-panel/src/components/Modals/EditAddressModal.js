@@ -10,6 +10,7 @@ import {
   auth_post_request,
 } from "../../actions/lib";
 import GoogleMapReact from "google-map-react";
+import { ADD_ADDRESS, EDIT_ADDRESS } from "../../actions/actions";
 
 import Marker from "../Layout/Marker";
 
@@ -102,14 +103,14 @@ class EditAddressModal extends Component {
       this.props.auth_put_request(
         `user/${sessionStorage.getItem("userID")}/update_address`,
         data,
-        null
+        EDIT_ADDRESS
       );
     } else {
       //   {**ADD ADDRESS**}
       this.props.auth_post_request(
         `user/${sessionStorage.getItem("userID")}/add_address`,
         data,
-        null
+        ADD_ADDRESS
       );
     }
     console.log(data);
