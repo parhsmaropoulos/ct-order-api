@@ -68,11 +68,11 @@ func GetAllOrdersByUserIdHandler(c *gin.Context) {
 
 	var user models.User
 
-	result := models.GORMDB.Where("email = ?", email).First(&user)
+	result := models.GORMDB.Where("email = ? ", email).First(&user)
 
 	var orders []models.Order
 
-	result = models.GORMDB.Where("user_id = ?", user.ID).Find(&orders)
+	result = models.GORMDB.Where("user_id = ? and completed = true", user.ID).Find(&orders)
 	if result.Error != nil {
 		ContexJsonResponse(c, "Error on orders search", http.StatusInternalServerError, nil, result.Error)
 		return
@@ -155,6 +155,7 @@ func CancelOrderByIdHandler(c *gin.Context) {
 
 	order.Accepted = false
 	order.Canceled = true
+	order.Completed = true
 
 	if order.ID == 0 {
 		ContexJsonResponse(c, "Order cancelation  failed, no such an ID available", 500, nil, nil)
