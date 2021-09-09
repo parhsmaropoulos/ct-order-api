@@ -58,8 +58,8 @@ class HomePage extends Component {
           <br />
           <Link to="/choices">Choices</Link>
           <br />
-          <Link to={`/comments`}>Comments</Link>
         </div> */}
+        <Link to={`/admin`}>admin</Link>
         <GridList
           style={{
             display: "flex",

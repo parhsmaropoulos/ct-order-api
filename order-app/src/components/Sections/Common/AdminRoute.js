@@ -5,7 +5,6 @@ import { AuthContext } from "../../../firebase/AuthProvider";
 
 const AdminRoute = ({ component: Component, ...rest }) => {
   const { currentUser } = useContext(AuthContext);
-  console.log(currentUser)
   return (
     // Show the component only when the user is logged in
     // Otherwise, redirect the user to /signin page

@@ -184,3 +184,32 @@ export const auth_delete_request = (url, dispatch_type) => async (dispatch) => {
     });
   }
 };
+
+
+export const put_request =
+  (url, data, dispatch_type) => async (dispatch) => {
+    try {
+      let auth_config = config;
+      try {
+        const res = await axios.put(current_url + url, data, auth_config);
+        console.log(res);
+        dispatch({
+          type: dispatch_type,
+          data: res.data.data,
+        });
+        return res;
+      } catch (e) {
+        console.log(e);
+        dispatch({
+          type: SNACKBAR_ERROR,
+          message: "Error with get request",
+        });
+      }
+    } catch (e) {
+      //handle e
+      dispatch({
+        type: SNACKBAR_ERROR,
+        message: "Error with token",
+      });
+    }
+  };

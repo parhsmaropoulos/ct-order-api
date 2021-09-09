@@ -9,7 +9,7 @@ import {
   TableHead,
   TableRow,
 } from "@material-ui/core";
-import { auth_put_request } from "../../../../actions/lib";
+import { put_request } from "../../../../actions/lib";
 import { useDispatch } from "react-redux";
 import { CHANGE_AVAILABILITY } from "../../../../actions/actions";
 
@@ -39,7 +39,7 @@ export default function ProductCatalog(props) {
   const dispatch = useDispatch();
 
   const update_prod = (id) => {
-    dispatch(auth_put_request(`products/${id}/change_availability`,null,CHANGE_AVAILABILITY));
+    dispatch(put_request(`products/${id}/change_availability`,null,CHANGE_AVAILABILITY));
   };
 
   return (
@@ -62,7 +62,7 @@ export default function ProductCatalog(props) {
                   <TableCell align="right">
                     <Switch
                       checked={product.available === true ? true : false}
-                      onChange={() => update_prod(product)}
+                      onChange={() => update_prod(product.ID)}
                       label="Available"
                     />
                   </TableCell>

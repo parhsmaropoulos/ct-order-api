@@ -38,11 +38,11 @@ export default function RightContainer(props) {
   let selectedCat = "";
   let selectedIngreCat = "";
   if (props.categories.length > 0) {
-    selectedCat = props.categories[0].name;
+    selectedCat = props.categories[0].ID;
   }
   // console.log(props.ingredientCategories);
   if (props.ingredientCategories.length > 0) {
-    selectedIngreCat = 0;
+    selectedIngreCat =0;
   }
   const [selectedCategory, changeCategory] = useState(selectedCat);
   // const [selectedOrderCategory, changeOrderCategory] = useState(selectedCat);

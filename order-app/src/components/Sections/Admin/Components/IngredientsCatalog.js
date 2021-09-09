@@ -11,6 +11,8 @@ import {
 } from "@material-ui/core";
 import { useDispatch } from "react-redux";
 import { update_ingredient } from "../../../../actions/items";
+import { put_request } from "../../../../actions/lib";
+import { CHANGE_AVAILABILITY } from "../../../../actions/actions";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -39,10 +41,9 @@ export default function IngredientsCatalog(props) {
 
   const dispatch = useDispatch();
 
-  const update_ingre = (ingredient) => {
-    dispatch(
-      update_ingredient(ingredient.id, ingredient, "change_availability")
-    );
+  const update_ingre = (id) => {
+    dispatch(put_request(`ingredients/${id}/change_availability`,null,CHANGE_AVAILABILITY));
+
   };
   return (
     <Paper className={classes.root} elevation={3}>
@@ -65,7 +66,7 @@ export default function IngredientsCatalog(props) {
                     <TableCell align="right">
                       <Switch
                         checked={ingredient.available === true ? true : false}
-                        onChange={() => update_ingre(ingredient)}
+                        onChange={() => update_ingre(ingredient.ID)}
                         label="Available"
                       />
                     </TableCell>
