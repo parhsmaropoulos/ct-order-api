@@ -81,6 +81,7 @@ class PreCompleteOrderPage extends Component {
     this.onChange = this.onChange.bind(this);
     this.recieveOrder = this.recieveOrder.bind(this);
     this.sendOrder = this.sendOrder.bind(this);
+    this.sendOrderFunc = this.sendOrderFunc.bind(this);
     this.handlePaymentChange = this.handlePaymentChange.bind(this);
     this.handleTipsChange = this.handleTipsChange.bind(this);
   }
@@ -110,7 +111,7 @@ class PreCompleteOrderPage extends Component {
   handlePaymentChange = (type) => {
     switch (type) {
       case "cash":
-        document.getElementById("tip-div").style.display = "block";
+        // document.getElementById("tip-div").style.display = "block";
         this.setState({
           payWithCard: false,
           payWithCash: true,
@@ -119,7 +120,7 @@ class PreCompleteOrderPage extends Component {
         });
         break;
       case "card":
-        document.getElementById("tip-div").style.display = "none";
+        // document.getElementById("tip-div").style.display = "none";
         this.setState({
           payWithCard: true,
           payWithCash: false,
@@ -128,7 +129,7 @@ class PreCompleteOrderPage extends Component {
         });
         break;
       case "paypal":
-        document.getElementById("tip-div").style.display = "none";
+        // document.getElementById("tip-div").style.display = "none";
         this.setState({
           payWithCard: false,
           payWithCash: false,
@@ -148,16 +149,9 @@ class PreCompleteOrderPage extends Component {
       showEditModal: showedit,
       selectedAddress: address,
     });
-    // console.log(address);
-    // this.setState({
-    //   showAddressModal: showadd,
-    //   showEditModal: showedit,
-    //   selectedAddress: address,
-    // });
   };
 
   // Convert order products to our form
-
   convertToOrderProducts = (products) => {
     let orderProducts = [];
 
@@ -178,12 +172,16 @@ class PreCompleteOrderPage extends Component {
     return orderProducts;
   };
 
+  async sendOrderFunc(e) {
+    e.preventDefault()
+    window.everypay.onClick();
+  }
+
   async sendOrder(e) {
     // check input requirements
     const order = {
       products: this.convertToOrderProducts(this.props.orderReducer.products),
       user_id: this.props.userReducer.user.ID,
-      // user_id: sessionStorage.getItem("userID"),
       delivery_type: this.state.deliveryOption,
       pre_discount_price: this.props.orderReducer.totalPrice,
       after_discount_price: this.props.orderReducer.totalPrice,
@@ -191,7 +189,6 @@ class PreCompleteOrderPage extends Component {
       tips: parseFloat(this.state.tips),
       comments: this.state.comments,
       discounts: [],
-      // user_details: {
       name: this.props.userReducer.user.name,
       surname: this.props.userReducer.user.surname,
       address: this.state.selectedAddress,
@@ -204,10 +201,7 @@ class PreCompleteOrderPage extends Component {
       completed: false,
       canceled: false,
       from_id: sessionStorage.getItem("userID"),
-      // },
     };
-    console.log(order);
-    window.everypay.onClick();
     if (this.validateFields(order)) {
       let SSEdata = {
         id: null,
@@ -232,7 +226,6 @@ class PreCompleteOrderPage extends Component {
         SSEdata,
         null
       );
-      console.log(resp);
     }
   }
 
@@ -304,7 +297,6 @@ class PreCompleteOrderPage extends Component {
 
   componentDidMount() {
     this.eventSource.onmessage = (e) => this.recieveOrder(e);
-    console.log(this.props);
     if (this.props.userReducer.user !== null) {
       if (this.props.userReducer.user.addresses.length > 0) {
         this.setState({
@@ -550,6 +542,12 @@ class PreCompleteOrderPage extends Component {
             <div className="root-accordion">
               <Accordion defaultExpanded={false}>
                 <AccordionSummary>
+                <FormControlLabel
+                  aria-label="Acknowledge"
+                  onClick={() => this.handlePaymentChange("card")}
+                  onFocus={(event) => event.stopPropagation()}
+                  control={<Checkbox checked={this.state.payWithCard}/>}
+                />
                   <div className="column-accordion">
                     <Typography className="heading-accordion">
                       Credit
@@ -557,7 +555,7 @@ class PreCompleteOrderPage extends Component {
                   </div>
                 </AccordionSummary>
                 <AccordionDetails className="details-accordion">
-                  <EveryPayForm />
+                  <EveryPayForm amount={(this.state.tips + this.props.orderReducer.totalPrice)*100} func={this.sendOrder} description={`order from id ${sessionStorage.getItem("userID")}`}/>
                 </AccordionDetails>
                 <Divider />
               </Accordion>
@@ -565,14 +563,21 @@ class PreCompleteOrderPage extends Component {
             <div className="root-accordion">
               <Accordion defaultExpanded={false}>
                 <AccordionSummary>
-                  <div className="column-accordion">
+                <FormControlLabel
+                  aria-label="Acknowledge"
+                  // onClick={() => this.handlePaymentChange("paypal")}
+                  onFocus={(event) => event.stopPropagation()}
+                  onClick={(event) => event.stopPropagation()}
+                  control={<Checkbox onClick={() => this.handlePaymentChange("paypal")} checked={this.state.payWithPaypal}/>}
+                />
+                <div className="column-accordion">
                     <Typography className="heading-accordion">
                       Paypal
                     </Typography>
                   </div>
                 </AccordionSummary>
                 <AccordionDetails className="details-accordion">
-                  Pay with paypal
+                  Paypal
                 </AccordionDetails>
                 <Divider />
               </Accordion>
@@ -580,9 +585,15 @@ class PreCompleteOrderPage extends Component {
             <div className="root-accordion">
               <Accordion defaultExpanded={false}>
                 <AccordionSummary>
-                  <div className="column-accordion">
-                    <Typography className="heading-accordion">Cash</Typography>
-                  </div>
+                <FormControlLabel
+                  aria-label="Acknowledge"
+                  onClick={() => this.handlePaymentChange("cash")}
+                  onFocus={(event) => event.stopPropagation()}
+                  control={<Checkbox checked={this.state.payWithCash}/>}
+                />
+                <Typography className="heading-accordion">
+                  Cash
+                </Typography>
                 </AccordionSummary>
                 <AccordionDetails className="details-accordion">
                   Pay with cash
@@ -604,7 +615,7 @@ class PreCompleteOrderPage extends Component {
                       variant="contained"
                       color="primary"
                       type="submit"
-                      onClick={this.sendOrder}
+                      onClick={this.sendOrderFunc}
                     >
                       Αποστολή{" "}
                     </Button>
@@ -629,8 +640,6 @@ class PreCompleteOrderPage extends Component {
                         );
                       })}
                     </List>
-                    <span>payment-details</span>
-                    <br />
                   </div>
                 </AccordionDetails>
                 <Divider />
@@ -641,244 +650,6 @@ class PreCompleteOrderPage extends Component {
           {addAddressModal}
           {editAddressModal}
         </Grid>
-        // <div className="pre-order-container">
-        //   <div className="pre-order-container-body">
-        //     <div className="pre-order-col pre-order-user-details">
-        //       <div className="pre-order-col-container">
-        //         <div className="pre-order-col-title">1. User Details</div>
-        //         <div className="pre-order-col-subdiv">
-        //           <FormControl className="selectDeliveryControl">
-        //             <InputLabel id="selectDeliveryLabel">
-        //               Τρόπος παραγγελίας
-        //             </InputLabel>
-        //             <Select
-        //               labelId="selectDeliveryLabel"
-        //               id="selectDelivery"
-        //               name="deliveryOption"
-        //               onChange={this.onSelectChange}
-        //               required
-        //               defaultValue="Delivery"
-        //             >
-        //               <MenuItem value="Delivery">Delivery</MenuItem>
-        //               <MenuItem value="TakeAway">
-        //                 Παραλαβή απο το κατάστημα
-        //               </MenuItem>
-        //             </Select>
-        //           </FormControl>
-        //         </div>
-        //         <div className="pre-order-col-subdiv">
-        //           <FormControl className="selectAddressControl">
-        //             <InputLabel id="selectAddressLabel">
-        //               Select Address
-        //             </InputLabel>
-        //             <Select
-        //               labelId="selectAddressLabel"
-        //               id="selectAddress"
-        //               name="selectedAddress"
-        //               value={
-        //                 this.props.userReducer.user.addresses.length > 0
-        //                   ? "0"
-        //                   : ""
-        //               }
-        //               onChange={this.onAddressChange}
-        //               required
-        //             >
-        //               {this.props.userReducer.user.addresses.map(
-        //                 (address, index) => {
-        //                   return (
-        //                     <MenuItem value={index} key={index}>
-        //                       {address.address_name} {address.address_number},{" "}
-        //                       {address.area_name}
-        //                     </MenuItem>
-        //                   );
-        //                 }
-        //               )}
-        //               <MenuItem
-        //                 onClick={() => this.selectAddressModal(true, false, "")}
-        //               >
-        //                 Add new
-        //               </MenuItem>
-        //             </Select>
-        //           </FormControl>
-        //         </div>
-        //         <div className="pre-order-col-subdiv">
-        //           <form className="pre-order-info-form">
-        //             <div className="pre-order-info-form-row">
-        //               <TextField
-        //                 id="bellName"
-        //                 name="bellName"
-        //                 value={this.state.userDetails.bellName}
-        //                 label="Κουδούνι *"
-        //                 variant="outlined"
-        //                 placeholder="Όνομα στο κουδούνι"
-        //                 className="pre-complete-input"
-        //                 onChange={this.onChange}
-        //               />
-        //             </div>
-        //             <div className="pre-order-info-form-row">
-        //               <div className="form-custom-row-group">
-        //                 <TextField
-        //                   id="floorNumber"
-        //                   name="floorNumber"
-        //                   label="Όροφος *"
-        //                   value={this.state.userDetails.floor}
-        //                   variant="outlined"
-        //                   placeholder="Όροφος"
-        //                   className="pre-complete-input"
-        //                   onChange={this.onChange}
-        //                 />
-        //               </div>
-        //               <div className="form-custom-row-group">
-        //                 <TextField
-        //                   id="phone"
-        //                   type="tel"
-        //                   name="phone"
-        //                   inputProps={{
-        //                     pattern: "69[0-9]{8}",
-        //                   }}
-        //                   label="Τηλέφωνο επικοινωνίας"
-        //                   value={this.state.phone}
-        //                   variant="outlined"
-        //                   placeholder="Τηλέφωνο επικοινωνίας: 69xxxxxxxx"
-        //                   className="pre-complete-input"
-        //                   onChange={this.onChange}
-        //                 />
-        //               </div>
-        //             </div>
-        //             <div className="pre-order-info-form-row">
-        //               <TextField
-        //                 id="comments"
-        //                 name="comment"
-        //                 label="Σχόλια"
-        //                 variant="outlined"
-        //                 placeholder="Έξτρα σχόλια"
-        //                 rows={4}
-        //                 multiline
-        //                 className="pre-complete-input"
-        //                 onChange={this.onChange}
-        //               />
-        //             </div>
-        //           </form>
-        //         </div>
-        //       </div>
-        //     </div>
-        //     <div className="pre-order-col pre-order-payment-details">
-        //       <div className="pre-order-col-container">
-        //         <div className="pre-order-col-title">2. Payment Options</div>
-        //         <div className="pre-order-col-subdiv">
-        //           <FormControlLabel
-        //             control={
-        //               <Checkbox
-        //                 checked={this.state.payWithCard}
-        //                 onChange={() => this.handlePaymentChange("card")}
-        //                 name="Card"
-        //               />
-        //             }
-        //             label="Credit Card"
-        //           />
-        //           <EveryPayForm/>
-        //         </div>
-        //         <div className="pre-order-col-subdiv">
-        //           <FormControlLabel
-        //             control={
-        //               <Checkbox
-        //                 checked={this.state.payWithPaypal}
-        //                 onChange={() => this.handlePaymentChange("paypal")}
-        //                 name="Paypal"
-        //               />
-        //             }
-        //             label="Paypal"
-        //           />
-        //         </div>
-        //         <div className="pre-order-col-subdiv">
-        //           <FormControlLabel
-        //             control={
-        //               <Checkbox
-        //                 checked={this.state.payWithCash}
-        //                 onChange={() => this.handlePaymentChange("cash")}
-        //                 name="Cash"
-        //               />
-        //             }
-        //             label="Cash"
-        //           />
-        //         </div>
-        //         <div
-        //           className="pre-order-col-subdiv"
-        //           id="tip-div"
-        //           style={{ display: "block" }}
-        //         >
-        //           <FormControl>
-        //             <FormLabel>Select Tips</FormLabel>
-        //             <FormGroup row={true}>
-        //               {availableTipOptions.map((option, index) => {
-        //                 let active = false;
-        //                 if (this.state.tips === option) {
-        //                   active = true;
-        //                 }
-        //                 return (
-        //                   <FormControlLabel
-        //                     key={index}
-        //                     value={String(option)}
-        //                     control={
-        //                       <Checkbox
-        //                         checked={active}
-        //                         name={option.toString()}
-        //                         onChange={() => this.handleTipsChange(option)}
-        //                       />
-        //                     }
-        //                     label={option}
-        //                   />
-        //                 );
-        //               })}
-        //             </FormGroup>
-        //           </FormControl>
-        //         </div>
-        //       </div>
-        //     </div>
-        //     <div className="pre-order-col pre-order-complete-order">
-        //       <div className="pre-order-col-container">
-        //         <div className="pre-order-col-title">3. Complete Order</div>
-        //         <div className="pre-order-col-subdiv">
-        //           <span>Σύνολο: {this.props.orderReducer.totalPrice} €</span>
-        //           <br />
-        //           <Button
-        //             className="complete-order-button"
-        //             variant="contained"
-        //             color="primary"
-        //             type="submit"
-        //             onClick={this.sendOrder}
-        //           >
-        //             Αποστολή{" "}
-        //           </Button>
-        //         </div>
-        //         <div className="pre-order-col-subdiv">
-        //           <List className="pre-order-item-list">
-        //             {this.props.orderReducer.products.map((prod, index) => {
-        //               return (
-        //                 <ListItem
-        //                   key={index}
-        //                   disabled
-        //                   className="pre-order-item-list-item"
-        //                 >
-        //                   <ListItemText
-        //                     type="li"
-        //                     primary={`${prod.quantity} x ${prod.item.name}`}
-        //                     secondary={`${prod.optionAnswers.join()} , ${
-        //                       prod.comment
-        //                     }`}
-        //                   />
-        //                 </ListItem>
-        //               );
-        //             })}
-        //           </List>
-        //           <span>payment-details</span>
-        //           <br />
-        //         </div>
-        //       </div>
-        //     </div>
-        //   </div>
-
-        // </div>
       );
     }
   }

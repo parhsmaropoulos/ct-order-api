@@ -56,6 +56,7 @@ import TextPage from "./Sections/Common/TextPage";
 import AllComents from "./Sections/Admin/Comments/AllComents";
 import { Container } from "@material-ui/core";
 import AdminLogInPage from "./Sections/Admin/AdminLogInPage";
+import AdminRoute from "./Sections/Common/AdminRoute";
 
 // const alertOptions = {
 //   timeout: 3000,
@@ -119,7 +120,7 @@ class App extends Component {
             />
             <Route path="/search/:string" component={OrderMainPage} />
             {/* ADMIN ROUTES */}
-            <Route path="/admin_login" component={AdminLogInPage} />
+            <PrivateRoute path="/admin_login" component={AdminLogInPage} />
             <Route path="/admin" component={AdminMainPage} />
             {/* <Route path="/orders" component={OrdersPage} /> */}
             {/* <Route path="/users" component={UsersPage} /> */}

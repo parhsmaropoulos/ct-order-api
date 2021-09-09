@@ -41,12 +41,12 @@ export default function InnerSidebarCatalog(props) {
             <div
               key={index}
               className={
-                category.name === props.selectedCategory ? "selected" : ""
+                category.ID === props.selectedCategory ? "selected" : ""
               }
             >
               <ListItem
                 className={classes.classItem}
-                onClick={(e) => props.onCategoryChange(category.name)}
+                onClick={(e) => props.onCategoryChange(category.ID)}
               >
                 <ListItemText primary={category.name} />
               </ListItem>
@@ -58,7 +58,9 @@ export default function InnerSidebarCatalog(props) {
               key={index}
               className={index === props.selectedCategory ? "selected" : ""}
             >
-              <ListItem onClick={(e) => props.onCategoryChange(index)}>
+              <ListItem 
+              className={classes.classItem}
+              onClick={(e) => props.onCategoryChange(index)}>
                 <ListItemText primary={category} />
               </ListItem>
             </div>

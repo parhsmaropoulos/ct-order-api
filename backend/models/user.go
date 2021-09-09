@@ -61,4 +61,6 @@ type User struct {
 	Last_Order Order     `json:"last_order" gorm:"-"`
 	// Orders_ids pq.Int64Array `json:"orders_ids" gorm:"type:integer[]"`
 	Orders []Order `json:"orders"`
+
+	IsAdmin bool `json:"is_admin"`
 }

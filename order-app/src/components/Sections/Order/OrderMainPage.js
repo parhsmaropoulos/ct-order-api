@@ -724,7 +724,6 @@ class OrderMainPage extends Component {
 }
 
 const mapStateToProps = (state) => (
-  console.log(state),
   {
     orderReducer: state.orderReducer,
     products: state.productReducer.products,

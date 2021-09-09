@@ -36,8 +36,6 @@ import {
   USER_LOADING,
 } from "./actions";
 import { returnErrors } from "./messages";
-import { auth_post_request } from "./lib";
-
 // LOGIN USER
 export const login = (email, password) => (dispatch) => {
   dispatch({
@@ -177,7 +175,7 @@ export const admin_login = (email, password) => (dispatch) => {
   };
 
   axios
-    .post(current_url + "admin/login", data, headers)
+    .post(current_url + "ad in/login", data, headers)
     .then((res) => {
       // console.log(data.user);
       // Decode token

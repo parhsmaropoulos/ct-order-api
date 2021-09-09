@@ -7,97 +7,6 @@ import {
 } from "@material-ui/core";
 import React, { Component } from "react";
 
-// let order = {
-//   id: "609f9bb1186eff05507246a2",
-//   products: [
-//     {
-//       comment: "",
-//       extraPrice: 0,
-//       extra_ingredients: ["waffle"],
-//       item: {
-//         id: "60841a29f47efe9d043d69c5",
-//         name: "CHEF'S",
-//         description: "Μαρούλι, ντομάτα, ζαμπόν, τυρί, αυγό βραστό, σως κοκτέιλ",
-//         price: 5,
-//         category: "Σαλάτες",
-//         image: "",
-//         ingredients: null,
-//         choices: [],
-//         custom: false,
-//         extra_ingredients: null,
-//         available: true,
-//         visible: false,
-//       },
-//       optionAnswers: [],
-//       options: [],
-//       quantity: 1,
-//       totalPrice: 5,
-//     },
-//     {
-//       comment: "",
-//       extraPrice: 0,
-//       extra_ingredients: ["wafflef"],
-//       item: {
-//         id: "60841a29f47efe9d043d69c5",
-//         name: "CHEF",
-//         description: "Μαρούλι, ντομάτα, ζαμπόν, τυρί, αυγό βραστό, σως κοκτέιλ",
-//         price: 5,
-//         category: "Σαλάτες",
-//         image: "",
-//         ingredients: null,
-//         choices: [],
-//         custom: false,
-//         extra_ingredients: null,
-//         available: true,
-//         visible: false,
-//       },
-//       optionAnswers: [],
-//       options: [],
-//       quantity: 1,
-//       totalPrice: 5,
-//     },
-//   ],
-//   accepted: true,
-//   user_id: "6060b7a74e3408671bf3cc7f",
-//   delivery_type: "Delivery",
-//   pre_discount_price: 5,
-//   after_discount_price: 0,
-//   payment_type: "Cash",
-//   discounts: [],
-//   discounts_ids: [],
-//   tips: 0.5,
-//   comments: "",
-//   user_details: {
-//     Name: "pa",
-//     Surname: "ma",
-//     Address: {
-//       id: "60621a3cc569e29bc11f8fa3",
-//       city_name: "",
-//       area_name: "Glifada",
-//       address_name: "Georgiou Gennimata",
-//       address_number: "20",
-//       zipcode: "165 62",
-//       latitude: 37.8941277,
-//       longitude: 23.7627664,
-//     },
-//     Phone: "2102342341",
-//     Bell_name: "4",
-//     Floor: "5",
-//   },
-//   delivery_time: 25,
-//   rating: {
-//     rate: 0,
-//     user_id: "000000000000000000000000",
-//   },
-//   comment: {
-//     comment_text: "",
-//     comment_answer: "",
-//     approved: false,
-//   },
-//   completed: true,
-//   canceled: false,
-//   create_at: "2021-05-15T10:00:17.001Z",
-// };
 class PrintComponent extends Component {
   render() {
     let order;
@@ -106,6 +15,7 @@ class PrintComponent extends Component {
     } else {
       return null;
     }
+    console.log(order)
     return (
       <Paper className="main">
         <React.Fragment>
@@ -127,15 +37,15 @@ class PrintComponent extends Component {
               </ListItem>
             ) : null}
             {order.products.map((product, index) => {
-              // console.log(product);
+              console.log(product);
               return (
                 <Paper key={index} elevation={0}>
                   <ListItem>
                     <ListItemText
-                      primary={product.quantity + " X " + product.name}
+                      primary={product.quantity + " X " + product.item_name}
                     />
                     <ListItemText
-                      primary={product.totalPrice / product.quantity + "€"}
+                      primary={product.total_price / product.quantity + "€"}
                     />
                   </ListItem>
                   <List>
@@ -147,13 +57,7 @@ class PrintComponent extends Component {
                             </ListItem>
                           );
                         })
-                      : // product.options.map((option, op_index) => {
-                        //     return (
-                        //       <ListItem key={op_index}>
-                        //         <ListItemText primary={"+ " + option.Choice} />
-                        //       </ListItem>
-                        //     );
-                        //   })
+                      : 
                         null}
                     {!!product.extra_ingredients
                       ? product.extra_ingredients.map(

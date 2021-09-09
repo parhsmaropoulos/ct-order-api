@@ -40,7 +40,6 @@ export const get_request = (url, dispatch_type) => async (dispatch) => {
     let auth_config = config;
     try {
       const res = await axios.get(current_url + url, auth_config);
-      console.log(res);
       dispatch({
         type: dispatch_type,
         data: res.data.data,

@@ -9,8 +9,9 @@ import {
   TableHead,
   TableRow,
 } from "@material-ui/core";
-import { update_item } from "../../../../actions/items";
+import { auth_put_request } from "../../../../actions/lib";
 import { useDispatch } from "react-redux";
+import { CHANGE_AVAILABILITY } from "../../../../actions/actions";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -37,8 +38,8 @@ export default function ProductCatalog(props) {
 
   const dispatch = useDispatch();
 
-  const update_prod = (product) => {
-    dispatch(update_item(product.id, product, "change_availability"));
+  const update_prod = (id) => {
+    dispatch(auth_put_request(`products/${id}/change_availability`,null,CHANGE_AVAILABILITY));
   };
 
   return (
@@ -53,7 +54,7 @@ export default function ProductCatalog(props) {
         </TableHead>
         <TableBody>
           {props.products.map((product, index) => {
-            if (props.selectedCategory === product.category) {
+            if (props.selectedCategory === product.category_id) {
               return (
                 <TableRow key={index}>
                   <TableCell align="left">{product.name}</TableCell>

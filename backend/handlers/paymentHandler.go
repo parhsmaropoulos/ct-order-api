@@ -36,14 +36,11 @@ func NewPaymentHandler(c *gin.Context) {
 
 	//Get env api key
 	var auth = lib.GoDotEnvVariable("EVERYPAY_PRIVATE_KEY")
-
-	log.Println(input)
 	//Create the post form
 	form := url.Values{}
 	form.Add("token", input.Token)
 	form.Add("amount", input.Amount)
 	form.Add("description", input.Description)
-
 	req, _ := http.NewRequest("POST", "https://sandbox-api.everypay.gr/payments", strings.NewReader(form.Encode()))
 	//Set headers and basic auth for everypay api
 	req.SetBasicAuth(auth, "")
@@ -74,7 +71,7 @@ func NewPaymentHandler(c *gin.Context) {
 	}
 
 	err = json.Unmarshal([]byte(body), &everypay_res)
-	log.Println(everypay_res)
+
 	if reflect.ValueOf(everypay_res.Error).IsZero() == false {
 		ContexJsonResponse(c, everypay_res.Error.Message, int(everypay_res.Error.Status), nil, nil)
 		return

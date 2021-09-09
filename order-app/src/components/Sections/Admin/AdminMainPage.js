@@ -19,7 +19,6 @@ import {
   get_request,
   post_request,
 } from "../../../actions/lib";
-import { get_order } from "../../../actions/orders";
 
 class AdminMainPage extends Component {
   constructor(props) {
@@ -42,13 +41,11 @@ class AdminMainPage extends Component {
     adminReducer: PropTypes.object.isRequired,
     productReducer: PropTypes.object.isRequired,
     auth_get_request: PropTypes.func.isRequired,
-    get_order: PropTypes.func.isRequired,
     post_request: PropTypes.func.isRequired,
     get_request: PropTypes.func.isRequired,
   };
 
   changeTab = (tab) => {
-    // console.log(tab);
     this.setState({ selected_tab: tab });
   };
 
@@ -106,24 +103,24 @@ class AdminMainPage extends Component {
 
   componentDidMount() {
     this.eventSource.onmessage = (e) => this.recieveOrder(e);
-    // this.get_items();
-    // this.get_ingredients();
-    // this.get_choices();
-    // this.get_categories();
-    this.get_today();
+    this.get_categories();
+    this.get_choices();
+    this.get_ingredients();
+    this.get_items();
+    // this.get_today();
   }
 
   async get_items() {
-    await this.props.auth_get_request("products/all", GET_ITEMS);
+    await this.props.get_request("products/all", GET_ITEMS);
   }
   async get_categories() {
-    await this.props.auth_get_request("product_category/all", GET_CATEGORIES);
+    await this.props.get_request("product_category/all", GET_CATEGORIES);
   }
   async get_choices() {
-    await this.props.auth_get_request("product_choices/all", GET_CHOICES);
+    await this.props.get_request("product_choices/all", GET_CHOICES);
   }
   async get_ingredients() {
-    await this.props.auth_get_request("ingredients/all", GET_INGREDIENTS);
+    await this.props.get_request("ingredients/all", GET_INGREDIENTS);
   }
   async get_today() {
     await this.props.get_request("admin/today", TODAY_ORDERS);
@@ -169,7 +166,6 @@ const mapStateToProps = (state) => ({
 
 export default connect(mapStateToProps, {
   auth_get_request,
-  get_order,
   get_request,
   post_request,
 })(AdminMainPage);

@@ -3,40 +3,44 @@ import React, { useEffect, useState } from "react";
 import { authHeaders } from "../../../utils/axiosHeaders";
 import { current_url } from "../../../utils/util";
 
-function EveryPayForm() {
+function EveryPayForm({amount,description, func}) {
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     window.everypay.payform(
       {
         pk: "pk_cgHDp12Elp34Z3njlWAMKR5jlperbdGb", //can be found in your dashboard
-        amount: 1000,
         locale: "el",
         theme: "material",
+        amount:amount,
         display: {
           button: false,
         },
       },
       handleResponse
     );
-  }, []);
+  });
 
   const handleResponse = async (r) => {
     if (r.response === "success") {
-      console.log(r);
+      // console.log(r);
       let body = {
         token: r.token,
-        amount: "1000",
-        description: "order id xxxxxx",
+        amount: String(amount),
+        description: description,
       };
       const res = await axios.post(
         current_url + "payments/new_payment",
         body,
         authHeaders
       );
+      if(res.status === 200){
+        func();
+      }
+      return res;
     }
-    // if (r.onLoad) {
-    //     setLoading(false);
-    // }
+    if (r.onLoad) {
+        setLoading(false);
+    }
   };
 
   return (
