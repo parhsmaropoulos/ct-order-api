@@ -151,8 +151,7 @@ export const register_async = (email, password, type) => async (dispatch) => {
 
 export const logout_async = () => async (dispatch) => {
   try {
-    const credentials = await app.auth().signOut();
-    console.log(credentials);
+    await app.auth().signOut();
 
     sessionStorage.setItem("isAuthenticated", false);
     dispatch({

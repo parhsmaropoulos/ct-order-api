@@ -90,7 +90,7 @@ const userReducer = (state = defaultState, action) => {
         user: action.user,
       };
     case LOGOUT_SUCCESS:
-      sessionStorage.removeItem("isAuthenticated");
+      // console.log("logout");
       sessionStorage.removeItem("userID");
       return {
         ...state,

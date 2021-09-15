@@ -75,7 +75,7 @@ class HomePage extends Component {
             this.props.productReducer.categories.map((c, indx) => {
               return (
                 <GridListTile
-                  key={c.image}
+                  key={c.ID}
                   cols={1}
                   // style={{ border: "1px solid black" }}
                 >

@@ -77,13 +77,14 @@ class App extends Component {
     // this.sendMessage = this.sendMessage.bind(this);
   }
 
-  showModal = (e) => {
+  showModal = (bool) => {
     this.setState({
-      showModal: !this.state.showModal,
+      showModal: bool,
     });
   };
 
   componentDidMount() {}
+
   onChange = (e) => {
     this.setState({ [e.target.name]: e.target.value });
   };
@@ -95,8 +96,11 @@ class App extends Component {
         <InfoSnackbar />
         <ErrorSnackbar />
         {/* <Router history={customHistory}> */}
-        <Header onClose={this.showModal} />
-        <LogRegModal onClose={this.showModal} show={this.state.showModal} />
+        <Header onClose={(bool) => this.showModal(bool)} />
+        <LogRegModal
+          onClose={(bool) => this.showModal(bool)}
+          show={this.state.showModal}
+        />
         {/* <AlertsOverlay /> */}
         <Container id="Panel">
           <Switch>

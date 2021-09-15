@@ -152,7 +152,7 @@ class OrderMainPage extends Component {
   };
 
   removeFromCart = (index, order_item) => {
-    console.log(order_item);
+    // console.log(order_item);
     this.setState({
       cart: [...this.state.cart.filter((item, idex) => idex !== index)],
       totalPrice: this.state.totalPrice - order_item.totalPrice,
@@ -208,7 +208,7 @@ class OrderMainPage extends Component {
       cartTotalPrice -= price_per_unit;
     }
     cur_cart[index] = cur_item;
-    console.log(cur_item);
+    // console.log(cur_item);
     if (cur_item.quantity === 0) {
       cur_item.quantity += 1;
       cur_item.totalPrice += price_per_unit;
@@ -723,15 +723,13 @@ class OrderMainPage extends Component {
   }
 }
 
-const mapStateToProps = (state) => (
-  {
-    orderReducer: state.orderReducer,
-    products: state.productReducer.products,
-    categories: state.productReducer.categories,
-    userReducer: state.userReducer,
-    isReady: state.productReducer.isReady,
-  }
-);
+const mapStateToProps = (state) => ({
+  orderReducer: state.orderReducer,
+  products: state.productReducer.products,
+  categories: state.productReducer.categories,
+  userReducer: state.userReducer,
+  isReady: state.productReducer.isReady,
+});
 
 export default connect(mapStateToProps, {
   update_cart,

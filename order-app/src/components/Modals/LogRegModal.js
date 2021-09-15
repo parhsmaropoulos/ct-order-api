@@ -83,8 +83,8 @@ class LogRegModal extends Component {
     this.setState({ selectedTab: key });
   };
 
-  onClose = (e) => {
-    this.props.onClose && this.props.onClose(e);
+  onClose = (bool) => {
+    this.props.onClose && this.props.onClose(bool);
   };
 
   onChange = (e) => {
@@ -113,15 +113,17 @@ class LogRegModal extends Component {
         </div>
       );
     }
-    if (sessionStorage.getItem("isAuthenticated")) {
-      return <Redirect to="/" />;
+    if (this.props.show) {
+      if (sessionStorage.getItem("isAuthenticated") === "true") {
+        this.onClose(false);
+      }
     }
     return (
       <Modal
         open={this.props.show}
         autoFocus={true}
         onClose={(e) => {
-          this.onClose(e);
+          this.onClose(false);
         }}
         // id="logregModal"
         className="log-reg-modal"
@@ -140,7 +142,7 @@ class LogRegModal extends Component {
               <Button
                 variant="secondary"
                 onClick={(e) => {
-                  this.onClose(e);
+                  this.onClose(false);
                 }}
               >
                 X

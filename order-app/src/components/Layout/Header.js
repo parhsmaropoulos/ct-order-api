@@ -20,6 +20,7 @@ import {
   MenuList,
   Paper,
   Popper,
+  Typography,
 } from "@material-ui/core";
 
 class Header extends Component {
@@ -38,24 +39,23 @@ class Header extends Component {
   }
 
   static propTypes = {
-    // isAuthenticated: PropTypes.string.isRequired,
     logout: PropTypes.func.isRequired,
     products: PropTypes.array.isRequired,
     logout_async: PropTypes.func.isRequired,
   };
 
-  onClose = (e) => {
-    // console.log("e");
-    this.props.onClose && this.props.onClose(e);
+  onClose = (bool) => {
+    this.props.onClose && this.props.onClose(bool);
   };
 
   onChangeLang(lang) {
     this.setState({ selectedLangeuage: lang });
   }
 
-  async logOut() {
+  logOut = async (bool) => {
     await this.props.logout_async();
-  }
+    this.props.onClose && this.props.onClose(bool);
+  };
 
   handleToggle = () => {
     this.setState({ open: !this.state.open });
@@ -70,8 +70,7 @@ class Header extends Component {
 
   render() {
     let authenticated =
-      this.props.userReducer.isAuthenticated ||
-      sessionStorage.getItem("isAuthenticated");
+      sessionStorage.getItem("isAuthenticated") === "true" ? true : false;
     if (window.location.href.endsWith("admin_login")) {
       return null;
     }
@@ -102,7 +101,7 @@ class Header extends Component {
                     EN
                   </NavDropdown.Item>
                 </NavDropdown> */}
-                {authenticated ? (
+                {authenticated === true ? (
                   <Grid item xs={3}>
                     <Button
                       color="primary"
@@ -154,13 +153,12 @@ class Header extends Component {
                                 <MenuItem onClick={this.handleClose}>
                                   <Link to="/account/ratings">My ratings</Link>
                                 </MenuItem>
-                                <MenuItem onClick={this.handleClose}>
-                                  <Link
-                                    to="/home"
-                                    onClick={() => this.logOut()}
-                                  >
-                                    Logout
-                                  </Link>
+                                <MenuItem
+                                  onClick={() => {
+                                    this.logOut(false);
+                                  }}
+                                >
+                                  <Typography to="/home">Logout</Typography>
                                 </MenuItem>
                               </MenuList>
                             </ClickAwayListener>
@@ -172,7 +170,7 @@ class Header extends Component {
                 ) : (
                   <Nav.Link
                     onClick={(e) => {
-                      this.onClose(e);
+                      this.onClose(true);
                     }}
                   >
                     Login/Register

@@ -60,8 +60,10 @@
 }
 
 .inner-paper {
-  height: 60%;
-  width: 40%;
+  height: auto;
+  max-height: 70%;
+  overflow-y: scroll;
+  width: 45%;
   text-align: center;
   margin-left: auto;
   margin-right: auto;
