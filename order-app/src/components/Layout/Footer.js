@@ -86,8 +86,7 @@ class Footer extends Component {
         {/* 
             ########################## Logo Column ################################
           */}
-        <Grid item lg={1} md={false} sm={false}></Grid>
-        <Grid item lg={2} md={3} sm={12}>
+        <Grid item lg={3} md={3} sm={12} style={{textAlign:"center", verticalAlign:"middle"}}>
           <Image src={logo} className="headerLogo" />
           <br />
           <SocialIcon
@@ -131,8 +130,8 @@ class Footer extends Component {
         {/* 
             ########################## First Menu Column ################################
           */}
-        <Grid item lg={3} md={3} sm={12}>
-          <ul>
+        <Grid item lg={3} md={3} sm={12} style={{textAlign:"center"}}>
+          <ul style={{listStyleType:"none"}}>
             <Link to="/document/oroi_xrisis">
               <li>Όροι χρήσης</li>
             </Link>
@@ -150,8 +149,8 @@ class Footer extends Component {
         {/* 
             ########################## Second Menu Column ################################
           */}
-        <Grid item lg={3} md={3} sm={12}>
-          <ul>
+        <Grid item lg={3} md={3} sm={12} style={{textAlign:"center"}}>
+          <ul style={{listStyleType:"none"}}>
             <Link to="/document/protection">
               <li>Πολιτική Προστασίας</li>
             </Link>
