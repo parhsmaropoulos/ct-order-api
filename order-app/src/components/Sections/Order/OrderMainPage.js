@@ -347,13 +347,14 @@ class OrderMainPage extends Component {
       return (
         // <div id="orderMainPageContainer">
         <Container>
+          {modal}
           <ThemeProvider theme={customTheme}>
-            <Grid spacing={1} container style={{ minHeight: "70vh" }}>
+            <Grid spacing={2} container style={{ minHeight: "70vh" }}>
               {alertModal}
               {/* <Row className="orderMainPageRow"> */}
               {/* ############## CATEGORIES ################## */}
               <Hidden smUp>
-                <Grid item sm={2} xs={2} spacing={2}>
+                <Grid item sm={2} xs={2}>
                   <Button
                     style={{
                       justifyContent: "left",
@@ -398,7 +399,7 @@ class OrderMainPage extends Component {
                           selected = true;
                         }
                         return (
-                          <Link to={`/order/${categ.name}`}>
+                          <Link key={index} to={`/order/${categ.name}`}>
                             <ListGroup.Item
                               key={index}
                               onClick={() =>
@@ -440,7 +441,7 @@ class OrderMainPage extends Component {
                   renderInput={(params) => (
                     <TextField
                       {...params}
-                      label="Search product"
+                      label="Αναζήτηση Προϊόντος"
                       variant="outlined"
                       InputProps={{ ...params.InputProps }}
                     />
@@ -536,7 +537,6 @@ class OrderMainPage extends Component {
                   })}
                 </ListGroup>
               </Grid>
-              {modal}
               {/* ################### CART ############### */}
               <Grid
                 item
