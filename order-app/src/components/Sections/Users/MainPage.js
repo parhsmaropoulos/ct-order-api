@@ -30,13 +30,12 @@ class MainPage extends Component {
     userReducer: PropTypes.object.isRequired,
     auth_get_request: PropTypes.func.isRequired,
     auth_put_request: PropTypes.func.isRequired,
-
   };
 
   componentDidMount() {
     if (this.props.userReducer.hasLoaded === false) {
-       this.get_user(); 
-    }else{
+      this.get_user();
+    } else {
       this.setState({
         name: this.props.userReducer.user.name,
         surname: this.props.userReducer.user.surname,
@@ -46,8 +45,11 @@ class MainPage extends Component {
       });
     }
   }
-  async get_user(){
-    let user = await this.props.auth_get_request(`user/${sessionStorage.getItem("userID")}`,GET_USER)
+  async get_user() {
+    let user = await this.props.auth_get_request(
+      `user/${sessionStorage.getItem("userID")}`,
+      GET_USER
+    );
     this.setState({
       name: this.props.userReducer.user.name,
       surname: this.props.userReducer.user.surname,
@@ -66,19 +68,22 @@ class MainPage extends Component {
     const data = {
       password: this.state.newPassword,
     };
-    this.props.auth_put_request("user/0/update_password",data,UPDATE_USER)
+    this.props.auth_put_request("user/0/update_password", data, UPDATE_USER);
     // this.props.updateUser(data);
   }
 
   onUpdateSubmit(e) {
     e.preventDefault();
     const data = {
-        name: this.state.name,
-        surname: this.state.surname,
-        phone: this.state.phone,
+      name: this.state.name,
+      surname: this.state.surname,
+      phone: this.state.phone,
     };
-    this.props.auth_put_request("user/0/update_personal_info",data,UPDATE_USER)
-
+    this.props.auth_put_request(
+      "user/0/update_personal_info",
+      data,
+      UPDATE_USER
+    );
   }
 
   onSubmit(e) {
@@ -109,35 +114,35 @@ class MainPage extends Component {
               </Link>
             </Grid>
 
-            <Grid item lg={2} md={2} sm={6} xs={12}>
+            {/* <Grid item lg={2} md={2} sm={6} xs={12}>
               <Link className="nav-text" to="/account/ratings">
                 Βαθμολογίες
               </Link>
-            </Grid>
+            </Grid> */}
           </Grid>
           <Row className="userProfileRow bodyRow">
             <div className="roundedContainer userProfileContainer">
-              <h4> Change your values</h4>
+              <h4> Επεξεργασία Στοιχείων</h4>
               <Form onSubmit={this.onUpdateSubmit}>
                 <Form.Row>
                   <Form.Group as={Col} controlId="formGridName">
-                    <Form.Label>Name</Form.Label>
+                    <Form.Label>Όνομα</Form.Label>
                     <Form.Control
                       onChange={this.onChange}
                       type="text"
                       name="name"
                       value={this.state.name}
-                      placeholder="Enter Name"
+                      placeholder="Εισάγετε το όνομά σας"
                     />
                   </Form.Group>
                   <Form.Group as={Col} controlId="formGridLastName">
-                    <Form.Label>Last Name</Form.Label>
+                    <Form.Label>Επίθετο</Form.Label>
                     <Form.Control
                       onChange={this.onChange}
                       type="text"
                       name="surname"
                       value={this.state.surname}
-                      placeholder="Enter Last Name"
+                      placeholder="Εισάγετε το επίθετό σας"
                     />
                   </Form.Group>
                 </Form.Row>
@@ -149,15 +154,15 @@ class MainPage extends Component {
                       type="email"
                       name="email"
                       value={this.state.email}
-                      placeholder="Enter email"
+                      placeholder="Εισάγετε το email σας"
                       readOnly
                     />
                   </Form.Group>
                   <Form.Group as={Col} controlId="formGridPhone">
-                    <Form.Label>Phone</Form.Label>
+                    <Form.Label>Τηλέφωνο Επικοινωνίας</Form.Label>
                     <Form.Control
                       type="tel"
-                      placeholder="Enter phone: 69xxxxxxxx"
+                      placeholder="Εισάγετε τον αριθμό σας: 69xxxxxxxx"
                       name="phone"
                       pattern="69[0-9]{8}"
                       value={this.state.phone}
@@ -167,38 +172,38 @@ class MainPage extends Component {
                 </Form.Row>
 
                 <Button variant="primary" type="submit">
-                  Update
+                  Ενημέρωση
                 </Button>
               </Form>
-              <h4> Change your password</h4>
-              <Form onSubmit={this.onChangePasswordSubmit}>
+              {/* <h4> Αλλαγή Κωδικού</h4> */}
+              {/* <Form onSubmit={this.onChangePasswordSubmit}>
                 <Form.Row>
                   <Form.Group as={Col} controlId="formPassword">
-                    <Form.Label>New Password</Form.Label>
+                    <Form.Label>Νέος κωδικός</Form.Label>
                     <Form.Control
                       onChange={this.onChange}
                       type="text"
                       name="newPassword"
                       // value={this.state.newPassword}
-                      placeholder="Enter Password"
+                      placeholder="Εισάγετε τον νέο κωδικό σας"
                     />
                   </Form.Group>
                   <Form.Group as={Col} controlId="formPassword2">
-                    <Form.Label>Repeat Password</Form.Label>
+                    <Form.Label>Επανάληψη Κωδικού</Form.Label>
                     <Form.Control
                       onChange={this.onChange}
                       type="text"
                       name="newPassword2"
                       // value={this.state.newPassword2}
-                      placeholder="Repeat Password"
+                      placeholder="Επαναλάβετε τον κωδικό σας"
                     />
                   </Form.Group>
                 </Form.Row>
 
                 <Button variant="primary" type="submit">
-                  Update
+                  Ενημέρωση
                 </Button>
-              </Form>
+              </Form> */}
             </div>
           </Row>
         </Container>
@@ -214,4 +219,6 @@ const mapStateToProps = (state) => (
   }
 );
 
-export default connect(mapStateToProps, { auth_get_request, auth_put_request })(MainPage);
+export default connect(mapStateToProps, { auth_get_request, auth_put_request })(
+  MainPage
+);
