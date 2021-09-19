@@ -15,7 +15,11 @@ import {
 import AddressModal from "../../Modals/AddressModal";
 import { MdRemoveCircle } from "react-icons/md";
 import { CircularProgress, Grid, Container } from "@material-ui/core";
-import { GET_USER, GET_USER_ADDRESSES } from "../../../actions/actions";
+import {
+  GET_USER,
+  GET_USER_ADDRESSES,
+  UPDATE_USER,
+} from "../../../actions/actions";
 
 // const columns = [
 //   {
@@ -86,7 +90,8 @@ class UserAdress extends Component {
     this.props.auth_delete_request(
       `user/${sessionStorage.getItem("userID")}/delete_address/${
         this.state.selectedAddress.ID
-      }`
+      }`,
+      UPDATE_USER
     );
     this.showRemoveAddressDialog(false, null);
   };
@@ -208,11 +213,11 @@ class UserAdress extends Component {
               </Link>
             </Grid>
 
-            <Grid item lg={2} md={2} sm={6} xs={12}>
+            {/* <Grid item lg={2} md={2} sm={6} xs={12}>
               <Link className="nav-text" to="/account/ratings">
                 Βαθμολογίες
               </Link>
-            </Grid>
+            </Grid> */}
           </Grid>
           <Grid container style={{ marginTop: 10 }}>
             <Grid container className="roundedContainer">
@@ -230,7 +235,7 @@ class UserAdress extends Component {
                         <th>Αριθμός</th>
                         <th>Περιοχή</th>
                         <th>Τ.Κ.</th>
-                        <th>Actions</th>
+                        <th>Επιλογές</th>
                       </tr>
                     </thead>
                     <tbody>
