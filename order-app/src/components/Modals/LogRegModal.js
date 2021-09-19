@@ -8,6 +8,7 @@ import {
   register,
   register_async,
   login_async,
+  glogin_async,
 } from "../../actions/user";
 import { returnErrors } from "../../actions/messages";
 import PropTypes from "prop-types";
@@ -37,6 +38,7 @@ class LogRegModal extends Component {
     this.onSubmitRegister = this.onSubmitRegister.bind(this);
     this.onClose = this.onClose.bind(this);
     this.onChangeTab = this.onChangeTab.bind(this);
+    this.googleLogin = this.googleLogin.bind(this);
   }
 
   static propTypes = {
@@ -46,6 +48,7 @@ class LogRegModal extends Component {
     showErrorSnackbar: PropTypes.func.isRequired,
     register_async: PropTypes.func.isRequired,
     login_async: PropTypes.func.isRequired,
+    glogin_async: PropTypes.func.isRequired,
   };
 
   componentDidMount() {
@@ -53,6 +56,11 @@ class LogRegModal extends Component {
       email: "",
       password: "",
     });
+  }
+
+  async googleLogin(e) {
+    e.preventDefault();
+    await this.props.glogin_async();
   }
 
   async onSubmit(e) {
@@ -157,20 +165,22 @@ class LogRegModal extends Component {
                 onSelect={(k) => this.onChangeTab(k)}
                 className="modalBodyTabs"
               >
-                <Tab eventKey="login" title="Login">
-                  <div className="loginButtons">
+                <Tab eventKey="login" title="Σύνδεση">
+                  {/* <div className="loginButtons">
                     <Button variant="outline-secondary">
                       Log in with facebook <Facebook />
                     </Button>
                     <br />
-                    <Button variant="outline-secondary">
-                      {/* Log in with gmail <Gmail className="gmailLogo" /> */}
+                    <Button
+                      variant="outline-secondary"
+                      onClick={this.googleLogin}
+                    >
                       Log in with gmail <Google />
                     </Button>
                   </div>
                   <div>
                     <p>Κείμενο για είσοδο/ εγγραφή ή λινκ</p>
-                  </div>
+                  </div> */}
                   <hr />
                   <form onSubmit={this.onSubmit}>
                     <TextField
@@ -202,20 +212,19 @@ class LogRegModal extends Component {
                     </div>
                   </form>
                 </Tab>
-                <Tab eventKey="register" title="Register">
-                  <div className="loginButtons">
+                <Tab eventKey="register" title="Εγγραφή">
+                  {/* <div className="loginButtons">
                     <Button variant="outline-secondary">
                       Register with facebook <Facebook />
                     </Button>
                     <br />
                     <Button variant="outline-secondary">
-                      {/* Log in with gmail <Gmail className="gmailLogo" /> */}
                       Register with gmail <Google />
                     </Button>
                   </div>
                   <div>
                     <p>Κείμενο για είσοδο/ εγγραφή ή λινκ</p>
-                  </div>
+                  </div> */}
                   <hr />
                   <form onSubmit={this.onSubmitRegister}>
                     <TextField
@@ -288,5 +297,6 @@ export default withRouter(
     showErrorSnackbar,
     register_async,
     login_async,
+    glogin_async,
   })(LogRegModal)
 );
