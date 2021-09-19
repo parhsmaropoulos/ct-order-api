@@ -286,11 +286,6 @@
   flex: 1.5;
 }
 
-.pre-order-payment-details {
-  /* height: auto; */
-  /* background-color: chartreuse; */
-}
-
 .search-bar-custom {
   /* z-index: 1000; */
   position: -webkit-sticky;
@@ -396,8 +391,6 @@
   align-items: "center";
 }
 
-.column-accordion {
-}
 .helper-accordion {
   border-left: 2px solid black;
   padding: 1 2;

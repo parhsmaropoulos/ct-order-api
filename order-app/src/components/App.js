@@ -25,7 +25,7 @@ import AllUsersPage from "./NotUsing/users/AllUsersPage";
 import OrderMainPage from "./Sections/Order/OrderMainPage";
 import MainPage from "./Sections/Users/MainPage";
 import SingleItemPage from "./Sections/View/Products/SingleItemPage";
-import PreCompleteOrderPage from "./Sections/Order/PreCompleteOrderPage";
+import Checkout from "./Sections/Order/Checkout";
 
 // Layout
 import Header from "./Layout/Header";
@@ -118,10 +118,7 @@ class App extends Component {
               component={OrderMainPage}
             />
             <PrivateRoute exact path="/order" component={OrderMainPage} />
-            <PrivateRoute
-              path="/pre_complete/:id"
-              component={PreCompleteOrderPage}
-            />
+            <PrivateRoute path="/pre_complete/:id" component={Checkout} />
             <Route path="/search/:string" component={OrderMainPage} />
             {/* ADMIN ROUTES */}
             <PrivateRoute path="/admin_login" component={AdminLogInPage} />

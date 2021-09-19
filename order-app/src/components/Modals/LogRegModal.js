@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { Button, Tab, Tabs } from "react-bootstrap";
-import { Facebook, Google } from "react-bootstrap-icons";
 import { connect } from "react-redux";
 import "../../css/common/logregmodal.css";
 import {
@@ -20,7 +19,7 @@ import {
   TextField,
 } from "@material-ui/core";
 import { showErrorSnackbar } from "../../actions/snackbar";
-import { Redirect, withRouter } from "react-router-dom";
+import { withRouter } from "react-router-dom";
 
 class LogRegModal extends Component {
   constructor(props) {

@@ -46,7 +46,7 @@ class MainPage extends Component {
     }
   }
   async get_user() {
-    let user = await this.props.auth_get_request(
+    await this.props.auth_get_request(
       `user/${sessionStorage.getItem("userID")}`,
       GET_USER
     );
@@ -212,12 +212,9 @@ class MainPage extends Component {
   }
 }
 
-const mapStateToProps = (state) => (
-  console.log(state),
-  {
-    userReducer: state.userReducer,
-  }
-);
+const mapStateToProps = (state) => ({
+  userReducer: state.userReducer,
+});
 
 export default connect(mapStateToProps, { auth_get_request, auth_put_request })(
   MainPage

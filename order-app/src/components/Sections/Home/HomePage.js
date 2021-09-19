@@ -1,17 +1,11 @@
 import React, { Component } from "react";
-import { Button, Container } from "react-bootstrap";
+import { Container } from "react-bootstrap";
 import { connect } from "react-redux";
 import { get_request } from "../../../actions/lib";
 import PropTypes from "prop-types";
 import { v4 as uuidv4 } from "uuid";
-import InfoIcon from "@material-ui/icons/Info";
 import { Link } from "react-router-dom";
-import {
-  GridList,
-  GridListTile,
-  GridListTileBar,
-  IconButton,
-} from "@material-ui/core";
+import { GridList, GridListTile, GridListTileBar } from "@material-ui/core";
 import { GET_CATEGORIES } from "../../../actions/actions";
 
 class HomePage extends Component {

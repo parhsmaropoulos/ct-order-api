@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import "../../../css/Pages/orderpage.css";
-import { Redirect } from "react-router";
 import { Link } from "react-router-dom";
 import {
   send_order,
@@ -22,13 +21,11 @@ import {
   CircularProgress,
   FormControlLabel,
   Checkbox,
-  FormGroup,
   Button,
   Accordion,
   AccordionSummary,
   Typography,
   AccordionDetails,
-  Chip,
   Divider,
   AccordionActions,
   Grid,
@@ -38,15 +35,13 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import EditAddressModal from "../../Modals/EditAddressModal";
 import { showErrorSnackbar } from "../../../actions/snackbar";
-import { FormLabel } from "react-bootstrap";
 import { auth_get_request, auth_post_request } from "../../../actions/lib";
 import { GET_USER, SEND_ORDER } from "../../../actions/actions";
 import EveryPayForm from "./EveryPayForm";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 
 const availableTipOptions = [0.5, 1.0, 1.5, 2.0, 5.0, 10.0];
 
-class PreCompleteOrderPage extends Component {
+class Checkout extends Component {
   constructor(props) {
     super(props);
     this.eventSource = new EventSource(
@@ -233,7 +228,7 @@ class PreCompleteOrderPage extends Component {
       SSEdata.from = String(sessionStorage.getItem("userID"));
       SSEdata.user_details = {};
 
-      const resp = await this.props.auth_post_request(
+      await this.props.auth_post_request(
         `sse/sendorder/${SSEdata.from}`,
         SSEdata,
         null
@@ -700,4 +695,4 @@ export default connect(mapStateToProps, {
   auth_get_request,
   auth_post_request,
   order_declined,
-})(PreCompleteOrderPage);
+})(Checkout);
