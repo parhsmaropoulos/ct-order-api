@@ -8,6 +8,7 @@ import {
   send_order,
   empty_cart,
   order_accepted,
+  order_declined,
   clearReducer,
 } from "../../../actions/orders";
 import { getUser } from "../../../actions/user";
@@ -92,6 +93,7 @@ class PreCompleteOrderPage extends Component {
     empty_cart: PropTypes.func.isRequired,
     getUser: PropTypes.func.isRequired,
     order_accepted: PropTypes.func.isRequired,
+    order_declined: PropTypes.func.isRequired,
     userReducer: PropTypes.object.isRequired,
     orderReducer: PropTypes.object.isRequired,
     clearReducer: PropTypes.func.isRequired,
@@ -104,8 +106,11 @@ class PreCompleteOrderPage extends Component {
 
   recieveOrder(response) {
     let data = JSON.parse(response.data);
-    console.log(data);
-    this.props.order_accepted(data.time);
+    if (data.accepted === true) {
+      this.props.order_accepted(data.time);
+    } else {
+      this.props.order_declined();
+    }
   }
 
   handlePaymentChange = (type) => {
@@ -143,7 +148,7 @@ class PreCompleteOrderPage extends Component {
   };
 
   selectAddressModal = (showadd, showedit, address) => {
-    console.log(showadd, showedit, address);
+    // console.log(showadd, showedit, address);
     this.setState({
       showAddressModal: showadd,
       showEditModal: showedit,
@@ -173,7 +178,7 @@ class PreCompleteOrderPage extends Component {
   };
 
   async sendOrderFunc(e) {
-    e.preventDefault()
+    e.preventDefault();
     window.everypay.onClick();
   }
 
@@ -191,7 +196,14 @@ class PreCompleteOrderPage extends Component {
       discounts: [],
       name: this.props.userReducer.user.name,
       surname: this.props.userReducer.user.surname,
-      address: this.state.selectedAddress,
+      // address: this.state.selectedAddress,
+      client_area_name: this.state.selectedAddress.area_name,
+      client_city_name: this.state.selectedAddress.city_name,
+      client_address_name: this.state.selectedAddress.address_name,
+      client_address_number: this.state.selectedAddress.address_number,
+      client_zip: this.state.selectedAddress.zipcode,
+      client_lat: this.state.selectedAddress.latitude,
+      client_lon: this.state.selectedAddress.longitude,
       phone: parseInt(this.state.phone),
       bell_name: this.state.userDetails.bellName,
       floor: this.state.userDetails.floor,
@@ -295,24 +307,34 @@ class PreCompleteOrderPage extends Component {
     });
   };
 
-  componentDidMount() {
+  async GetUser() {
+    await this.props.auth_get_request(
+      `user/${sessionStorage.getItem("userID")}`,
+      GET_USER
+    );
+    console.log("here");
+    return;
+  }
+
+  async componentDidMount() {
     this.eventSource.onmessage = (e) => this.recieveOrder(e);
-    if (this.props.userReducer.user !== null) {
-      if (this.props.userReducer.user.addresses.length > 0) {
-        this.setState({
-          selectedAddress: this.props.userReducer.user.addresses[0],
-        });
-      }
-      if (this.props.userReducer.user.last_order !== null) {
-        let newDetails = this.state.userDetails;
-        let last = this.props.userReducer.user.last_order;
-        newDetails.bellName = last.Bell_name;
-        newDetails.floor = last.Floor;
-        this.setState({
-          userDetails: newDetails,
-          phone: last.Phone,
-        });
-      }
+    if (this.props.userReducer.user === null) {
+      await this.GetUser();
+    }
+    if (this.props.userReducer.user.addresses) {
+      this.setState({
+        selectedAddress: this.props.userReducer.user.addresses[0],
+      });
+    }
+    if (this.props.userReducer.user.last_order !== null) {
+      let newDetails = this.state.userDetails;
+      let last = this.props.userReducer.user.last_order;
+      newDetails.bellName = last.Bell_name;
+      newDetails.floor = last.Floor;
+      this.setState({
+        userDetails: newDetails,
+        phone: last.Phone,
+      });
     }
   }
   componentWillUnmount() {
@@ -374,7 +396,6 @@ class PreCompleteOrderPage extends Component {
       );
     }
     if (this.props.orderReducer.sent && !this.props.orderReducer.pending) {
-      console.log(this.props.orderReducer.timeToDelivery);
       return (
         <div className="loading-div">
           Your order has been{" "}
@@ -412,7 +433,7 @@ class PreCompleteOrderPage extends Component {
                   <form className="pre-order-info-form">
                     <FormControl className="selectAddressControl">
                       <InputLabel id="selectAddressLabel">
-                        Select Address
+                        Επιλέψτε Διεύθυνση
                       </InputLabel>
                       <Select
                         labelId="selectAddressLabel"
@@ -542,20 +563,27 @@ class PreCompleteOrderPage extends Component {
             <div className="root-accordion">
               <Accordion defaultExpanded={false}>
                 <AccordionSummary>
-                <FormControlLabel
-                  aria-label="Acknowledge"
-                  onClick={() => this.handlePaymentChange("card")}
-                  onFocus={(event) => event.stopPropagation()}
-                  control={<Checkbox checked={this.state.payWithCard}/>}
-                />
+                  <FormControlLabel
+                    aria-label="Acknowledge"
+                    onClick={() => this.handlePaymentChange("card")}
+                    onFocus={(event) => event.stopPropagation()}
+                    control={<Checkbox checked={this.state.payWithCard} />}
+                  />
                   <div className="column-accordion">
-                    <Typography className="heading-accordion">
-                      Credit
-                    </Typography>
+                    <Typography className="heading-accordion">Κάρτα</Typography>
                   </div>
                 </AccordionSummary>
                 <AccordionDetails className="details-accordion">
-                  <EveryPayForm amount={(this.state.tips + this.props.orderReducer.totalPrice)*100} func={this.sendOrder} description={`order from id ${sessionStorage.getItem("userID")}`}/>
+                  <EveryPayForm
+                    amount={
+                      (this.state.tips + this.props.orderReducer.totalPrice) *
+                      100
+                    }
+                    func={this.sendOrder}
+                    description={`order from id ${sessionStorage.getItem(
+                      "userID"
+                    )}`}
+                  />
                 </AccordionDetails>
                 <Divider />
               </Accordion>
@@ -563,14 +591,19 @@ class PreCompleteOrderPage extends Component {
             <div className="root-accordion">
               <Accordion defaultExpanded={false}>
                 <AccordionSummary>
-                <FormControlLabel
-                  aria-label="Acknowledge"
-                  // onClick={() => this.handlePaymentChange("paypal")}
-                  onFocus={(event) => event.stopPropagation()}
-                  onClick={(event) => event.stopPropagation()}
-                  control={<Checkbox onClick={() => this.handlePaymentChange("paypal")} checked={this.state.payWithPaypal}/>}
-                />
-                <div className="column-accordion">
+                  <FormControlLabel
+                    aria-label="Acknowledge"
+                    // onClick={() => this.handlePaymentChange("paypal")}
+                    onFocus={(event) => event.stopPropagation()}
+                    onClick={(event) => event.stopPropagation()}
+                    control={
+                      <Checkbox
+                        onClick={() => this.handlePaymentChange("paypal")}
+                        checked={this.state.payWithPaypal}
+                      />
+                    }
+                  />
+                  <div className="column-accordion">
                     <Typography className="heading-accordion">
                       Paypal
                     </Typography>
@@ -585,18 +618,16 @@ class PreCompleteOrderPage extends Component {
             <div className="root-accordion">
               <Accordion defaultExpanded={false}>
                 <AccordionSummary>
-                <FormControlLabel
-                  aria-label="Acknowledge"
-                  onClick={() => this.handlePaymentChange("cash")}
-                  onFocus={(event) => event.stopPropagation()}
-                  control={<Checkbox checked={this.state.payWithCash}/>}
-                />
-                <Typography className="heading-accordion">
-                  Cash
-                </Typography>
+                  <FormControlLabel
+                    aria-label="Acknowledge"
+                    onClick={() => this.handlePaymentChange("cash")}
+                    onFocus={(event) => event.stopPropagation()}
+                    control={<Checkbox checked={this.state.payWithCash} />}
+                  />
+                  <Typography className="heading-accordion">Μετρητά</Typography>
                 </AccordionSummary>
                 <AccordionDetails className="details-accordion">
-                  Pay with cash
+                  Πληρωμή με μετρητά
                 </AccordionDetails>
                 <Divider />
               </Accordion>
@@ -615,7 +646,7 @@ class PreCompleteOrderPage extends Component {
                       variant="contained"
                       color="primary"
                       type="submit"
-                      onClick={this.sendOrderFunc}
+                      onClick={this.sendOrder}
                     >
                       Αποστολή{" "}
                     </Button>
@@ -668,4 +699,5 @@ export default connect(mapStateToProps, {
   getUser,
   auth_get_request,
   auth_post_request,
+  order_declined,
 })(PreCompleteOrderPage);
