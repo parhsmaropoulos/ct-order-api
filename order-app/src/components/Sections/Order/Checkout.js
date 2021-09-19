@@ -635,19 +635,6 @@ class Checkout extends Component {
                 <AccordionSummary>3. Ολοκλήρωση Παραγγελίας</AccordionSummary>
                 <AccordionDetails>
                   <div className="pre-order-col-subdiv">
-                    <span>Σύνολο: {this.props.orderReducer.totalPrice} €</span>
-                    <br />
-                    <Button
-                      className="complete-order-button"
-                      variant="contained"
-                      color="primary"
-                      type="submit"
-                      onClick={this.sendOrder}
-                    >
-                      Αποστολή{" "}
-                    </Button>
-                  </div>
-                  <div className="pre-order-col-subdiv">
                     <List className="pre-order-item-list">
                       {this.props.orderReducer.products.map((prod, index) => {
                         return (
@@ -667,6 +654,21 @@ class Checkout extends Component {
                         );
                       })}
                     </List>
+                    <div style={{ marginTop: "2em" }}>
+                      <span>
+                        Σύνολο: {this.props.orderReducer.totalPrice} €
+                      </span>
+                    </div>
+                    <br />
+                    <Button
+                      className="complete-order-button"
+                      variant="contained"
+                      color="primary"
+                      type="submit"
+                      onClick={this.sendOrder}
+                    >
+                      Αποστολή{" "}
+                    </Button>
                   </div>
                 </AccordionDetails>
                 <Divider />

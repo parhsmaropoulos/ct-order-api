@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { authHeaders } from "../../../utils/axiosHeaders";
 import { current_url } from "../../../utils/util";
 
-function EveryPayForm({amount,description, func}) {
+const EveryPayForm = React.memo(({ amount, description, func }) => {
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     window.everypay.payform(
@@ -11,7 +11,7 @@ function EveryPayForm({amount,description, func}) {
         pk: "pk_cgHDp12Elp34Z3njlWAMKR5jlperbdGb", //can be found in your dashboard
         locale: "el",
         theme: "material",
-        amount:amount,
+        amount: amount,
         display: {
           button: false,
         },
@@ -33,13 +33,13 @@ function EveryPayForm({amount,description, func}) {
         body,
         authHeaders
       );
-      if(res.status === 200){
+      if (res.status === 200) {
         func();
       }
       return res;
     }
     if (r.onLoad) {
-        setLoading(false);
+      setLoading(false);
     }
   };
 
@@ -50,6 +50,6 @@ function EveryPayForm({amount,description, func}) {
       <div id="pay-form"></div>
     </div>
   );
-}
+});
 
 export default EveryPayForm;

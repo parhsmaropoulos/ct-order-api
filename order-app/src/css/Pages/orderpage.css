@@ -276,6 +276,7 @@
 .pre-order-col-subdiv {
   padding-top: 4%;
   padding-bottom: 4%;
+  width: 100%;
   font-size: 1rem;
   border-bottom: 1px solid black;
 }
