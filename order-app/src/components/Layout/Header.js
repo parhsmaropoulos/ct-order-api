@@ -113,7 +113,7 @@ class Header extends Component {
                       onClick={this.handleToggle}
                     >
                       <PersonCircle />
-                      Profile
+                      Λογαριασμός
                     </Button>
                     <Popper
                       open={this.state.open}
@@ -140,25 +140,25 @@ class Header extends Component {
                                 id="menu-list-grow"
                               >
                                 <MenuItem onClick={this.handleClose}>
-                                  <Link to="/account">My profile</Link>
+                                  <Link to="/account">Λογαριασμός</Link>
                                 </MenuItem>
                                 <MenuItem onClick={this.handleClose}>
-                                  <Link to="/account/orders">My orders</Link>
+                                  <Link to="/account/orders">Παραγγελίες</Link>
                                 </MenuItem>
                                 <MenuItem onClick={this.handleClose}>
                                   <Link to="/account/addresses">
-                                    My addresses
+                                    Διευθύνσεις
                                   </Link>
                                 </MenuItem>
-                                <MenuItem onClick={this.handleClose}>
-                                  <Link to="/account/ratings">My ratings</Link>
-                                </MenuItem>
+                                {/* <MenuItem onClick={this.handleClose}>
+                                  <Link to="/account/ratings">Βαθμολογίες</Link>
+                                </MenuItem> */}
                                 <MenuItem
                                   onClick={() => {
                                     this.logOut(false);
                                   }}
                                 >
-                                  <Typography to="/home">Logout</Typography>
+                                  <Typography to="/home">Αποσύνδεση</Typography>
                                 </MenuItem>
                               </MenuList>
                             </ClickAwayListener>
@@ -173,7 +173,7 @@ class Header extends Component {
                       this.onClose(true);
                     }}
                   >
-                    Login/Register
+                    Σύνδεση/Εγγραφή
                   </Nav.Link>
                 )}
               </Nav>
