@@ -556,11 +556,13 @@ class Checkout extends Component {
               </Accordion>
             </div>
             <div className="root-accordion">
-              <Accordion defaultExpanded={false}>
+              <Accordion
+                expanded={this.state.payWithCard}
+                onClick={() => this.handlePaymentChange("card")}
+              >
                 <AccordionSummary>
                   <FormControlLabel
                     aria-label="Acknowledge"
-                    onClick={() => this.handlePaymentChange("card")}
                     onFocus={(event) => event.stopPropagation()}
                     control={<Checkbox checked={this.state.payWithCard} />}
                   />
@@ -584,19 +586,16 @@ class Checkout extends Component {
               </Accordion>
             </div>
             <div className="root-accordion">
-              <Accordion defaultExpanded={false}>
+              <Accordion
+                expanded={this.state.payWithPaypal}
+                onClick={() => this.handlePaymentChange("paypal")}
+              >
                 <AccordionSummary>
                   <FormControlLabel
                     aria-label="Acknowledge"
-                    // onClick={() => this.handlePaymentChange("paypal")}
                     onFocus={(event) => event.stopPropagation()}
                     onClick={(event) => event.stopPropagation()}
-                    control={
-                      <Checkbox
-                        onClick={() => this.handlePaymentChange("paypal")}
-                        checked={this.state.payWithPaypal}
-                      />
-                    }
+                    control={<Checkbox checked={this.state.payWithPaypal} />}
                   />
                   <div className="column-accordion">
                     <Typography className="heading-accordion">
@@ -611,11 +610,13 @@ class Checkout extends Component {
               </Accordion>
             </div>
             <div className="root-accordion">
-              <Accordion defaultExpanded={false}>
+              <Accordion
+                expanded={this.state.payWithCash}
+                onClick={() => this.handlePaymentChange("cash")}
+              >
                 <AccordionSummary>
                   <FormControlLabel
                     aria-label="Acknowledge"
-                    onClick={() => this.handlePaymentChange("cash")}
                     onFocus={(event) => event.stopPropagation()}
                     control={<Checkbox checked={this.state.payWithCash} />}
                   />
