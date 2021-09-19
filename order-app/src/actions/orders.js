@@ -20,6 +20,7 @@ import {
   EMPTY_CART,
   GET_ORDER,
   ORDER_ACCEPTED,
+  ORDER_DECLINED,
   REGISTER_FAIL,
   REJECT_ORDER,
   SEND_ORDER,
@@ -128,6 +129,13 @@ export const order_accepted = (time) => (dispatch) => {
   dispatch({
     type: ORDER_ACCEPTED,
     time: time,
+  });
+};
+
+// Empty the order accepted
+export const order_declined = () => (dispatch) => {
+  dispatch({
+    type: ORDER_DECLINED,
   });
 };
 
