@@ -72,7 +72,15 @@ type Order struct {
 	Phone     int64   `json:"phone"`
 	Bell_name string  `json:"bell_name"`
 	Floor     string  `json:"floor"`
-	Address   Address `json:"address"`
+	// Address   Address `json:"address"`
+	
+	Client_Area_Name string `json:"client_area_name" gorm:""`
+	Client_City_Name string `json:"client_city_name"`
+	Client_Address_Name string `json:"client_address_name"`
+	Client_Address_Number string `json:"client_address_number"`
+	Client_Zip string `json:"client_zip"`
+	Client_Lat float64 `json:"client_lat"`
+	Client_Lon float64 `json:"client_lon"`
 
 	Delivery_time int32   `json:"delivery_time"`
 	Comment       Comment `json:"comment"`
