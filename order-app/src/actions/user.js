@@ -36,6 +36,7 @@ import {
   USER_LOADING,
 } from "./actions";
 import { returnErrors } from "./messages";
+
 // LOGIN USER
 export const login = (email, password) => (dispatch) => {
   dispatch({
@@ -99,6 +100,38 @@ export const login_async = (email, password) => async (dispatch) => {
       type: LOGIN_SUCCESS,
     });
   } catch (error) {
+    alert(error);
+    dispatch({
+      type: LOGIN_FAIL,
+      error: error.response,
+    });
+    dispatch({
+      type: SNACKBAR_ERROR,
+      message: "Invalid credits",
+    });
+  }
+};
+
+export const glogin_async = () => async (dispatch) => {
+  try {
+    const res = await app.auth().signInWithPopup(provider);
+    const credential = provider.credentialFromResult(res);
+    const token = credential.accessToken;
+    console.log(token);
+    const user = res.user;
+    sessionStorage.setItem("userID", user.uid);
+    sessionStorage.setItem("isAuthenticated", true);
+    dispatch({
+      type: LOGIN_SUCCESS,
+    });
+  } catch (error) {
+    // const errorCode = error.code;
+    // const errorMessage = error.message;
+    // // The email of the user's account used.
+    // const email = error.email;
+    // // The AuthCredential type that was used.
+    // const credential = provider.credentialFromError(error);
+    // console.log(credential)
     alert(error);
     dispatch({
       type: LOGIN_FAIL,
