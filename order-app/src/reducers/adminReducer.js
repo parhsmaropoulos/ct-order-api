@@ -99,8 +99,8 @@ const adminReducer = (state = defaultState, action) => {
     case ACCEPT_ORDER:
       // Remove order from pending
       // append it to accepted
-      console.log(action);
-      console.log(action.accepted_id);
+      // console.log(action);
+      // console.log(action.accepted_id);
       let newAcceptedOrders = state.orders;
       for (i in newAcceptedOrders.pending_orders) {
         if (newAcceptedOrders.pending_orders[i].id === action.accepted_id) {
