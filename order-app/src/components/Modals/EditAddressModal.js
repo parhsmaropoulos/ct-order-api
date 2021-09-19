@@ -44,7 +44,7 @@ class EditAddressModal extends Component {
     } else {
       text = "Προσθήκη";
     }
-    console.log(this.props.address);
+    // console.log(this.props.address);
     let addr = this.props.address;
     if (addr.latitude === 0) {
       addr.latitude = 37.892267385003336;
@@ -113,7 +113,7 @@ class EditAddressModal extends Component {
         ADD_ADDRESS
       );
     }
-    console.log(data);
+    // console.log(data);
     this.setState({
       address: "",
       addressName: "",
@@ -151,7 +151,9 @@ class EditAddressModal extends Component {
       >
         <div className="modal-content" onClick={(e) => e.stopPropagation()}>
           <div className="modal-content-header">
-            <span className="modal-content-header-title">Edit Address</span>
+            <span className="modal-content-header-title">
+              Επεξεργασία Διεύθυνσης
+            </span>
             <span className="close" onClick={this.props.closeModal}>
               &times;
             </span>
@@ -160,47 +162,47 @@ class EditAddressModal extends Component {
             <div className="modal-content-body-col left-col">
               <Form onSubmit={this.onSubmit}>
                 <Form.Group as={Col} controlId="formGridAddressName">
-                  <Form.Label>Address Name</Form.Label>
+                  <Form.Label>Όνομα Οδού</Form.Label>
                   <Form.Control
                     onChange={this.onChange}
                     type="text"
                     name="addressName"
                     value={this.state.addressName}
                     // defaultValue={this.props.address.address_name}
-                    placeholder="Address Name"
+                    placeholder="Όνομα Οδού"
                   />
                 </Form.Group>
                 <Form.Group as={Col} controlId="formGridAddressNumber">
-                  <Form.Label>Address Number</Form.Label>
+                  <Form.Label>Αριθμός Οδού</Form.Label>
                   <Form.Control
                     onChange={this.onChange}
                     type="text"
                     name="addressNumber"
                     value={this.state.addressNumber}
                     // defaultValue={this.props.address.address_number}
-                    placeholder="Address Number"
+                    placeholder="Αριθμός Οδού"
                   />
                 </Form.Group>
                 <Form.Group as={Col} controlId="formGridAreaName">
-                  <Form.Label>Area Name</Form.Label>
+                  <Form.Label>Όνομα Περιοχής</Form.Label>
                   <Form.Control
                     onChange={this.onChange}
                     type="text"
                     name="areaName"
                     value={this.state.areaName}
                     // defaultValue={this.props.address.area_name}
-                    placeholder="Area Name"
+                    placeholder="Όνομα Περιοχής"
                   />
                 </Form.Group>
                 <Form.Group as={Col} controlId="formGridZipCode">
-                  <Form.Label>Zip Code</Form.Label>
+                  <Form.Label>Τ.Κ.</Form.Label>
                   <Form.Control
                     onChange={this.onChange}
                     type="text"
                     name="zipCode"
                     value={this.state.zipCode}
                     // defaultValue={this.props.address.zipcode}
-                    placeholder="Zip Code"
+                    placeholder="Τ.Κ."
                   />
                 </Form.Group>
               </Form>

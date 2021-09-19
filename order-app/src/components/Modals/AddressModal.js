@@ -55,12 +55,12 @@ class AddressModal extends Component {
           longitude: latLng.lng,
         })
       )
-      .then((latLng) => console.log("Success", this.state))
+      // .then((latLng) => console.log("Success", this.state))
       .catch((error) => console.error("Error", error));
   };
 
   saveResults = (results) => {
-    console.log(results);
+    // console.log(results);
     var opts = results[0].address_components;
     this.setState({
       address: results[0].formatted_address,
@@ -119,7 +119,9 @@ class AddressModal extends Component {
           onClick={(e) => e.stopPropagation()}
         >
           <div className="modal-content-header">
-            <span className="modal-content-header-title">Add new address</span>
+            <span className="modal-content-header-title">
+              Προσθήκη Διεύθυνσης
+            </span>
             <span className="close" onClick={this.props.closeModal}>
               &times;
             </span>
@@ -144,7 +146,7 @@ class AddressModal extends Component {
                 <div className="autocomplete-div">
                   <input
                     {...getInputProps({
-                      placeholder: "Search Places ...",
+                      placeholder: "Αναζήτηση ...",
                       className: "location-search-input",
                     })}
                   />
