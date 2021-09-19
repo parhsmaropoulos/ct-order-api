@@ -112,13 +112,13 @@ class UserOrders extends Component {
               <Row className="centered">
                 <div>
                   <Typography component="legend">
-                    Enter your comment!
+                    Εισάγετε το σχόλιο σας!
                   </Typography>
                   <textarea
                     name="comment"
                     type="textarea"
                     value={this.state.comment}
-                    placeholder="Great job.."
+                    placeholder="Σχόλιο.."
                     cols="40"
                     onChange={(e) => this.onChange(e)}
                   />
@@ -126,7 +126,7 @@ class UserOrders extends Component {
               </Row>
               <Row className="centered">
                 <Box component="fieldset" mb={3} borderColor="transparent">
-                  <Typography component="legend">Leave a rating!</Typography>
+                  <Typography component="legend">Βαθμολογία!</Typography>
                   <Rating
                     name="rating"
                     defaultValue={4}
@@ -177,11 +177,11 @@ class UserOrders extends Component {
               </Link>
             </Grid>
 
-            <Grid item lg={2} md={2} sm={6} xs={12}>
+            {/* <Grid item lg={2} md={2} sm={6} xs={12}>
               <Link className="nav-text" to="/account/ratings">
                 Βαθμολογίες
               </Link>
-            </Grid>
+            </Grid> */}
           </Grid>
           <Col className="userOrdersCol bodyCol">
             <div className="roundedContainer">
@@ -234,7 +234,7 @@ class UserOrders extends Component {
                                   this.showCommentModal(false, order)
                                 }
                               >
-                                Comment!
+                                Σχολιάστε
                               </button>
                             )}
                           </Col>

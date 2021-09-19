@@ -33,14 +33,14 @@ class UserRatings extends Component {
               </Link>
             </Grid>
 
-            <Grid item lg={2} md={2} sm={6} xs={12}>
+            {/* <Grid item lg={2} md={2} sm={6} xs={12}>
               <Link
                 className="nav-text  nav-text-activated"
                 to="/account/ratings"
               >
                 Βαθμολογίες
               </Link>
-            </Grid>
+            </Grid> */}
           </Grid>
         </Row>
         <Row className="userRatingsRow bodyRow"></Row>
