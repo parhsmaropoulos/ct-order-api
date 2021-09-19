@@ -17,6 +17,7 @@ body {
 
 .Panel {
   flex: 1 0 auto;
+  height: auto;
   min-height: 100%;
   width: 100%;
 }
