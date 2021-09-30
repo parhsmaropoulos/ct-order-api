@@ -44,20 +44,23 @@ func main() {
 	pool := websock.NewPool()
 	go pool.Start()
 
-	// configure firebase
-	firebaseAuth := config.SetupFirebase()
+	// configure firebase auth
+	firebaseAuth := func(c *gin.Context) {
+		c.Set("firebaseAuth",config.SetupFirebase())}
 
-	router.Use(func(c *gin.Context) {
-		c.Set("firebaseAuth", firebaseAuth)
-	})
+	// configure admin firebase auth
+	firebaseAdminAuth := func(c *gin.Context) {
+		c.Set("firebaseAuth",config.SetupAdminFirebase())}
 
-	// SSEE
+	// router.Use(firebaseAdminAuth,firebaseAuth)
+
+	// SSE
 	// Make a new Broker instance
 	b := &sse.Broker{
-		make(map[chan string]string, 2),
-		make(chan (chan string), 2),
-		make(chan (chan string), 2),
-		make(chan string, 2),
+		Clients: make(map[chan string]string, 2),
+		NewClients: make(chan (chan string), 2),
+		DefunctClients: make(chan (chan string), 2),
+		Messages: make(chan string, 2),
 	}
 
 	// Start processing events
@@ -92,7 +95,7 @@ func main() {
 		})
 	}
 
-	users := router.Group("/user/")
+	users := router.Group("/user/").Use(firebaseAuth)
 	{
 		// AUTH
 		users.POST("/login", handlers.LoginHandler)
@@ -118,6 +121,14 @@ func main() {
 		// User ratings
 		users.GET("/:id/comments", middleware.AuthMiddleware(), handlers.GetUserCommentsByIdHandler)
 
+		// CREATE ORDER
+		users.POST("/new_order", middleware.AuthMiddleware(), handlers.RegisterOrderHandler)
+
+		// CREATE NEW
+		users.POST("/new_comment", handlers.RegisterCommentHandler)
+
+
+
 	}
 	subscribes := router.Group("/subscribes/")
 	{
@@ -130,144 +141,134 @@ func main() {
 		token.POST("/refresh", middleware.Refresh)
 	}
 
-	products := router.Group("/products/")
+	products := router.Group("/products/").Use(firebaseAdminAuth)
 	{
 		// GET ALL
 		products.GET("/all", handlers.GetAllProductsHandler)
 
 		// GET SINGLE
-		products.GET("/:id", handlers.GetSingleProductByIdHandler)
+		products.GET("/:id",middleware.AuthMiddleware(), handlers.GetSingleProductByIdHandler)
 
 		// CREATE
-		products.POST("/create_product", handlers.RegisterProductHandler)
+		products.POST("/create_product",middleware.AuthMiddleware(), handlers.RegisterProductHandler)
 
 		// CREATE
-		products.DELETE("/:id", handlers.RegisterProductHandler)
+		products.DELETE("/:id",middleware.AuthMiddleware(), handlers.RegisterProductHandler)
 
 		// UPDATE VALUES
-		products.PUT("/:id/update_values", handlers.UpdateProductValuesByIdHandler)
-
-		// ADD CHOICE ?
-		// products.PUT("/:id/add_choice", handlers.AddChoiceToProductByIdHandler)
+		products.PUT("/:id/update_values",middleware.AuthMiddleware(), handlers.UpdateProductValuesByIdHandler)
 
 		// CHANGE AVAILABILITY
-		products.PUT("/:id/change_availability", handlers.ChangeAvailabilityOfProductByIdHandler)
+		products.PUT("/:id/change_availability",middleware.AuthMiddleware(), handlers.ChangeAvailabilityOfProductByIdHandler)
 	}
 
-	product_choices := router.Group("/product_choices/")
+	product_choices := router.Group("/product_choices/").Use(firebaseAdminAuth)
 	{
 		// GET ALL
 		product_choices.GET("/all", handlers.GetAllProductChoicesHandler)
 
 		// GET SINGLE
-		product_choices.GET("/:id", handlers.GetSingleProductChoiceByIdHandler)
+		product_choices.GET("/:id", middleware.AuthMiddleware(),handlers.GetSingleProductChoiceByIdHandler)
 
 		// CREATE
-		product_choices.POST("/new_product_choice", handlers.RegisterProductChoiceHandler)
+		product_choices.POST("/new_product_choice",middleware.AuthMiddleware(), handlers.RegisterProductChoiceHandler)
 
 		// UPDATE SINGLE
-		product_choices.PUT("/:id/update_product_choice", handlers.UpdateProductChoiceByIdHandler)
+		product_choices.PUT("/:id/update_product_choice",middleware.AuthMiddleware(), handlers.UpdateProductChoiceByIdHandler)
 
 		// DELETE SINGLE
-		product_choices.DELETE("/:id", handlers.UpdateProductChoiceByIdHandler)
+		product_choices.DELETE("/:id",middleware.AuthMiddleware(), handlers.UpdateProductChoiceByIdHandler)
 
 	}
 
-	ingredients := router.Group("/ingredients/")
+	ingredients := router.Group("/ingredients/").Use(firebaseAdminAuth)
 	{
 		// CREATE NEW
-		ingredients.POST("/create_ingredient", handlers.RegisterIngredientHandler)
+		ingredients.POST("/create_ingredient",middleware.AuthMiddleware(), handlers.RegisterIngredientHandler)
 
 		// UPDATE VALUES
-		ingredients.PUT("/:id/update_values", handlers.UpdateIngredientValuesByIdHandler)
+		ingredients.PUT("/:id/update_values",middleware.AuthMiddleware(), handlers.UpdateIngredientValuesByIdHandler)
 
 		// CHANGE AVAILABILITY
-		ingredients.PUT("/:id/change_availability", handlers.ChangeAvailabilityOfIngredientByIdHandler)
+		ingredients.PUT("/:id/change_availability",middleware.AuthMiddleware(), handlers.ChangeAvailabilityOfIngredientByIdHandler)
 
 		// GET ALL
 		ingredients.GET("/all", handlers.GetAllIngredientsHandler)
 
 		// GET SINGLE
-		ingredients.GET("/:id", handlers.GetSingleIngredientByIdHandler)
+		ingredients.GET("/:id",middleware.AuthMiddleware(), handlers.GetSingleIngredientByIdHandler)
 
 		// DELETE
-		ingredients.DELETE("/:id", handlers.DeleteIngredientByIdHandler)
+		ingredients.DELETE("/:id", middleware.AuthMiddleware(),handlers.DeleteIngredientByIdHandler)
 
 	}
 
-	product_categories := router.Group("/product_category/")
+	product_categories := router.Group("/product_category/").Use(firebaseAdminAuth)
 	{
 		// GET ALL
 		product_categories.GET("/all", handlers.GetAllProductCategoriesHandler)
 
 		// CREATE NEW
-		product_categories.POST("/create_product_category", handlers.RegisterProductCategoryHandler)
+		product_categories.POST("/create_product_category",middleware.AuthMiddleware(), handlers.RegisterProductCategoryHandler)
 
 		// GET SINGLE ?
 		// DELETE ?
-		product_categories.DELETE("/:id", handlers.DeleteProductCategoryByIdHandler)
+		product_categories.DELETE("/:id", middleware.AuthMiddleware(),handlers.DeleteProductCategoryByIdHandler)
 
 	}
 
-	orders := router.Group("/orders/")
+	orders := router.Group("/orders/").Use(firebaseAdminAuth)
 	{
 		// GET ALL
-		orders.GET("/all", handlers.GetAllOrdersHandler)
+		orders.GET("/all", middleware.AuthMiddleware(),handlers.GetAllOrdersHandler)
 
 		// GET TODAY
-		orders.GET("/today", handlers.GetTodayOrdersHandler)
+		orders.GET("/today", middleware.AuthMiddleware(),handlers.GetTodayOrdersHandler)
 
 		// GET SINGLE
 		orders.GET("/:id", handlers.GetSingleOrderByIdHandler)
-
-		// CREATE ORDER
-		orders.POST("/new_order", middleware.AuthMiddleware(), handlers.RegisterOrderHandler)
-
 	}
 
-	payments := router.Group("/payments/")
+	payments := router.Group("/payments/").Use(firebaseAuth)
 	{
 		// CREATE NEW
-		payments.POST("/new_payment", handlers.NewPaymentHandler)
+		payments.POST("/new_payment",  middleware.AuthMiddleware(),handlers.NewPaymentHandler)
 	}
 
-	admin := router.Group("/admin/")
+	admin := router.Group("/admin/").Use(firebaseAdminAuth)
 	{
 		// Auth actions
 		// admin.POST("/login", models.AdminLogin)
 		// admin.POST("/logout", models.AdminLogout)
 
 		// ADMIN ORDER ACTION
-		admin.PUT("/orders/:id/accept_order", handlers.AcceptOrderByIdHandler)
-		admin.PUT("/orders/:id/cancel_order", handlers.CancelOrderByIdHandler)
-		admin.PUT("/orders/:id/complete_order", handlers.CompleteOrderByIdHandler)
+		admin.PUT("/orders/:id/accept_order", middleware.AuthMiddleware(), handlers.AcceptOrderByIdHandler)
+		admin.PUT("/orders/:id/cancel_order",  middleware.AuthMiddleware(),handlers.CancelOrderByIdHandler)
+		admin.PUT("/orders/:id/complete_order", middleware.AuthMiddleware(), handlers.CompleteOrderByIdHandler)
 
 		// Fetch orders
 		// admin.PUT("/update_order", models.UpdateOrder)
 		// admin.GET("/:id", models.GetSingleOrder)
 
 		// GET TODAY ORDERS
-		admin.GET("/today", handlers.GetTodayOrdersHandler)
+		admin.GET("/today", middleware.AuthMiddleware(), handlers.GetTodayOrdersHandler)
 
 	}
 
-	comments := router.Group("/comments/")
+	comments := router.Group("/comments/").Use(firebaseAdminAuth)
 	{
-		// CREATE NEW
-		comments.POST("/new_comment", handlers.RegisterCommentHandler)
-
 		// GET SINGLE
-		comments.GET("/:id", handlers.GetSingleCommentByIdHandler)
+		comments.GET("/:id", middleware.AuthMiddleware(), handlers.GetSingleCommentByIdHandler)
 
 		// GET ALL
-		comments.GET("/all", handlers.GetAllCommentsHandler)
+		comments.GET("/all", middleware.AuthMiddleware(), handlers.GetAllCommentsHandler)
 
 		// APPROVE COMMENT
-		comments.PUT("/:id/approve_comment", handlers.ApproveCommentByIdHandler)
+		comments.PUT("/:id/approve_comment", middleware.AuthMiddleware(), handlers.ApproveCommentByIdHandler)
 		// REJECT COMMENT
-		comments.PUT("/:id/reject_comment", handlers.RejectCommentByIdHandler)
+		comments.PUT("/:id/reject_comment", middleware.AuthMiddleware(), handlers.RejectCommentByIdHandler)
 		// ANSWER COMMENT
-		comments.PUT("/:id/answer_comment", handlers.AnswerCommentByIdHandler)
+		comments.PUT("/:id/answer_comment", middleware.AuthMiddleware(), handlers.AnswerCommentByIdHandler)
 	}
 
 	router.Any("/", func(c *gin.Context) {
@@ -285,7 +286,6 @@ func main() {
 	} else {
 		port = ":" + lib.GoDotEnvVariable("PORT")
 	}
-
 	fmt.Println("SERVER RUNNING ON :" + port)
 	router.Run(port)
 }
