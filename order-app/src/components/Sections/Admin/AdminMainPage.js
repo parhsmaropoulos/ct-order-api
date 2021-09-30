@@ -19,6 +19,7 @@ import {
   get_request,
   post_request,
 } from "../../../actions/lib";
+import { get_order } from "../../../actions/orders";
 
 class AdminMainPage extends Component {
   constructor(props) {
@@ -29,6 +30,7 @@ class AdminMainPage extends Component {
     );
     this.state = {
       orders: [],
+      incomings: [],
       selected_time: 0,
       selected_tab: "",
     };
@@ -43,6 +45,7 @@ class AdminMainPage extends Component {
     auth_get_request: PropTypes.func.isRequired,
     post_request: PropTypes.func.isRequired,
     get_request: PropTypes.func.isRequired,
+    get_order: PropTypes.func.isRequired,
   };
 
   changeTab = (tab) => {
@@ -55,7 +58,7 @@ class AdminMainPage extends Component {
 
   async recieveOrder(order) {
     let data = JSON.parse(order.data);
-    console.log(data);
+    // console.log(data);
     this.props.get_order(data.order);
 
     this.setState({
@@ -75,6 +78,7 @@ class AdminMainPage extends Component {
       data,
       ACCEPT_ORDER
     );
+
     let orders = this.state.orders;
     const newOrders = orders.filter((ord) => ord.ID !== data.id);
     this.setState({
@@ -107,7 +111,7 @@ class AdminMainPage extends Component {
     this.get_choices();
     this.get_ingredients();
     this.get_items();
-    // this.get_today();
+    this.get_today();
   }
 
   async get_items() {
@@ -167,5 +171,6 @@ const mapStateToProps = (state) => ({
 export default connect(mapStateToProps, {
   auth_get_request,
   get_request,
+  get_order,
   post_request,
 })(AdminMainPage);

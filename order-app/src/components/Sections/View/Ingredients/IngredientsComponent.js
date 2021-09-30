@@ -118,7 +118,6 @@ class IngredientsComponent extends Component {
 }
 
 const mapStateToProps = (state) => ({
-  isAuthenticated: state.userReducer.isAuthenticated,
   ingredients: state.productReducer.ingredients,
   ingredientCategories: state.productReducer.ingredientCategories,
 });

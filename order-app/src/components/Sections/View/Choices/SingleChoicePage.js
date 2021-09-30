@@ -82,7 +82,11 @@ class SingleChoicePage extends Component {
       multiple: this.state.multiple,
       options: this.state.options,
     };
-    this.props.auth_put_request(`product_choices/${choice.id}/update_product_choice` ,choice,UPDATE_CHOICE);
+    this.props.auth_put_request(
+      `product_choices/${choice.id}/update_product_choice`,
+      choice,
+      UPDATE_CHOICE
+    );
   }
 
   render() {
@@ -196,7 +200,5 @@ class SingleChoicePage extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  isAuthenticated: state.userReducer.isAuthenticated,
-});
+const mapStateToProps = (state) => ({});
 export default connect(mapStateToProps, { auth_put_request })(SingleChoicePage);

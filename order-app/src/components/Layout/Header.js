@@ -6,7 +6,7 @@ import React, { Component } from "react";
 import { Image, Nav, Navbar } from "react-bootstrap";
 import { PersonCircle } from "react-bootstrap-icons";
 import { connect } from "react-redux";
-import { logout, refreshToken, logout_async } from "../../actions/user";
+import { logout } from "../../actions/user";
 import PropTypes from "prop-types";
 import "../../css/Layout/header.css";
 import logo from "../../assets/Images/transparent-logo.png";
@@ -20,7 +20,11 @@ import {
   MenuList,
   Paper,
   Popper,
+  Typography,
 } from "@material-ui/core";
+import LogRegModal from "../Modals/LogRegModal";
+import withAuthorization from "../../firebase/withAuthorization";
+import { compose } from "recompose";
 
 class Header extends Component {
   constructor(props) {
@@ -30,7 +34,7 @@ class Header extends Component {
       selectedLangeuage: "EN",
       searchText: "",
       focus: false,
-      isAuthenticated: "",
+      openLogReg: false,
       results: [],
       open: false,
       logedIn: false,
@@ -38,24 +42,22 @@ class Header extends Component {
   }
 
   static propTypes = {
-    // isAuthenticated: PropTypes.string.isRequired,
     logout: PropTypes.func.isRequired,
     products: PropTypes.array.isRequired,
-    logout_async: PropTypes.func.isRequired,
   };
 
-  onClose = (e) => {
-    // console.log("e");
-    this.props.onClose && this.props.onClose(e);
+  onClose = (bool) => {
+    this.props.onClose && this.props.onClose(bool);
   };
 
   onChangeLang(lang) {
     this.setState({ selectedLangeuage: lang });
   }
 
-  async logOut() {
-    await this.props.logout_async();
-  }
+  logOut = async (bool) => {
+    await this.props.firebase.signOut();
+    this.props.onClose && this.props.onClose(bool);
+  };
 
   handleToggle = () => {
     this.setState({ open: !this.state.open });
@@ -68,13 +70,20 @@ class Header extends Component {
     this.setState({ open: false });
   };
 
+  onCloseLog = (bool) => {
+    this.setState({ openLogReg: bool });
+  };
   render() {
     let authenticated =
-      this.props.userReducer.isAuthenticated ||
-      sessionStorage.getItem("isAuthenticated");
-    if (window.location.href.endsWith("admin_login")) {
-      return null;
-    }
+      localStorage.getItem("isAuthenticated") === "true" ? true : false;
+
+    let modal = (
+      <LogRegModal
+        open={this.state.openLogReg}
+        firebase={this.props.firebase}
+        onClose={(bool) => this.onCloseLog(bool)}
+      />
+    );
     return (
       <Grid container>
         <Grid item xs={1}></Grid>
@@ -102,7 +111,7 @@ class Header extends Component {
                     EN
                   </NavDropdown.Item>
                 </NavDropdown> */}
-                {authenticated ? (
+                {authenticated === true ? (
                   <Grid item xs={3}>
                     <Button
                       color="primary"
@@ -114,7 +123,7 @@ class Header extends Component {
                       onClick={this.handleToggle}
                     >
                       <PersonCircle />
-                      Profile
+                      Λογαριασμός
                     </Button>
                     <Popper
                       open={this.state.open}
@@ -141,26 +150,25 @@ class Header extends Component {
                                 id="menu-list-grow"
                               >
                                 <MenuItem onClick={this.handleClose}>
-                                  <Link to="/account">My profile</Link>
+                                  <Link to="/account">Λογαριασμός</Link>
                                 </MenuItem>
                                 <MenuItem onClick={this.handleClose}>
-                                  <Link to="/account/orders">My orders</Link>
+                                  <Link to="/account/orders">Παραγγελίες</Link>
                                 </MenuItem>
                                 <MenuItem onClick={this.handleClose}>
                                   <Link to="/account/addresses">
-                                    My addresses
+                                    Διευθύνσεις
                                   </Link>
                                 </MenuItem>
-                                <MenuItem onClick={this.handleClose}>
-                                  <Link to="/account/ratings">My ratings</Link>
-                                </MenuItem>
-                                <MenuItem onClick={this.handleClose}>
-                                  <Link
-                                    to="/home"
-                                    onClick={() => this.logOut()}
-                                  >
-                                    Logout
-                                  </Link>
+                                {/* <MenuItem onClick={this.handleClose}>
+                                  <Link to="/account/ratings">Βαθμολογίες</Link>
+                                </MenuItem> */}
+                                <MenuItem
+                                  onClick={() => {
+                                    this.logOut(false);
+                                  }}
+                                >
+                                  <Typography to="/home">Αποσύνδεση</Typography>
                                 </MenuItem>
                               </MenuList>
                             </ClickAwayListener>
@@ -172,10 +180,10 @@ class Header extends Component {
                 ) : (
                   <Nav.Link
                     onClick={(e) => {
-                      this.onClose(e);
+                      this.onCloseLog(true);
                     }}
                   >
-                    Login/Register
+                    Σύνδεση/Εγγραφή
                   </Nav.Link>
                 )}
               </Nav>
@@ -183,6 +191,7 @@ class Header extends Component {
           </Navbar>
         </Grid>
         <Grid item xs={1}></Grid>
+        {modal}
       </Grid>
     );
   }
@@ -193,6 +202,9 @@ const mapStateToProps = (state) => ({
   products: state.productReducer.products,
 });
 
-export default connect(mapStateToProps, { logout, refreshToken, logout_async })(
-  Header
-);
+export default compose(
+  connect(mapStateToProps, { logout }),
+  withAuthorization(() => {
+    return true;
+  })
+)(Header);

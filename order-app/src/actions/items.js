@@ -10,7 +10,6 @@
  */
 
 import axios from "axios";
-import app from "../firebase/base";
 import { authHeaders, headers } from "../utils/axiosHeaders";
 import { current_url } from "../utils/util";
 import {

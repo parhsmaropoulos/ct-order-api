@@ -15,7 +15,7 @@ class PrintComponent extends Component {
     } else {
       return null;
     }
-    console.log(order)
+    // console.log(order)
     return (
       <Paper className="main">
         <React.Fragment>
@@ -37,7 +37,7 @@ class PrintComponent extends Component {
               </ListItem>
             ) : null}
             {order.products.map((product, index) => {
-              console.log(product);
+              // console.log(product);
               return (
                 <Paper key={index} elevation={0}>
                   <ListItem>
@@ -57,8 +57,7 @@ class PrintComponent extends Component {
                             </ListItem>
                           );
                         })
-                      : 
-                        null}
+                      : null}
                     {!!product.extra_ingredients
                       ? product.extra_ingredients.map(
                           (ingredient, op_index) => {

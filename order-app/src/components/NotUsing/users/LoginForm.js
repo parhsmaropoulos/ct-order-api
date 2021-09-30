@@ -15,21 +15,11 @@ class LoginForm extends Component {
   }
   static propTypes = {
     login: PropTypes.func.isRequired,
-    isAuthenticated: PropTypes.bool,
   };
 
   onSubmit(e) {
     e.preventDefault();
-    // const credits = {
-    //   email: this.state.email,
-    //   password: this.state.password,
-    // };
-    // console.log(credits);
     this.props.login(this.state.email, this.state.password);
-    // axios
-    //   .post("http://localhost:8080/user/login", credits, headers)
-    //   .then((res) => console.log(res))
-    //   .catch((err) => console.log(err));
   }
 
   onChange = (e) => {
@@ -69,8 +59,6 @@ class LoginForm extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  isAuthenticated: state.isAuthenticated,
-});
+const mapStateToProps = (state) => ({});
 
 export default connect(mapStateToProps, { login })(LoginForm);

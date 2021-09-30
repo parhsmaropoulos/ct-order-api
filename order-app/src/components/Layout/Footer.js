@@ -35,7 +35,7 @@ class Footer extends Component {
   }
 
   static propTypes = {
-    isAuthenticated: PropTypes.bool,
+    // isAuthenticated: PropTypes.bool,
     subscribe: PropTypes.func.isRequired,
   };
 
@@ -51,7 +51,7 @@ class Footer extends Component {
    * On email subscription check if mail is valid throught regex
    */
 
-  async onSubscribe  () {
+  async onSubscribe() {
     const re =
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     if (re.test(this.state.newsletterEmail)) {
@@ -64,15 +64,19 @@ class Footer extends Component {
       const data = {
         email: this.state.newsletterEmail,
       };
-      const res = await auth_post_request("subscribes/new", data, SUBSCRIBE_USER)
-      console.log(res)
+      const res = await auth_post_request(
+        "subscribes/new",
+        data,
+        SUBSCRIBE_USER
+      );
+      console.log(res);
       // this.props.subscribe(data);
       this.setState({ newsletterEmail: "" });
     } else {
       document.getElementById("inputNewsLetterHelperText").style.display =
         "block";
     }
-  };
+  }
 
   render() {
     if (window.location.href.endsWith("admin_login")) {
@@ -86,8 +90,13 @@ class Footer extends Component {
         {/* 
             ########################## Logo Column ################################
           */}
-        <Grid item lg={1} md={false} sm={false}></Grid>
-        <Grid item lg={2} md={3} sm={12}>
+        <Grid
+          item
+          lg={3}
+          md={3}
+          sm={12}
+          style={{ textAlign: "center", verticalAlign: "middle" }}
+        >
           <Image src={logo} className="headerLogo" />
           <br />
           <SocialIcon
@@ -131,8 +140,8 @@ class Footer extends Component {
         {/* 
             ########################## First Menu Column ################################
           */}
-        <Grid item lg={3} md={3} sm={12}>
-          <ul>
+        <Grid item lg={3} md={3} sm={12} style={{ textAlign: "center" }}>
+          <ul style={{ listStyleType: "none" }}>
             <Link to="/document/oroi_xrisis">
               <li>Όροι χρήσης</li>
             </Link>
@@ -150,8 +159,8 @@ class Footer extends Component {
         {/* 
             ########################## Second Menu Column ################################
           */}
-        <Grid item lg={3} md={3} sm={12}>
-          <ul>
+        <Grid item lg={3} md={3} sm={12} style={{ textAlign: "center" }}>
+          <ul style={{ listStyleType: "none" }}>
             <Link to="/document/protection">
               <li>Πολιτική Προστασίας</li>
             </Link>

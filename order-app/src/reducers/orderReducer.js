@@ -53,6 +53,8 @@ const orderReducer = (state = defaultState, action) => {
         ...state,
         sent: true,
         accepted: false,
+        recieved: true,
+        pending: false,
       };
     case ADD_ITEM:
       console.log(action);

@@ -85,7 +85,6 @@ func (b *Broker) Start() {
 
 					for s := range b.Clients {
 						client := b.Clients[s]
-						fmt.Print(client)
 						if client == "admin" {
 							log.Printf("Broadcast message to  clients with id %s", client)
 							s <- msg
@@ -95,7 +94,6 @@ func (b *Broker) Start() {
 				} else {
 					for s := range b.Clients {
 						client := b.Clients[s]
-						fmt.Print(client)
 						if client == id {
 							log.Printf("Broadcast message to  clients with id %s", client)
 							s <- msg

@@ -5,7 +5,6 @@ import { Form } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import { send_order } from "../../../../actions/orders";
 import { PencilFill } from "react-bootstrap-icons";
 import { auth_put_request } from "../../../../actions/lib";
 import { CHANGE_AVAILABILITY } from "../../../../actions/actions";
@@ -24,11 +23,14 @@ class ItemsComponent extends Component {
     auth_put_request: PropTypes.func.isRequired,
   };
 
-  componentDidMount() {
-    }
+  componentDidMount() {}
 
   changeAvailability(id) {
-    this.props.auth_put_request(`products/${id}/change_availability`,null,CHANGE_AVAILABILITY);
+    this.props.auth_put_request(
+      `products/${id}/change_availability`,
+      null,
+      CHANGE_AVAILABILITY
+    );
   }
 
   render() {
@@ -139,17 +141,13 @@ class ItemsComponent extends Component {
   }
 }
 
-const mapStateToProps = (state) => (
-  {
-    isAuthenticated: state.userReducer.isAuthenticated,
-    // user_id: state.userReducer.user.id,
-    categories: state.productReducer.categories,
-    products: state.productReducer.products,
-    ingredients: state.productReducer.ingredients,
-    order_accepted: state.orderReducer.accepted,
-    order_sent: state.orderReducer.sent,
-  }
-);
+const mapStateToProps = (state) => ({
+  categories: state.productReducer.categories,
+  products: state.productReducer.products,
+  ingredients: state.productReducer.ingredients,
+  order_accepted: state.orderReducer.accepted,
+  order_sent: state.orderReducer.sent,
+});
 
 export default connect(mapStateToProps, {
   auth_put_request,

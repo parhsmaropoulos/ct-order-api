@@ -48,7 +48,6 @@ class CreateItemForm extends Component {
   }
 
   static propTypes = {
-    isAuthenticated: PropTypes.bool.isRequired,
     auth_post_request: PropTypes.func.isRequired,
     ingredients: PropTypes.array.isRequired,
     choices: PropTypes.array.isRequired,
@@ -458,7 +457,6 @@ class CreateItemForm extends Component {
 }
 
 const mapStateToProps = (state) => ({
-  isAuthenticated: state.userReducer.isAuthenticated,
   ingredients: state.productReducer.ingredients,
   ingredientCategories: state.productReducer.ingredientCategories,
   choices: state.productReducer.choices,

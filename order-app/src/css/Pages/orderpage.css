@@ -276,6 +276,7 @@
 .pre-order-col-subdiv {
   padding-top: 4%;
   padding-bottom: 4%;
+  width: 100%;
   font-size: 1rem;
   border-bottom: 1px solid black;
 }
@@ -284,11 +285,6 @@
   /* height: auto; */
   /* background-color: cadetblue; */
   flex: 1.5;
-}
-
-.pre-order-payment-details {
-  /* height: auto; */
-  /* background-color: chartreuse; */
 }
 
 .search-bar-custom {
@@ -346,6 +342,25 @@
 .list-group-item {
   cursor: pointer;
 }
+.inner-paper-item-modal {
+  height: auto;
+  max-height: 70%;
+  overflow-y: scroll;
+  width: 55%;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.order-item-modal {
+  text-align: center;
+  margin-top: 5%;
+  height: 100%;
+  min-height: 60%;
+  margin-right: 20%;
+  margin-left: 20%;
+  overflow-y: auto;
+}
 @media only screen and (max-width: 600px) {
   .pre-order-container-body {
     flex-direction: column;
@@ -377,8 +392,6 @@
   align-items: "center";
 }
 
-.column-accordion {
-}
 .helper-accordion {
   border-left: 2px solid black;
   padding: 1 2;

@@ -24,7 +24,6 @@ class RegisterForm extends Component {
 
   static propTypes = {
     register: PropTypes.func.isRequired,
-    isAuthenticated: PropTypes.bool,
   };
   onSubmit(e) {
     e.preventDefault();
@@ -168,8 +167,6 @@ class RegisterForm extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  isAuthenticated: state.isAuthenticated,
-});
+const mapStateToProps = (state) => ({});
 
 export default connect(mapStateToProps, { register })(RegisterForm);

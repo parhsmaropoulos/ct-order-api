@@ -1,8 +1,6 @@
 import React, { Component } from "react";
 import { Form } from "react-bootstrap";
 import "../../css/Pages/orderpage.css";
-import "../../css/common/logregmodal.css";
-import "../../css/Layout/general.css";
 import { connect } from "react-redux";
 import AddIcon from "@material-ui/icons/Add";
 import RemoveIcon from "@material-ui/icons/Remove";
@@ -42,7 +40,6 @@ class OrderItemModal extends Component {
   }
 
   static propTypes = {
-    isAuthenticated: PropTypes.bool,
     ingredients: PropTypes.array.isRequired,
   };
 
@@ -121,7 +118,7 @@ class OrderItemModal extends Component {
           }
         });
         if (found === false) {
-          alert(`Please select a choice for option: ${c.name}`);
+          alert(`Διαλέχτε μια επιλογή για την κατηγορία: ${c.name}`);
         }
       }
     });
@@ -148,8 +145,6 @@ class OrderItemModal extends Component {
     let oldPrice = 0;
     let found = false;
     let exists = false;
-    // console.log(choiceName);
-    // console.log(selectedOption);
     // Check if choice has already changed once
     for (var id in currentOptions) {
       let old_option = currentOptions[id];
@@ -162,7 +157,6 @@ class OrderItemModal extends Component {
         old_option.price = selectedOption.price;
         // old_option.ID = selectedOption.ID;
         found = true;
-        // console.log("found");
       }
     }
     // Else it adds the option
@@ -246,9 +240,9 @@ class OrderItemModal extends Component {
         onClose={(e) => {
           this.onClose(e);
         }}
-        className="log-reg-modal"
+        className="order-item-modal"
       >
-        <Paper elevation={0}>
+        <Paper className="inner-paper-item-modal" elevation={0}>
           <Grid container>
             <Grid item lg={9} md={9} sm={6} xs={6}>
               <Typography>{this.props.item.name}</Typography>
@@ -333,7 +327,6 @@ class OrderItemModal extends Component {
                                               option
                                             )
                                           }
-                                          defaultChecked
                                         />
                                       </Grid>
                                       <Grid item xs={9}>
@@ -552,12 +545,11 @@ class OrderItemModal extends Component {
                   )}
                 </Form.Group>
                 <Form.Group>
-                  <Form.Label className="modalChoiceName">Comments</Form.Label>
+                  <Form.Label className="modalChoiceName">Σχόλια</Form.Label>
                   <Form.Control
                     as="textarea"
                     name="comment"
-                    label="Leave a comment"
-                    placeholder="Leave a comment"
+                    placeholder="Αφήστε σχόλιο σχετικά με το προϊόν"
                     value={this.state.comment}
                     onChange={this.onChange}
                   />
@@ -621,7 +613,6 @@ class OrderItemModal extends Component {
 const mapStateToProps = (state) =>
   // console.log(state.productReducer.ingredients),
   ({
-    isAuthenticated: state.userReducer.isAuthenticated,
     ingredients: state.productReducer.ingredients,
     choices: state.productReducer.choices,
   });
