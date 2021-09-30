@@ -14,12 +14,14 @@ import {
 } from "../../../actions/lib";
 import AddressModal from "../../Modals/AddressModal";
 import { MdRemoveCircle } from "react-icons/md";
-import { CircularProgress, Grid, Container } from "@material-ui/core";
+import { Grid, Container } from "@material-ui/core";
 import {
   GET_USER,
   GET_USER_ADDRESSES,
   UPDATE_USER,
 } from "../../../actions/actions";
+import withAuthorization from "../../../firebase/withAuthorization";
+import Header from "../../Layout/Header";
 
 // const columns = [
 //   {
@@ -126,7 +128,7 @@ class UserAdress extends Component {
     let editAddressModal;
     let addAddressModal;
     let removeAddressdialog;
-    let authenticated = sessionStorage.getItem("isAuthenticated");
+
     if (this.state.showRemoveAddressDialog) {
       removeAddressdialog = (
         <Modal
@@ -179,116 +181,99 @@ class UserAdress extends Component {
         />
       );
     }
+    return (
+      <Container className="accountMainPage">
+        <Header />
+        <Grid spacing={3} container>
+          <Grid item lg={3} md={3} sm={6} xs={12}>
+            <Link className="nav-text" to="/account">
+              Ο λογαριασμός μου
+            </Link>
+          </Grid>
+          <Grid item lg={3} md={3} sm={6} xs={12}>
+            <Link className="nav-text" to="/account/orders">
+              Οι παραγγελίες μου
+            </Link>
+          </Grid>
+          <Grid item lg={2} md={2} sm={6} xs={12}>
+            <Link
+              className="nav-text  nav-text-activated"
+              to="/account/addresses"
+            >
+              Διευθύνσεις
+            </Link>
+          </Grid>
 
-    if (authenticated === true && this.props.userReducer.hasLoaded === false) {
-      this.props.auth_get_request(
-        `user/${sessionStorage.getItem("uid")}`,
-        GET_USER
-      );
-      return (
-        <div className="loading-div">
-          <CircularProgress disableShrink />{" "}
-        </div>
-      );
-    } else {
-      return (
-        <Container className="accountMainPage">
-          <Grid spacing={3} container>
-            <Grid item lg={3} md={3} sm={6} xs={12}>
-              <Link className="nav-text" to="/account">
-                Ο λογαριασμός μου
-              </Link>
-            </Grid>
-            <Grid item lg={3} md={3} sm={6} xs={12}>
-              <Link className="nav-text" to="/account/orders">
-                Οι παραγγελίες μου
-              </Link>
-            </Grid>
-            <Grid item lg={2} md={2} sm={6} xs={12}>
-              <Link
-                className="nav-text  nav-text-activated"
-                to="/account/addresses"
-              >
-                Διευθύνσεις
-              </Link>
-            </Grid>
-
-            {/* <Grid item lg={2} md={2} sm={6} xs={12}>
+          {/* <Grid item lg={2} md={2} sm={6} xs={12}>
               <Link className="nav-text" to="/account/ratings">
                 Βαθμολογίες
               </Link>
             </Grid> */}
-          </Grid>
-          <Grid container style={{ marginTop: 10 }}>
-            <Grid container className="roundedContainer">
-              <div className="userAddressColHeader">
-                <div className="title">Οι διευθήνσεις σου</div>
-                <span></span>
-              </div>
-              <div className="userAddressColBody table-responsive-sm">
-                {this.props.userReducer.addresses.length > 0 ? (
-                  <Table striped bordered hover>
-                    <thead>
-                      <tr>
-                        <th>#</th>
-                        <th>Διευθηνση</th>
-                        <th>Αριθμός</th>
-                        <th>Περιοχή</th>
-                        <th>Τ.Κ.</th>
-                        <th>Επιλογές</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {this.props.userReducer.addresses.map(
-                        (address, index) => {
-                          return (
-                            <tr
-                              className="address-list-item-container"
-                              key={index}
+        </Grid>
+        <Grid container style={{ marginTop: 10 }}>
+          <Grid container className="roundedContainer">
+            <div className="userAddressColHeader">
+              <div className="title">Οι διευθήνσεις σου</div>
+              <span></span>
+            </div>
+            <div className="userAddressColBody table-responsive-sm">
+              {this.props.userReducer.addresses.length > 0 ? (
+                <Table striped bordered hover>
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Διευθηνση</th>
+                      <th>Αριθμός</th>
+                      <th>Περιοχή</th>
+                      <th>Τ.Κ.</th>
+                      <th>Επιλογές</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {this.props.userReducer.addresses.map((address, index) => {
+                      return (
+                        <tr className="address-list-item-container" key={index}>
+                          <td>{index}</td>
+                          <td>{address.address_name}</td>
+                          <td>{address.address_number}</td>
+                          <td>{address.area_name}</td>
+                          <td>{address.zipcode}</td>
+                          <td style={{ dispaly: "flex" }}>
+                            <PencilFill
+                              onClick={() => this.editAddress(address)}
+                            />{" "}
+                            <MdRemoveCircle
+                              onClick={() =>
+                                this.showRemoveAddressDialog(true, address)
+                              }
                             >
-                              <td>{index}</td>
-                              <td>{address.address_name}</td>
-                              <td>{address.address_number}</td>
-                              <td>{address.area_name}</td>
-                              <td>{address.zipcode}</td>
-                              <td style={{ dispaly: "flex" }}>
-                                <PencilFill
-                                  onClick={() => this.editAddress(address)}
-                                />{" "}
-                                <MdRemoveCircle
-                                  onClick={() =>
-                                    this.showRemoveAddressDialog(true, address)
-                                  }
-                                >
-                                  X
-                                </MdRemoveCircle>
-                              </td>
-                            </tr>
-                          );
-                        }
-                      )}
-                    </tbody>
-                  </Table>
-                ) : (
-                  <div>Δεν εχεις καταχωρήσει κάποια διεύθηνση ακόμα</div>
-                )}
-              </div>
-            </Grid>
+                              X
+                            </MdRemoveCircle>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </Table>
+              ) : (
+                <div>Δεν εχεις καταχωρήσει κάποια διεύθηνση ακόμα</div>
+              )}
+            </div>
           </Grid>
-          <div className="addAddressDiv">
-            <Button
-              className="addAddressButton"
-              onClick={() => this.selectAddressModal(true)}
-            >
-              +
-            </Button>
-          </div>
-          {removeAddressdialog}
-          {editAddressModal}
-          {addAddressModal}
-        </Container>
-      );
-    }
+        </Grid>
+        <div className="addAddressDiv">
+          <Button
+            className="addAddressButton"
+            onClick={() => this.selectAddressModal(true)}
+          >
+            +
+          </Button>
+        </div>
+        {removeAddressdialog}
+        {editAddressModal}
+        {addAddressModal}
+      </Container>
+    );
   }
 }
 
@@ -296,8 +281,11 @@ const mapStateToProps = (state) => ({
   userReducer: state.userReducer,
 });
 
-export default connect(mapStateToProps, {
-  auth_get_request,
-  auth_put_request,
-  auth_delete_request,
-})(UserAdress);
+const condition = (authUser) => !!authUser;
+export default withAuthorization(condition)(
+  connect(mapStateToProps, {
+    auth_get_request,
+    auth_put_request,
+    auth_delete_request,
+  })(UserAdress)
+);

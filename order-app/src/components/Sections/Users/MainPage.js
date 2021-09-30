@@ -2,12 +2,14 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { Button, Col, Form, Row } from "react-bootstrap";
-import { Link, Redirect } from "react-router-dom";
+import { Link } from "react-router-dom";
 import "../../../css/Pages/accountpage.css";
 import { auth_get_request, auth_put_request } from "../../../actions/lib";
 
 import { Grid, Container } from "@material-ui/core";
 import { GET_USER, UPDATE_USER } from "../../../actions/actions";
+import withAuthorization from "../../../firebase/withAuthorization";
+import Header from "../../Layout/Header";
 
 class MainPage extends Component {
   constructor(props) {
@@ -92,123 +94,91 @@ class MainPage extends Component {
   }
 
   render() {
-    if (sessionStorage.getItem("isAuthenticated") === "false") {
-      return <Redirect to="/home" />;
-    } else {
-      return (
-        <Container className="accountMainPage">
-          <Grid spacing={3} container>
-            <Grid item lg={3} md={3} sm={6} xs={12}>
-              <Link className="nav-text nav-text-activated" to="/account">
-                Ο λογαριασμός μου
-              </Link>
-            </Grid>
-            <Grid item lg={3} md={3} sm={6} xs={12}>
-              <Link className="nav-text" to="/account/orders">
-                Οι παραγγελίες μου
-              </Link>
-            </Grid>
-            <Grid item lg={2} md={2} sm={6} xs={12}>
-              <Link className="nav-text" to="/account/addresses">
-                Διευθύνσεις
-              </Link>
-            </Grid>
+    return (
+      <Container className="accountMainPage">
+        <Header />
+        <Grid spacing={3} container>
+          <Grid item lg={3} md={3} sm={6} xs={12}>
+            <Link className="nav-text nav-text-activated" to="/account">
+              Ο λογαριασμός μου
+            </Link>
+          </Grid>
+          <Grid item lg={3} md={3} sm={6} xs={12}>
+            <Link className="nav-text" to="/account/orders">
+              Οι παραγγελίες μου
+            </Link>
+          </Grid>
+          <Grid item lg={2} md={2} sm={6} xs={12}>
+            <Link className="nav-text" to="/account/addresses">
+              Διευθύνσεις
+            </Link>
+          </Grid>
 
-            {/* <Grid item lg={2} md={2} sm={6} xs={12}>
+          {/* <Grid item lg={2} md={2} sm={6} xs={12}>
               <Link className="nav-text" to="/account/ratings">
                 Βαθμολογίες
               </Link>
             </Grid> */}
-          </Grid>
-          <Row className="userProfileRow bodyRow">
-            <div className="roundedContainer userProfileContainer">
-              <h4> Επεξεργασία Στοιχείων</h4>
-              <Form onSubmit={this.onUpdateSubmit}>
-                <Form.Row>
-                  <Form.Group as={Col} controlId="formGridName">
-                    <Form.Label>Όνομα</Form.Label>
-                    <Form.Control
-                      onChange={this.onChange}
-                      type="text"
-                      name="name"
-                      value={this.state.name}
-                      placeholder="Εισάγετε το όνομά σας"
-                    />
-                  </Form.Group>
-                  <Form.Group as={Col} controlId="formGridLastName">
-                    <Form.Label>Επίθετο</Form.Label>
-                    <Form.Control
-                      onChange={this.onChange}
-                      type="text"
-                      name="surname"
-                      value={this.state.surname}
-                      placeholder="Εισάγετε το επίθετό σας"
-                    />
-                  </Form.Group>
-                </Form.Row>
-                <Form.Row>
-                  <Form.Group as={Col} controlId="formGridEmail">
-                    <Form.Label>Email</Form.Label>
-                    <Form.Control
-                      onChange={this.onChange}
-                      type="email"
-                      name="email"
-                      value={this.state.email}
-                      placeholder="Εισάγετε το email σας"
-                      readOnly
-                    />
-                  </Form.Group>
-                  <Form.Group as={Col} controlId="formGridPhone">
-                    <Form.Label>Τηλέφωνο Επικοινωνίας</Form.Label>
-                    <Form.Control
-                      type="tel"
-                      placeholder="Εισάγετε τον αριθμό σας: 69xxxxxxxx"
-                      name="phone"
-                      pattern="69[0-9]{8}"
-                      value={this.state.phone}
-                      onChange={this.onChange}
-                    />
-                  </Form.Group>
-                </Form.Row>
+        </Grid>
+        <Row className="userProfileRow bodyRow">
+          <div className="roundedContainer userProfileContainer">
+            <h4> Επεξεργασία Στοιχείων</h4>
+            <Form onSubmit={this.onUpdateSubmit}>
+              <Form.Row>
+                <Form.Group as={Col} controlId="formGridName">
+                  <Form.Label>Όνομα</Form.Label>
+                  <Form.Control
+                    onChange={this.onChange}
+                    type="text"
+                    name="name"
+                    value={this.state.name}
+                    placeholder="Εισάγετε το όνομά σας"
+                  />
+                </Form.Group>
+                <Form.Group as={Col} controlId="formGridLastName">
+                  <Form.Label>Επίθετο</Form.Label>
+                  <Form.Control
+                    onChange={this.onChange}
+                    type="text"
+                    name="surname"
+                    value={this.state.surname}
+                    placeholder="Εισάγετε το επίθετό σας"
+                  />
+                </Form.Group>
+              </Form.Row>
+              <Form.Row>
+                <Form.Group as={Col} controlId="formGridEmail">
+                  <Form.Label>Email</Form.Label>
+                  <Form.Control
+                    onChange={this.onChange}
+                    type="email"
+                    name="email"
+                    value={this.state.email}
+                    placeholder="Εισάγετε το email σας"
+                    readOnly
+                  />
+                </Form.Group>
+                <Form.Group as={Col} controlId="formGridPhone">
+                  <Form.Label>Τηλέφωνο Επικοινωνίας</Form.Label>
+                  <Form.Control
+                    type="tel"
+                    placeholder="Εισάγετε τον αριθμό σας: 69xxxxxxxx"
+                    name="phone"
+                    pattern="69[0-9]{8}"
+                    value={this.state.phone}
+                    onChange={this.onChange}
+                  />
+                </Form.Group>
+              </Form.Row>
 
-                <Button variant="primary" type="submit">
-                  Ενημέρωση
-                </Button>
-              </Form>
-              {/* <h4> Αλλαγή Κωδικού</h4> */}
-              {/* <Form onSubmit={this.onChangePasswordSubmit}>
-                <Form.Row>
-                  <Form.Group as={Col} controlId="formPassword">
-                    <Form.Label>Νέος κωδικός</Form.Label>
-                    <Form.Control
-                      onChange={this.onChange}
-                      type="text"
-                      name="newPassword"
-                      // value={this.state.newPassword}
-                      placeholder="Εισάγετε τον νέο κωδικό σας"
-                    />
-                  </Form.Group>
-                  <Form.Group as={Col} controlId="formPassword2">
-                    <Form.Label>Επανάληψη Κωδικού</Form.Label>
-                    <Form.Control
-                      onChange={this.onChange}
-                      type="text"
-                      name="newPassword2"
-                      // value={this.state.newPassword2}
-                      placeholder="Επαναλάβετε τον κωδικό σας"
-                    />
-                  </Form.Group>
-                </Form.Row>
-
-                <Button variant="primary" type="submit">
-                  Ενημέρωση
-                </Button>
-              </Form> */}
-            </div>
-          </Row>
-        </Container>
-      );
-    }
+              <Button variant="primary" type="submit">
+                Ενημέρωση
+              </Button>
+            </Form>
+          </div>
+        </Row>
+      </Container>
+    );
   }
 }
 
@@ -216,6 +186,7 @@ const mapStateToProps = (state) => ({
   userReducer: state.userReducer,
 });
 
-export default connect(mapStateToProps, { auth_get_request, auth_put_request })(
-  MainPage
+const condition = (authUser) => !!authUser;
+export default withAuthorization(condition)(
+  connect(mapStateToProps, { auth_get_request, auth_put_request })(MainPage)
 );
