@@ -11,8 +11,6 @@
 
 import axios from "axios";
 import jwt from "jwt-decode";
-import { provider } from "../firebase/base";
-import app from "../firebase/base";
 import { authHeaders, headers } from "../utils/axiosHeaders";
 import { current_url } from "../utils/util";
 import {
@@ -89,13 +87,11 @@ export const login = (email, password) => (dispatch) => {
     });
 };
 
-export const login_async = (email, password) => async (dispatch) => {
+export const login_async = (email, password, firebase) => async (dispatch) => {
   try {
-    const credentials = await app
-      .auth()
-      .signInWithEmailAndPassword(email, password);
+    const credentials = await firebase.signIn(email, password);
     sessionStorage.setItem("userID", credentials.user.uid);
-    sessionStorage.setItem("isAuthenticated", true);
+    localStorage.setItem("isAuthenticated", true);
     dispatch({
       type: LOGIN_SUCCESS,
     });
@@ -112,177 +108,42 @@ export const login_async = (email, password) => async (dispatch) => {
   }
 };
 
-export const glogin_async = () => async (dispatch) => {
-  try {
-    const res = await app.auth().signInWithPopup(provider);
-    const credential = provider.credentialFromResult(res);
-    const token = credential.accessToken;
-    console.log(token);
-    const user = res.user;
-    sessionStorage.setItem("userID", user.uid);
-    sessionStorage.setItem("isAuthenticated", true);
-    dispatch({
-      type: LOGIN_SUCCESS,
-    });
-  } catch (error) {
-    // const errorCode = error.code;
-    // const errorMessage = error.message;
-    // // The email of the user's account used.
-    // const email = error.email;
-    // // The AuthCredential type that was used.
-    // const credential = provider.credentialFromError(error);
-    // console.log(credential)
-    alert(error);
-    dispatch({
-      type: LOGIN_FAIL,
-      error: error.response,
-    });
-    dispatch({
-      type: SNACKBAR_ERROR,
-      message: "Invalid credits",
-    });
-  }
-};
+export const register_async =
+  (email, password, type, firebase) => async (dispatch) => {
+    try {
+      let credentials;
+      if (type === "email") {
+        credentials = await firebase.register(email, password);
+      } else if (type === "gmail") {
+        // credentials = await app.auth().signInWithPopup(provider);
+      }
 
-export const register_async = (email, password, type) => async (dispatch) => {
-  try {
-    let credentials;
-    if (type === "email") {
-      credentials = await app
-        .auth()
-        .createUserWithEmailAndPassword(email, password);
-    } else if (type === "gmail") {
-      credentials = await app.auth().signInWithPopup(provider);
-    }
-
-    const data = {
-      id: credentials.user.uid,
-      username: "",
-      email: email,
-      password: password,
-    };
-    await axios.post(current_url + "user/register", data, authHeaders);
-
-    dispatch({
-      type: REGISTER_SUCCESS,
-    });
-    dispatch({
-      type: SNACKBAR_SUCCESS,
-      message: "User registered successfully",
-    });
-  } catch (error) {
-    alert(error);
-    dispatch({
-      type: REGISTER_FAIL,
-    });
-    dispatch({
-      type: SNACKBAR_ERROR,
-      message: error.response,
-    });
-  }
-};
-
-export const logout_async = () => async (dispatch) => {
-  try {
-    await app.auth().signOut();
-
-    sessionStorage.setItem("isAuthenticated", false);
-    dispatch({
-      type: LOGOUT_SUCCESS,
-    });
-  } catch (error) {
-    alert(error);
-  }
-};
-
-// LOGIN ADMIN
-export const admin_login = (email, password) => (dispatch) => {
-  dispatch({
-    type: ADMIN_LOADING,
-  });
-  // Request Body
-  const data = {
-    email: email,
-    password: password,
-  };
-
-  axios
-    .post(current_url + "ad in/login", data, headers)
-    .then((res) => {
-      // console.log(data.user);
-      // Decode token
-      const token = jwt(res.data.access_token);
-      // const refreshToken = jwt(res.data.refresh_token);
-      // console.log(refreshToken);
       const data = {
-        id: token.access_uuid,
-        user: token.user,
+        id: credentials.user.uid,
+        username: "",
+        email: email,
+        password: password,
       };
-      console.log(token);
+      await axios.post(current_url + "user/register", data, authHeaders);
+
       dispatch({
-        type: ADMIN_LOGIN_SUCCESS,
-        token: res.data.access_token,
-        refresh_token: res.data.refresh_token,
-        user: data.user,
+        type: REGISTER_SUCCESS,
       });
-    })
-    .then((res) => {
       dispatch({
         type: SNACKBAR_SUCCESS,
-        message: "Login successful",
+        message: "User registered successfully",
       });
-    })
-    .catch((err) => {
-      console.log(err);
-      // dispatch(returnErrors(err, err.status));
+    } catch (error) {
+      alert(error);
       dispatch({
-        type: LOGIN_FAIL,
-        error: err.response.data.message,
+        type: REGISTER_FAIL,
       });
       dispatch({
         type: SNACKBAR_ERROR,
-        message: "Invalid credits",
+        message: error.response,
       });
-    });
-};
-
-export const refreshToken = (token) => (dispatch) => {
-  const data = {
-    refresh_token: token,
+    }
   };
-  console.log(data);
-  axios
-    .post(current_url + "token/refresh", data, headers)
-    .then((res) => {
-      // Decode token
-      const token = jwt(res.data.access_token);
-      const refreshToken = jwt(res.data.refresh_token);
-      console.log(refreshToken);
-      const data = {
-        id: token.user_id,
-        user: token.user,
-      };
-      console.log(data.user);
-      dispatch({
-        type: LOGIN_SUCCESS,
-        token: res.data.access_token,
-        refresh_token: res.data.refresh_token,
-        user: data.user,
-      });
-    })
-    .catch((err) => {
-      console.log(err.response);
-      // dispatch(returnErrors(err, err.status));
-      dispatch({
-        type: LOGIN_FAIL,
-        error: err.response.data.message,
-      });
-      dispatch({
-        type: SNACKBAR_ERROR,
-        message: "Invalid credits",
-      });
-    });
-};
 
 // Update User
 export const updateUser = (data) => (dispatch) => {
