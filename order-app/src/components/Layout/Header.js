@@ -22,6 +22,9 @@ import {
   Popper,
   Typography,
 } from "@material-ui/core";
+import LogRegModal from "../Modals/LogRegModal";
+import withAuthorization from "../../firebase/withAuthorization";
+import { compose } from "recompose";
 
 class Header extends Component {
   constructor(props) {
@@ -31,7 +34,7 @@ class Header extends Component {
       selectedLangeuage: "EN",
       searchText: "",
       focus: false,
-      isAuthenticated: "",
+      openLogReg: false,
       results: [],
       open: false,
       logedIn: false,
@@ -53,7 +56,7 @@ class Header extends Component {
   }
 
   logOut = async (bool) => {
-    await this.props.logout_async();
+    await this.props.firebase.signOut();
     this.props.onClose && this.props.onClose(bool);
   };
 
@@ -68,12 +71,20 @@ class Header extends Component {
     this.setState({ open: false });
   };
 
+  onCloseLog = (bool) => {
+    this.setState({ openLogReg: bool });
+  };
   render() {
     let authenticated =
-      sessionStorage.getItem("isAuthenticated") === "true" ? true : false;
-    if (window.location.href.endsWith("admin_login")) {
-      return null;
-    }
+      localStorage.getItem("isAuthenticated") === "true" ? true : false;
+
+    let modal = (
+      <LogRegModal
+        open={this.state.openLogReg}
+        firebase={this.props.firebase}
+        onClose={(bool) => this.onCloseLog(bool)}
+      />
+    );
     return (
       <Grid container>
         <Grid item xs={1}></Grid>
@@ -170,7 +181,7 @@ class Header extends Component {
                 ) : (
                   <Nav.Link
                     onClick={(e) => {
-                      this.onClose(true);
+                      this.onCloseLog(true);
                     }}
                   >
                     Σύνδεση/Εγγραφή
@@ -181,6 +192,7 @@ class Header extends Component {
           </Navbar>
         </Grid>
         <Grid item xs={1}></Grid>
+        {modal}
       </Grid>
     );
   }
@@ -191,6 +203,9 @@ const mapStateToProps = (state) => ({
   products: state.productReducer.products,
 });
 
-export default connect(mapStateToProps, { logout, refreshToken, logout_async })(
-  Header
-);
+export default compose(
+  connect(mapStateToProps, { logout, refreshToken, logout_async }),
+  withAuthorization(() => {
+    return true;
+  })
+)(Header);

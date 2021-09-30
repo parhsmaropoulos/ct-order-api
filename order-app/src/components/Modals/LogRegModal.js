@@ -4,10 +4,9 @@ import { connect } from "react-redux";
 import "../../css/common/logregmodal.css";
 import {
   login,
-  register,
-  register_async,
   login_async,
   glogin_async,
+  register_async,
 } from "../../actions/user";
 import { returnErrors } from "../../actions/messages";
 import PropTypes from "prop-types";
@@ -19,7 +18,10 @@ import {
   TextField,
 } from "@material-ui/core";
 import { showErrorSnackbar } from "../../actions/snackbar";
-import { withRouter } from "react-router-dom";
+import { compose } from "recompose";
+import { Google } from "react-bootstrap-icons";
+import { withRouter } from "react-router";
+import { withFirebase } from "../../firebase/base";
 
 class LogRegModal extends Component {
   constructor(props) {
@@ -43,7 +45,6 @@ class LogRegModal extends Component {
   static propTypes = {
     login: PropTypes.func.isRequired,
     register: PropTypes.func.isRequired,
-    isAuthenticated: PropTypes.bool,
     showErrorSnackbar: PropTypes.func.isRequired,
     register_async: PropTypes.func.isRequired,
     login_async: PropTypes.func.isRequired,
@@ -64,7 +65,11 @@ class LogRegModal extends Component {
 
   async onSubmit(e) {
     e.preventDefault();
-    await this.props.login_async(this.state.email, this.state.password);
+    await this.props.login_async(
+      this.state.email,
+      this.state.password,
+      this.props.firebase
+    );
   }
 
   async onSubmitRegister(e) {
@@ -79,7 +84,8 @@ class LogRegModal extends Component {
       let res = await this.props.register_async(
         user.email,
         user.password,
-        "email"
+        "email",
+        this.props.firebase
       );
       console.log(res);
       // this.props.register(user);
@@ -120,19 +126,18 @@ class LogRegModal extends Component {
         </div>
       );
     }
-    if (this.props.show) {
-      if (sessionStorage.getItem("isAuthenticated") === "true") {
+    if (this.props.open) {
+      if (localStorage.getItem("isAuthenticated") === "true") {
         this.onClose(false);
       }
     }
     return (
       <Modal
-        open={this.props.show}
+        open={this.props.open}
         autoFocus={true}
         onClose={(e) => {
           this.onClose(false);
         }}
-        // id="logregModal"
         className="log-reg-modal"
       >
         <Paper className="inner-paper">
@@ -165,21 +170,7 @@ class LogRegModal extends Component {
                 className="modalBodyTabs"
               >
                 <Tab eventKey="login" title="Σύνδεση">
-                  {/* <div className="loginButtons">
-                    <Button variant="outline-secondary">
-                      Log in with facebook <Facebook />
-                    </Button>
-                    <br />
-                    <Button
-                      variant="outline-secondary"
-                      onClick={this.googleLogin}
-                    >
-                      Log in with gmail <Google />
-                    </Button>
-                  </div>
-                  <div>
-                    <p>Κείμενο για είσοδο/ εγγραφή ή λινκ</p>
-                  </div> */}
+                  {/* <SignInGoogle /> */}
                   <hr />
                   <form onSubmit={this.onSubmit}>
                     <TextField
@@ -284,18 +275,53 @@ class LogRegModal extends Component {
 }
 const mapStateToProps = (state) => ({
   userReducer: state.userReducer,
-  isAuthenticated: state.userReducer.isAuthenticated,
   errorReducer: state.errorReducer,
 });
 
-export default withRouter(
-  connect(mapStateToProps, {
-    login,
-    register,
-    returnErrors,
-    showErrorSnackbar,
-    register_async,
-    login_async,
-    glogin_async,
-  })(LogRegModal)
-);
+export default connect(mapStateToProps, {
+  login,
+  returnErrors,
+  showErrorSnackbar,
+  register_async,
+  login_async,
+  glogin_async,
+})(LogRegModal);
+
+class SignInGoogleBase extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = { error: null };
+  }
+
+  onSubmit = (event) => {
+    this.props.firebase
+      .signWithGoogle()
+      .then((socialAuthUser) => {
+        this.setState({ error: null });
+        this.props.history.push("/home");
+      })
+      .catch((error) => {
+        this.setState({ error });
+      });
+
+    event.preventDefault();
+  };
+
+  render() {
+    const { error } = this.state;
+
+    return (
+      <form onSubmit={this.onSubmit}>
+        <div className="loginButtons">
+          <Button variant="outline-secondary" type="submit">
+            Log in with gmail <Google />
+          </Button>
+        </div>
+        {error && <p>{error.message}</p>}
+      </form>
+    );
+  }
+}
+
+const SignInGoogle = compose(withRouter, withFirebase)(SignInGoogleBase);
