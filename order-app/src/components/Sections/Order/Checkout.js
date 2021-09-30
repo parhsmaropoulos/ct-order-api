@@ -38,6 +38,7 @@ import { showErrorSnackbar } from "../../../actions/snackbar";
 import { auth_get_request, auth_post_request } from "../../../actions/lib";
 import { GET_USER, SEND_ORDER } from "../../../actions/actions";
 import EveryPayForm from "./EveryPayForm";
+import withAuthorization from "../../../firebase/withAuthorization";
 
 const availableTipOptions = [0.5, 1.0, 1.5, 2.0, 5.0, 10.0];
 
@@ -72,12 +73,13 @@ class Checkout extends Component {
         awaiting: false,
       },
       hasLoaded: false,
+      paid: false,
     };
     this.onSelectChange = this.onSelectChange.bind(this);
     this.onChange = this.onChange.bind(this);
     this.recieveOrder = this.recieveOrder.bind(this);
     this.sendOrder = this.sendOrder.bind(this);
-    this.sendOrderFunc = this.sendOrderFunc.bind(this);
+    this.callPayment = this.callPayment.bind(this);
     this.handlePaymentChange = this.handlePaymentChange.bind(this);
     this.handleTipsChange = this.handleTipsChange.bind(this);
   }
@@ -172,12 +174,8 @@ class Checkout extends Component {
     return orderProducts;
   };
 
-  async sendOrderFunc(e) {
+  async callPayment(e) {
     e.preventDefault();
-    window.everypay.onClick();
-  }
-
-  async sendOrder(e) {
     // check input requirements
     const order = {
       products: this.convertToOrderProducts(this.props.orderReducer.products),
@@ -191,7 +189,6 @@ class Checkout extends Component {
       discounts: [],
       name: this.props.userReducer.user.name,
       surname: this.props.userReducer.user.surname,
-      // address: this.state.selectedAddress,
       client_area_name: this.state.selectedAddress.area_name,
       client_city_name: this.state.selectedAddress.city_name,
       client_address_name: this.state.selectedAddress.address_name,
@@ -210,45 +207,86 @@ class Checkout extends Component {
       from_id: sessionStorage.getItem("userID"),
     };
     if (this.validateFields(order)) {
-      let SSEdata = {
-        id: null,
-        order: null,
-        from: null,
-        user_details: null,
-      };
-      const res = await this.props.auth_post_request(
-        `orders/new_order`,
-        order,
-        SEND_ORDER
-      );
-      console.log(res);
-      let newOrder = res.data.data;
-      SSEdata.id = String(newOrder.ID);
-      SSEdata.order = newOrder;
-      SSEdata.from = String(sessionStorage.getItem("userID"));
-      SSEdata.user_details = {};
-
-      await this.props.auth_post_request(
-        `sse/sendorder/${SSEdata.from}`,
-        SSEdata,
-        null
-      );
+      if (this.state.payWithCard) {
+        window.everypay.onClick();
+      } else if (this.state.payWithPaypal) {
+        //handle paypal payment
+      } else if (this.state.payWithCash) {
+        this.sendOrder(e);
+      }
     }
+  }
+
+  async sendOrder(e) {
+    if (e) {
+      e.preventDefault();
+    }
+    // check input requirements
+    const order = {
+      products: this.convertToOrderProducts(this.props.orderReducer.products),
+      user_id: this.props.userReducer.user.ID,
+      delivery_type: this.state.deliveryOption,
+      pre_discount_price: this.props.orderReducer.totalPrice,
+      after_discount_price: this.props.orderReducer.totalPrice,
+      payment_type: this.state.payment_type,
+      tips: parseFloat(this.state.tips),
+      comments: this.state.comments,
+      discounts: [],
+      name: this.props.userReducer.user.name,
+      surname: this.props.userReducer.user.surname,
+      client_area_name: this.state.selectedAddress.area_name,
+      client_city_name: this.state.selectedAddress.city_name,
+      client_address_name: this.state.selectedAddress.address_name,
+      client_address_number: this.state.selectedAddress.address_number,
+      client_zip: this.state.selectedAddress.zipcode,
+      client_lat: this.state.selectedAddress.latitude,
+      client_lon: this.state.selectedAddress.longitude,
+      phone: parseInt(this.state.phone),
+      bell_name: this.state.userDetails.bellName,
+      floor: this.state.userDetails.floor,
+      delivery_time: 40,
+      comment: {},
+      accepted: false,
+      completed: false,
+      canceled: false,
+      from_id: sessionStorage.getItem("userID"),
+    };
+    let SSEdata = {
+      id: null,
+      order: null,
+      from: null,
+      user_details: null,
+    };
+    const res = await this.props.auth_post_request(
+      `user/new_order`,
+      order,
+      SEND_ORDER
+    );
+    let newOrder = res.data.data;
+    SSEdata.id = String(newOrder.ID);
+    SSEdata.order = newOrder;
+    SSEdata.from = String(sessionStorage.getItem("userID"));
+    SSEdata.user_details = {};
+    await this.props.auth_post_request(
+      `sse/sendorder/${SSEdata.from}`,
+      SSEdata,
+      null
+    );
   }
 
   validateFields = (order) => {
     const mobilePhoneRegex = new RegExp(/^69[0-9]{8}/);
     const homePhoneRegex = new RegExp(/^21[0-9]{8}/);
-    if (order.delivery_type === "") {
+    if (order.delivery_type === "" || order.delivery_type === null) {
       this.props.showErrorSnackbar("Please select delivery type");
       return false;
-    } else if (order.payment_type === "") {
+    } else if (order.payment_type === "" || order.delivery_type === null) {
       this.props.showErrorSnackbar("Please select payment type");
       return false;
-    } else if (order.address === "") {
+    } else if (!!order.address) {
       this.props.showErrorSnackbar("Please select an adress");
       return false;
-    } else if (order.floor === "" || order.bell_name === "") {
+    } else if (order.floor === "" || !!order.bell_name === "") {
       this.props.showErrorSnackbar("Please enter floor and bell name");
       return false;
     } else if (
@@ -564,7 +602,12 @@ class Checkout extends Component {
                   <FormControlLabel
                     aria-label="Acknowledge"
                     onFocus={(event) => event.stopPropagation()}
-                    control={<Checkbox checked={this.state.payWithCard} />}
+                    control={
+                      <Checkbox
+                        checked={this.state.payWithCard}
+                        onClick={() => this.handlePaymentChange("card")}
+                      />
+                    }
                   />
                   <div className="column-accordion">
                     <Typography className="heading-accordion">Κάρτα</Typography>
@@ -665,7 +708,7 @@ class Checkout extends Component {
                       variant="contained"
                       color="primary"
                       type="submit"
-                      onClick={this.sendOrder}
+                      onClick={this.callPayment}
                     >
                       Αποστολή{" "}
                     </Button>
@@ -688,14 +731,18 @@ const mapStateToProps = (state) => ({
   userReducer: state.userReducer,
   orderReducer: state.orderReducer,
 });
-export default connect(mapStateToProps, {
-  send_order,
-  showErrorSnackbar,
-  empty_cart,
-  order_accepted,
-  clearReducer,
-  getUser,
-  auth_get_request,
-  auth_post_request,
-  order_declined,
-})(Checkout);
+
+const condition = (authUser) => !!authUser;
+export default withAuthorization(condition)(
+  connect(mapStateToProps, {
+    send_order,
+    showErrorSnackbar,
+    empty_cart,
+    order_accepted,
+    clearReducer,
+    getUser,
+    auth_get_request,
+    auth_post_request,
+    order_declined,
+  })(Checkout)
+);

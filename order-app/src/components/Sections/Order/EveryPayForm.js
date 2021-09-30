@@ -22,7 +22,6 @@ const EveryPayForm = React.memo(({ amount, description, func }) => {
 
   const handleResponse = async (r) => {
     if (r.response === "success") {
-      // console.log(r);
       let body = {
         token: r.token,
         amount: String(amount),
