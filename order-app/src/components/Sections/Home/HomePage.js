@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from "uuid";
 import { Link } from "react-router-dom";
 import { GridList, GridListTile, GridListTileBar } from "@material-ui/core";
 import { GET_CATEGORIES } from "../../../actions/actions";
+import Header from "../../Layout/Header";
 
 class HomePage extends Component {
   constructor(props) {
@@ -23,6 +24,7 @@ class HomePage extends Component {
     productReducer: PropTypes.object.isRequired,
   };
   componentDidMount() {
+    // console.log(this.props);
     if (this.props.productReducer.categories.length === 0) {
       this.get_categories();
     }
@@ -33,27 +35,10 @@ class HomePage extends Component {
   async get_categories() {
     await this.props.get_request("product_category/all", GET_CATEGORIES);
   }
-
   render() {
     return (
-      <Container
-        className="homePageContainer"
-        style={{ minHeight: "70vh", margin: "2em" }}
-      >
-        {/* <div>
-          <Button>
-            <Link to={`/order`}>Order Now</Link>
-          </Button>
-          <Link to="/create_item">Create</Link>
-          <br />
-          <Link to="/items">Items</Link>
-          <br />
-          <Link to="/ingredients">Ingredients</Link>
-          <br />
-          <Link to="/choices">Choices</Link>
-          <br />
-        </div> */}
-        {/* <Link to={`/admin`}>admin</Link> */}
+      <Container className="homePageContainer" style={{ minHeight: "70vh" }}>
+        <Header />
         <GridList
           style={{
             display: "flex",
@@ -68,11 +53,7 @@ class HomePage extends Component {
           {this.props.productReducer.categories.length > 0 ? (
             this.props.productReducer.categories.map((c, indx) => {
               return (
-                <GridListTile
-                  key={c.ID}
-                  cols={1}
-                  // style={{ border: "1px solid black" }}
-                >
+                <GridListTile key={c.ID} cols={1}>
                   <img
                     style={{
                       maxWidth: "100%",
@@ -82,15 +63,8 @@ class HomePage extends Component {
                     src={`assets/images/${c.image}`}
                     alt={c.name}
                   />
-                  <Link to={`order/${c.name}`}>
-                    <GridListTileBar
-                      title={c.name}
-                      // actionIcon={
-                      // <IconButton aria-label={`info about ${c.name}`}>
-                      //   <InfoIcon />
-                      // </IconButton>
-                      // }
-                    />
+                  <Link to={`/order/${c.name}`}>
+                    <GridListTileBar title={c.name} />
                   </Link>
                 </GridListTile>
               );
