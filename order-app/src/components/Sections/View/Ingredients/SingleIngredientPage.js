@@ -3,9 +3,8 @@ import { connect } from "react-redux";
 // import { update_ingredient, delete_item } from "../../../../actions/items";
 import PropTypes from "prop-types";
 import { Button, Form } from "react-bootstrap";
-import { auth_delete_request,auth_put_request } from "../../../../actions/lib";
+import { auth_delete_request, auth_put_request } from "../../../../actions/lib";
 import { UPDATE_ITEM } from "../../../../actions/actions";
-
 
 class SingleIngredientPage extends Component {
   constructor(props) {
@@ -23,7 +22,6 @@ class SingleIngredientPage extends Component {
   }
 
   static propTypes = {
-    isAuthenticated: PropTypes.bool.isRequired,
     auth_put_request: PropTypes.func.isRequired,
     auth_delete_request: PropTypes.func.isRequired,
     categories: PropTypes.array.isRequired,
@@ -39,7 +37,11 @@ class SingleIngredientPage extends Component {
     };
     // TODO change image
     // console.log(ingredient);
-    await this.props.auth_put_request(`ingredients/${this.state.id}/update_values`,ingredient,UPDATE_ITEM)
+    await this.props.auth_put_request(
+      `ingredients/${this.state.id}/update_values`,
+      ingredient,
+      UPDATE_ITEM
+    );
     // this.props.update_ingredient(this.state.id, ingredient);
   }
 
@@ -57,7 +59,7 @@ class SingleIngredientPage extends Component {
 
   onDelete = () => {
     const id = this.state.item.id;
-    this.props.auth_delete_request(`ingrediets/${id}`)
+    this.props.auth_delete_request(`ingrediets/${id}`);
   };
 
   onChange = (e) => {
@@ -157,7 +159,6 @@ class SingleIngredientPage extends Component {
 }
 
 const mapStateToProps = (state) => ({
-  isAuthenticated: state.userReducer.isAuthenticated,
   categories: state.productReducer.ingredientCategories,
 });
 

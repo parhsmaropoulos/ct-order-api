@@ -85,7 +85,13 @@ class ChoicesComponent extends Component {
                   {this.props.choices[this.state.selectedChoice].description}
                 </td>
                 <td>
-                  {this.props.choices[this.state.selectedChoice].required ? <p><Check/></p>:<p></p> }
+                  {this.props.choices[this.state.selectedChoice].required ? (
+                    <p>
+                      <Check />
+                    </p>
+                  ) : (
+                    <p></p>
+                  )}
                 </td>
                 <td>
                   <Link
@@ -108,13 +114,9 @@ class ChoicesComponent extends Component {
   }
 }
 
-const mapStateToProps = (state) => (
-  console.log(state),
-  {
-    isAuthenticated: state.userReducer.isAuthenticated,
-    choices: state.productReducer.choices,
-  }
-);
+const mapStateToProps = (state) => ({
+  choices: state.productReducer.choices,
+});
 
 export default connect(mapStateToProps, {
   update_choice,

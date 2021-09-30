@@ -18,7 +18,6 @@ import {
 
 const defaultState = {
   token: sessionStorage.getItem("token"),
-  isAuthenticated: false,
   isLoading: false,
   hasLoaded: false,
   user: null,
@@ -61,7 +60,7 @@ const userReducer = (state = defaultState, action) => {
       sessionStorage.setItem("isAuthenticated", true);
       return {
         ...state,
-        isAuthenticated: true,
+
         isLoading: false,
         hadLoaded: true,
         user: action.user,
@@ -70,7 +69,7 @@ const userReducer = (state = defaultState, action) => {
       sessionStorage.setItem("isAuthenticated", true);
       return {
         ...state,
-        isAuthenticated: true,
+
         isLoading: false,
         error: "",
       };
@@ -85,7 +84,7 @@ const userReducer = (state = defaultState, action) => {
       return {
         ...state,
         ...action.payload,
-        isAuthenticated: true,
+
         isLoading: false,
         user: action.user,
       };
@@ -98,7 +97,7 @@ const userReducer = (state = defaultState, action) => {
         user: null,
         error: "",
         hasLoaded: false,
-        isAuthenticated: false,
+
         isLoading: false,
       };
     case REGISTER_FAIL:
@@ -108,17 +107,17 @@ const userReducer = (state = defaultState, action) => {
         user: null,
         error: "",
         hasLoaded: false,
-        isAuthenticated: false,
+
         isLoading: false,
       };
     case GET_USER_ORDERS:
-      console.log(action);
+      // console.log(action);
       return {
         ...state,
         orders: action.data,
       };
     case GET_USER_ADDRESSES:
-      console.log(action);
+      // console.log(action);
       return {
         ...state,
         addresses: action.data,

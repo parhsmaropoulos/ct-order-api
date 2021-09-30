@@ -80,7 +80,6 @@ class SingleItemPage extends Component {
   }
 
   static propTypes = {
-    isAuthenticated: PropTypes.bool.isRequired,
     auth_delete_request: PropTypes.func.isRequired,
     auth_put_request: PropTypes.func.isRequired,
     categories: PropTypes.array.isRequired,
@@ -456,7 +455,6 @@ class SingleItemPage extends Component {
 }
 
 const mapStateToProps = (state) => ({
-  isAuthenticated: state.userReducer.isAuthenticated,
   ingredients: state.productReducer.ingredients,
   ingredientCategories: state.productReducer.ingredientCategories,
   choices: state.productReducer.choices,

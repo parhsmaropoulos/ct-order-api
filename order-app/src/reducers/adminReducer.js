@@ -7,15 +7,12 @@ import {
   ACCEPT_ORDER,
   TODAY_ORDERS,
   COMPLETE_ORDER,
-  ADMIN_LOGIN_SUCCESS,
-  ADMIN_LOGOUT,
-  ADMIN_LOADING,
 } from "../actions/actions";
 
 const defaultState = {
   comments: [],
   loaded: false,
-  isAuthenticated: false,
+
   isLoading: false,
   orders_loaded_today: false,
   orders: {
@@ -27,27 +24,6 @@ const defaultState = {
 
 const adminReducer = (state = defaultState, action) => {
   switch (action.type) {
-    case ADMIN_LOADING: {
-      return {
-        ...state,
-        isLoading: true,
-      };
-    }
-    case ADMIN_LOGIN_SUCCESS:
-      sessionStorage.setItem("adminAuthenticated", true);
-      sessionStorage.setItem("token", action.token);
-      sessionStorage.setItem("refreshToken", action.refresh_token);
-      sessionStorage.setItem("userID", action.user.id);
-      return {
-        ...state,
-        isAuthenticated: true,
-        isLoading: false,
-      };
-    case ADMIN_LOGOUT:
-      return {
-        ...state,
-        isAuthenticated: false,
-      };
     case GET_COMMENTS:
       return {
         ...state,

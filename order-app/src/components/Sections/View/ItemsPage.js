@@ -18,7 +18,7 @@ class ItemsPage extends Component {
     categories: PropTypes.array.isRequired,
     ingredients: PropTypes.array.isRequired,
     choices: PropTypes.array.isRequired,
-    isAuthenticated: PropTypes.bool,
+
     auth_get_request: PropTypes.func.isRequired,
     isReady: PropTypes.bool,
   };
@@ -65,7 +65,6 @@ class ItemsPage extends Component {
   }
 }
 const mapStateToProps = (state) => ({
-  isAuthenticated: state.userReducer.isAuthenticated,
   categories: state.productReducer.categories,
   products: state.productReducer.products,
   ingredients: state.productReducer.ingredients,
