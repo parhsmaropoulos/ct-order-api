@@ -50,7 +50,6 @@ func GetAllOrdersHandler(c *gin.Context) {
 		ContexJsonResponse(c, "Error on orders search", http.StatusInternalServerError, nil, result.Error)
 		return
 	}
-
 	ContexJsonResponse(c, "Orders fetched successfully", 200, orders, nil)
 }
 
@@ -98,6 +97,7 @@ func GetSingleOrderByIdHandler(c *gin.Context) {
 		return
 	}
 
+	order.Receipt = models.GeneratePDFReciept(order)
 	ContexJsonResponse(c, "Order fetched successfully", 200, order, nil)
 	return
 }
@@ -226,6 +226,7 @@ func GetTodayOrdersHandler(c *gin.Context) {
 		Completed []models.Order`json:"completed"`
 	}
 	for _, o := range orders {
+		o.Receipt = models.GeneratePDFReciept(o)
 		if o.Completed {
 			resp.Completed = append(resp.Completed,o)
 		} else if o.Accepted {
