@@ -14,8 +14,6 @@ import jwt from "jwt-decode";
 import { authHeaders, headers } from "../utils/axiosHeaders";
 import { current_url } from "../utils/util";
 import {
-  ADMIN_LOADING,
-  ADMIN_LOGIN_SUCCESS,
   EMPTY_CART,
   GET_USER,
   GET_USER_ADDRESSES,

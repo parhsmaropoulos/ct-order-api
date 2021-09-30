@@ -2,12 +2,7 @@ import React, { Component } from "react";
 import { Button, Tab, Tabs } from "react-bootstrap";
 import { connect } from "react-redux";
 import "../../css/common/logregmodal.css";
-import {
-  login,
-  login_async,
-  glogin_async,
-  register_async,
-} from "../../actions/user";
+import { login, login_async, register_async } from "../../actions/user";
 import { returnErrors } from "../../actions/messages";
 import PropTypes from "prop-types";
 import {
@@ -284,7 +279,6 @@ export default connect(mapStateToProps, {
   showErrorSnackbar,
   register_async,
   login_async,
-  glogin_async,
 })(LogRegModal);
 
 class SignInGoogleBase extends Component {

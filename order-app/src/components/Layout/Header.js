@@ -6,7 +6,7 @@ import React, { Component } from "react";
 import { Image, Nav, Navbar } from "react-bootstrap";
 import { PersonCircle } from "react-bootstrap-icons";
 import { connect } from "react-redux";
-import { logout, refreshToken, logout_async } from "../../actions/user";
+import { logout } from "../../actions/user";
 import PropTypes from "prop-types";
 import "../../css/Layout/header.css";
 import logo from "../../assets/Images/transparent-logo.png";
@@ -44,7 +44,6 @@ class Header extends Component {
   static propTypes = {
     logout: PropTypes.func.isRequired,
     products: PropTypes.array.isRequired,
-    logout_async: PropTypes.func.isRequired,
   };
 
   onClose = (bool) => {
@@ -204,7 +203,7 @@ const mapStateToProps = (state) => ({
 });
 
 export default compose(
-  connect(mapStateToProps, { logout, refreshToken, logout_async }),
+  connect(mapStateToProps, { logout }),
   withAuthorization(() => {
     return true;
   })
