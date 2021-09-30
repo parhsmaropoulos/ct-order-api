@@ -21,8 +21,6 @@ class CreateCategoryForm extends Component {
   }
 
   static propTypes = {
-    // isAuthenticated: PropTypes.bool.isRequired,
-    // create_category: PropTypes.func.isRequired,
     auth_post_request: PropTypes.func.isRequired,
   };
 
@@ -131,10 +129,7 @@ class CreateCategoryForm extends Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  isAuthenticated: state.userReducer.isAuthenticated,
-  // categories: state.productReducer.categories,
-});
+const mapStateToProps = (state) => ({});
 
 export default connect(mapStateToProps, { create_category, auth_post_request })(
   CreateCategoryForm

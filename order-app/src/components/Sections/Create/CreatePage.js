@@ -6,7 +6,12 @@ import { CreateOptionsData } from "./CreateOptionsData";
 
 import { auth_get_request } from "../../../actions/lib";
 import PropTypes from "prop-types";
-import { GET_CATEGORIES, GET_CHOICES, GET_INGREDIENTS, GET_ITEMS } from "../../../actions/actions";
+import {
+  GET_CATEGORIES,
+  GET_CHOICES,
+  GET_INGREDIENTS,
+  GET_ITEMS,
+} from "../../../actions/actions";
 
 class CreatePage extends Component {
   state = {
@@ -18,7 +23,6 @@ class CreatePage extends Component {
   static propTypes = {
     productReducer: PropTypes.object.isRequired,
     auth_get_request: PropTypes.func.isRequired,
-    isAuthenticated: PropTypes.bool,
   };
   componentDidMount() {
     this.get_items();
@@ -31,13 +35,13 @@ class CreatePage extends Component {
     await this.props.auth_get_request("products/all", GET_ITEMS);
   }
   async get_categories() {
-    await this.props.auth_get_request("product_category/all",GET_CATEGORIES)
+    await this.props.auth_get_request("product_category/all", GET_CATEGORIES);
   }
   async get_choices() {
-    await this.props.auth_get_request("product_choices/all",GET_CHOICES)
+    await this.props.auth_get_request("product_choices/all", GET_CHOICES);
   }
   async get_ingredients() {
-    await this.props.auth_get_request("ingredients/all",GET_INGREDIENTS)
+    await this.props.auth_get_request("ingredients/all", GET_INGREDIENTS);
   }
   render() {
     return (
@@ -69,5 +73,4 @@ class CreatePage extends Component {
 const mapStateToProps = (state) => ({
   productReducer: state.productReducer,
 });
-export default connect(mapStateToProps, {auth_get_request
-})(CreatePage);
+export default connect(mapStateToProps, { auth_get_request })(CreatePage);

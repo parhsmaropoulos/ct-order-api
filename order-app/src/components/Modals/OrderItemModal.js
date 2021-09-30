@@ -1,8 +1,6 @@
 import React, { Component } from "react";
 import { Form } from "react-bootstrap";
 import "../../css/Pages/orderpage.css";
-// import "../../css/common/logregmodal.css";
-// import "../../css/Layout/general.css";
 import { connect } from "react-redux";
 import AddIcon from "@material-ui/icons/Add";
 import RemoveIcon from "@material-ui/icons/Remove";
@@ -42,7 +40,6 @@ class OrderItemModal extends Component {
   }
 
   static propTypes = {
-    isAuthenticated: PropTypes.bool,
     ingredients: PropTypes.array.isRequired,
   };
 
@@ -330,7 +327,6 @@ class OrderItemModal extends Component {
                                               option
                                             )
                                           }
-                                          defaultChecked
                                         />
                                       </Grid>
                                       <Grid item xs={9}>
@@ -617,7 +613,6 @@ class OrderItemModal extends Component {
 const mapStateToProps = (state) =>
   // console.log(state.productReducer.ingredients),
   ({
-    isAuthenticated: state.userReducer.isAuthenticated,
     ingredients: state.productReducer.ingredients,
     choices: state.productReducer.choices,
   });

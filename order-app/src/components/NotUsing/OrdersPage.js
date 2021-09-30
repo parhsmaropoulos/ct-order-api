@@ -11,12 +11,10 @@ class OrdersPage extends Component {
       user: {
         username: null,
       },
-      isAuthenticated: false,
     };
   }
 
   static propTypes = {
-    isAuthenticated: PropTypes.bool.isRequired,
     user: PropTypes.object.isRequired,
   };
 
@@ -24,13 +22,12 @@ class OrdersPage extends Component {
     console.log(this.props);
     this.setState({
       user: this.props.user,
-      isAuthenticated: this.props.isAuthenticated,
     });
   }
   render() {
     return (
       <div>
-        {!this.props.isAuthenticated ? (
+        {sessionStorage.getItem("isAuthenticated") === "true" ? (
           <div>
             <div>Welcome back {this.state.user.username}</div>
             <div>
@@ -54,7 +51,6 @@ class OrdersPage extends Component {
 
 const mapStateToProps = (state) => ({
   user: state.userReducer.user,
-  isAuthenticated: state.userReducer.isAuthenticated,
 });
 
 export default connect(mapStateToProps, {})(OrdersPage);

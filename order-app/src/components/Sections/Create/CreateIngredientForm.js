@@ -21,13 +21,12 @@ class CreateIngredientForm extends Component {
   }
 
   static propTypes = {
-    isAuthenticated: PropTypes.bool.isRequired,
     create_ingredient: PropTypes.func.isRequired,
     auth_post_request: PropTypes.array.isRequired,
   };
 
   componentDidMount() {
-    if (this.props.categories.length>0) {
+    if (this.props.categories.length > 0) {
       this.setState({
         category: this.props.categories[0],
       });
@@ -42,7 +41,11 @@ class CreateIngredientForm extends Component {
       description: this.state.description,
       category: this.state.category.trim(),
     };
-    await this.props.auth_post_request("ingredients/create_ingredient", ingredient, CREATE_INGREDIENT)
+    await this.props.auth_post_request(
+      "ingredients/create_ingredient",
+      ingredient,
+      CREATE_INGREDIENT
+    );
     // this.props.create_ingredient(ingredient);
     this.setState({
       name: "",
@@ -112,7 +115,7 @@ class CreateIngredientForm extends Component {
             onChange={this.onChange}
             required
           >
-            {this.props.categories.length>0 ? (
+            {this.props.categories.length > 0 ? (
               this.props.categories.map((category, index) => {
                 return <option key={index}>{category}</option>;
               })
@@ -126,7 +129,6 @@ class CreateIngredientForm extends Component {
           controlId="newcategory"
           style={{ display: this.state.display }}
         >
-
           <Form.Label>New Category </Form.Label>
           <Form.Control
             type="text"
@@ -144,7 +146,6 @@ class CreateIngredientForm extends Component {
 }
 
 const mapStateToProps = (state) => ({
-  isAuthenticated: state.userReducer.isAuthenticated,
   categories: state.productReducer.ingredientCategories,
 });
 
