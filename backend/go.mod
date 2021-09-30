@@ -14,6 +14,7 @@ require (
 	github.com/go-playground/validator/v10 v10.6.1 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/gorilla/websocket v1.4.2
+	github.com/johnfercher/maroto v0.33.0
 	github.com/joho/godotenv v1.3.0
 	github.com/json-iterator/go v1.1.11 // indirect
 	github.com/klauspost/compress v1.12.2 // indirect
@@ -22,7 +23,7 @@ require (
 	github.com/myesui/uuid v1.0.0 // indirect
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/speps/go-hashids/v2 v2.0.1
-	github.com/steinfletcher/apitest v1.5.11
+	github.com/steinfletcher/apitest v1.5.11 // indirect
 	github.com/stretchr/testify v1.7.0 // indirect
 	github.com/twinj/uuid v1.0.0
 	github.com/ugorji/go v1.2.6 // indirect

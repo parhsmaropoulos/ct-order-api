@@ -34,7 +34,7 @@ import {
   GET_ITEMS,
 } from "../../../actions/actions";
 import { Link } from "react-router-dom";
-// import { Link } from "react-router-dom";
+import Header from "../../Layout/Header";
 
 var _ = require("lodash");
 
@@ -49,6 +49,25 @@ const customTheme = createMuiTheme({
 class OrderMainPage extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      cart: [],
+      totalPrice: 0,
+      grouped: [],
+      selectedCategory: "1",
+      selectedItem: {},
+      itemToUpdate: {},
+      showModal: false,
+      modalToUpdate: false,
+      indexToUpdate: 0,
+      pathToImages: "",
+      showAlert: false,
+      alertMessage: "",
+      continueOrder: false,
+      products: [],
+      categories: [],
+      isReady: false,
+      openDrawer: false,
+    };
     this.addToCart = this.addToCart.bind(this);
     this.removeFromCart = this.removeFromCart.bind(this);
     this.clearCart = this.clearCart.bind(this);
@@ -58,25 +77,7 @@ class OrderMainPage extends Component {
     this.toggleDrawer = this.toggleDrawer.bind(this);
     this.onSearchChange = this.onSearchChange.bind(this);
   }
-  state = {
-    cart: [],
-    totalPrice: 0,
-    grouped: [],
-    selectedCategory: "1",
-    selectedItem: {},
-    itemToUpdate: {},
-    showModal: false,
-    modalToUpdate: false,
-    indexToUpdate: 0,
-    pathToImages: "",
-    showAlert: false,
-    alertMessage: "",
-    continueOrder: false,
-    products: [],
-    categories: [],
-    isReady: false,
-    openDrawer: false,
-  };
+
   static propTypes = {
     orderReducer: PropTypes.object.isRequired,
     userReducer: PropTypes.object.isRequired,
@@ -96,7 +97,7 @@ class OrderMainPage extends Component {
 
   continueOrder = () => {
     if (this.state.cart.length > 0) {
-      if (sessionStorage.getItem("isAuthenticated") !== "true") {
+      if (localStorage.getItem("isAuthenticated") !== "true") {
         // this.showAlert(true, "You have to login first!");
         this.props.showInfoSnackbar("You have to login first!");
       } else {
@@ -176,7 +177,7 @@ class OrderMainPage extends Component {
     if (close) {
       cat_ = this.state.selectedCategory;
     } else {
-      cat_ = item_.category;
+      cat_ = item_.category_id;
     }
     this.setState({
       selectedItem: item_,
@@ -233,8 +234,6 @@ class OrderMainPage extends Component {
 
   showSearchResults = (e) => {
     let type = e.type;
-    // console.log(e.target.value);
-    // console.log(e.target.textContent);
     if (type === "click" || type === "keydown") {
       let name = e.target.textContent;
       if (type === "keydown") {
@@ -250,14 +249,9 @@ class OrderMainPage extends Component {
         }
       }
       if (found)
-        this.setState(
-          {
-            selectedCategory: product.category,
-          },
-          () => {
-            // console.log(this.state.selectedCategory);
-          }
-        );
+        this.setState({
+          selectedCategory: product.category,
+        });
     }
   };
 
@@ -301,8 +295,6 @@ class OrderMainPage extends Component {
   }
 
   onSearchChange = (product) => {
-    console.log("change");
-    console.log(product);
     if (product) {
       this.changeCategory(product.category_id);
     }
@@ -333,9 +325,7 @@ class OrderMainPage extends Component {
       );
     }
     if (this.state.continueOrder) {
-      return (
-        <Redirect to={`/pre_complete/${sessionStorage.getItem("userID")}`} />
-      );
+      return <Redirect to={`/checkout/${sessionStorage.getItem("userID")}`} />;
     }
     if (!this.props.isReady) {
       return (
@@ -347,6 +337,7 @@ class OrderMainPage extends Component {
       return (
         // <div id="orderMainPageContainer">
         <Container>
+          <Header />
           {modal}
           <ThemeProvider theme={customTheme}>
             <Grid spacing={2} container style={{ minHeight: "70vh" }}>
