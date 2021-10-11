@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 // CSS
 import "../css/App/App.css";
 // Routing
