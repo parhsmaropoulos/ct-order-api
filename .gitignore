@@ -10,4 +10,5 @@ Design
 backend/assets
 backend/vendor
 backend/.env
-backend/config/serviceAccountKey.json
+backend/config/*.json
+backend/tests

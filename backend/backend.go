@@ -69,7 +69,6 @@ func main() {
 	// Static folder for images/video etc
 	router.Static("/assets", "./assets")
 
-	router.LoadHTMLGlob("templates/*.html")
 
 	panel := router.Group("/panel/")
 	{
