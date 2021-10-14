@@ -1,12 +1,12 @@
 package handlers
 
 import (
-	"GoProjects/CoffeeTwist/backend/lib"
-	"GoProjects/CoffeeTwist/backend/models"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
+	"main/src/lib"
+	"main/src/models"
 	"net/http"
 	"net/url"
 	"reflect"

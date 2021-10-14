@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	models "GoProjects/CoffeeTwist/backend/models"
 	"fmt"
+	models "main/src/models"
 	"net/http"
 
 	"github.com/gin-gonic/gin"

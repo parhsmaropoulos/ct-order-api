@@ -1,4 +1,4 @@
-module GoProjects/CoffeeTwist/backend
+module main
 
 // +heroku goVersion go1.15
 // +heroku install ./...

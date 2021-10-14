@@ -6,7 +6,7 @@ import (
 	"log"
 	"net/http"
 
-	models "GoProjects/CoffeeTwist/backend/models"
+	models "main/src/models"
 
 	"github.com/gin-gonic/gin"
 )

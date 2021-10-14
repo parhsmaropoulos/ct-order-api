@@ -1,9 +1,9 @@
 package models
 
 import (
-	"GoProjects/CoffeeTwist/backend/lib"
 	"database/sql"
 	"fmt"
+	"main/src/lib"
 
 	_ "github.com/lib/pq"
 

@@ -1,13 +1,13 @@
 package main
 
 import (
-	"GoProjects/CoffeeTwist/backend/config"
-	handlers "GoProjects/CoffeeTwist/backend/handlers"
-	"GoProjects/CoffeeTwist/backend/lib"
-	"GoProjects/CoffeeTwist/backend/middleware"
-	models "GoProjects/CoffeeTwist/backend/models"
-	sse "GoProjects/CoffeeTwist/backend/sse"
-	websock "GoProjects/CoffeeTwist/backend/websocket"
+	"main/src/config"
+	handlers "main/src/handlers"
+	"main/src/lib"
+	"main/src/middleware"
+	models "main/src/models"
+	sse "main/src/sse"
+	websock "main/src/websocket"
 
 	"fmt"
 	"net/http"

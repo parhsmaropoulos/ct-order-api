@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"GoProjects/CoffeeTwist/backend/models"
 	"fmt"
+	"main/src/models"
 	"net/http"
 	"strconv"
 

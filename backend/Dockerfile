@@ -1,29 +1,25 @@
-FROM golang:1.16-alpine
+FROM golang:alpine
 
-# Copy custom packages
-COPY ./ /go/src/config
-COPY ./ /go/src/handlers
-COPY ./ /go/src/lib
-COPY ./ /go/src/middleware
-COPY ./ /go/src/models
-COPY ./ /go/src/sse
-COPY ./ /go/src/websocket
+ENV GIN_MODE=release
+ENV PORT=3004
+ENV GO111MODULE=on
 
+WORKDIR /go/src/coffetwist
 
-WORKDIR /go/src/coffeetwist
+COPY src /go/src/coffeetwist/src
 
 COPY go.mod .
 COPY go.sum .
+
 RUN go mod download
 
-COPY ./*.go .
-COPY ./*.json .
+# Run the two commands below to install git and dependencies for the project. 
+# RUN apk update && apk add --no-cache git
+# RUN go get ./...
 
-RUN go build -o /app 
+RUN go build coffeetwist/src/app
 
-EXPOSE 8080
-EXPOSE 5432
+EXPOSE $PORT
 
-# CMD [ "/docker-gs-ping" ]
-CMD tail -f /dev/null
-# CMD ["./backend"]
+ENTRYPOINT ["./app"]
+# CMD tail -f /dev/null

@@ -1,13 +1,13 @@
 package handlers
 
 import (
-	"GoProjects/CoffeeTwist/backend/models"
 	"bytes"
 	"fmt"
 	"image"
 	_ "image/jpeg"
 	"image/png"
 	"io/ioutil"
+	"main/src/models"
 	"strconv"
 	"strings"
 
