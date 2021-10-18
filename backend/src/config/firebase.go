@@ -11,7 +11,7 @@ import (
 )
 
 func SetupFirebase() *auth.Client {
-	serviceAccountKeyFilePath, err := filepath.Abs("./config/serviceAccountKey.json")
+	serviceAccountKeyFilePath, err := filepath.Abs("./src/config/serviceAccountKey.json")
 	if err != nil {
 		panic("Unable to load serviceAccountKeys.json file")
 	}
@@ -33,7 +33,7 @@ func SetupFirebase() *auth.Client {
 
 
 func SetupAdminFirebase() *auth.Client {
-	serviceAccountKeyFilePath, err := filepath.Abs("./config/adminServiceAccountKey.json")
+	serviceAccountKeyFilePath, err := filepath.Abs("./src/config/adminServiceAccountKey.json")
 	if err != nil {
 		panic("Unable to load adminServiceAccountKey.json file")
 	}

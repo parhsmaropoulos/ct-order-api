@@ -4,9 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"main/src/models"
 	"net/http"
-
-	models "main/src/models"
 
 	"github.com/gin-gonic/gin"
 )

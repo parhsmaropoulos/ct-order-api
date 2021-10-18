@@ -1,12 +1,13 @@
-FROM golang:alpine
+FROM golang:latest as builder
 
-ENV GIN_MODE=release
-ENV PORT=3004
-ENV GO111MODULE=on
 
-WORKDIR /go/src/coffetwist
+# WORKDIR /go/src/coffetwist
+# ENV GIN_MODE=release
+# ENV PORT=3004
+# ENV GO111MODULE=on
 
-COPY src /go/src/coffeetwist/src
+WORKDIR /app
+
 
 COPY go.mod .
 COPY go.sum .
@@ -17,9 +18,13 @@ RUN go mod download
 # RUN apk update && apk add --no-cache git
 # RUN go get ./...
 
-RUN go build coffeetwist/src/app
+COPY . .
 
-EXPOSE $PORT
+# RUN go build coffeetwist/src/app
+RUN  go build 
 
-ENTRYPOINT ["./app"]
+# EXPOSE 5432
+# EXPOSE 8080
+# ENTRYPOINT ["./app/bin"]
+CMD ./main
 # CMD tail -f /dev/null

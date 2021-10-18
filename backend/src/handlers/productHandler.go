@@ -8,7 +8,7 @@ import (
 	_ "image/jpeg"
 	"image/png"
 	"io/ioutil"
-	models "main/src/models"
+	"main/src/models"
 	"math"
 	"strconv"
 	"strings"

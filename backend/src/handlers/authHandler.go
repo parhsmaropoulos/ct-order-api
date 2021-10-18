@@ -3,7 +3,7 @@ package handlers
 import (
 	"fmt"
 	"main/src/middleware"
-	models "main/src/models"
+	"main/src/models"
 	"net/http"
 
 	"github.com/gin-gonic/gin"

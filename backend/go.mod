@@ -1,34 +1,24 @@
 module main
 
-// +heroku goVersion go1.15
-// +heroku install ./...
-go 1.15
+go 1.16
 
 require (
-	cloud.google.com/go/firestore v1.5.0 // indirect
+	cloud.google.com/go/firestore v1.6.0 // indirect
 	firebase.google.com/go v3.13.0+incompatible
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
-	github.com/gin-gonic/gin v1.7.1
-	github.com/go-playground/validator/v10 v10.6.1 // indirect
+	github.com/gin-gonic/gin v1.7.4
 	github.com/gorilla/websocket v1.4.2
 	github.com/johnfercher/maroto v0.33.0
-	github.com/joho/godotenv v1.3.0
-	github.com/json-iterator/go v1.1.11 // indirect
-	github.com/leodido/go-urn v1.2.1 // indirect
-	github.com/lib/pq v1.10.2
+	github.com/joho/godotenv v1.4.0
+	github.com/lib/pq v1.10.3
 	github.com/myesui/uuid v1.0.0 // indirect
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/speps/go-hashids/v2 v2.0.1
-	github.com/stretchr/testify v1.7.0 // indirect
 	github.com/twinj/uuid v1.0.0
-	github.com/ugorji/go v1.2.6 // indirect
-	github.com/youmark/pkcs8 v0.0.0-20201027041543-1326539a0a0a // indirect
 	go.mongodb.org/mongo-driver v1.7.3
-	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97
-	golang.org/x/net v0.0.0-20210428140749-89ef3d95e781 // indirect
-	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
-	google.golang.org/api v0.40.0
+	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519
+	google.golang.org/api v0.58.0
 	gopkg.in/stretchr/testify.v1 v1.2.2 // indirect
-	gorm.io/driver/postgres v1.1.0
-	gorm.io/gorm v1.21.12
+	gorm.io/driver/postgres v1.1.2
+	gorm.io/gorm v1.21.16
 )
