@@ -93,6 +93,7 @@ export const login_async = (email, password, firebase) => async (dispatch) => {
     dispatch({
       type: LOGIN_SUCCESS,
     });
+    return true;
   } catch (error) {
     alert(error);
     dispatch({
@@ -103,6 +104,7 @@ export const login_async = (email, password, firebase) => async (dispatch) => {
       type: SNACKBAR_ERROR,
       message: "Invalid credits",
     });
+    return false;
   }
 };
 

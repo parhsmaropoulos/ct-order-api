@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 import { GridList, GridListTile, GridListTileBar } from "@material-ui/core";
 import { GET_CATEGORIES } from "../../../actions/actions";
 import Header from "../../Layout/Header";
+import Footer from "../../Layout/Footer";
 
 class HomePage extends Component {
   constructor(props) {
@@ -73,6 +74,7 @@ class HomePage extends Component {
             <div>None yet</div>
           )}
         </GridList>
+        <Footer className="footer" />
       </Container>
     );
   }

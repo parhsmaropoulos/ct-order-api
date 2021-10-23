@@ -9,9 +9,6 @@ import OrderMainPage from "./Sections/Order/OrderMainPage";
 import MainPage from "./Sections/Users/MainPage";
 import Checkout from "./Sections/Order/Checkout";
 
-// Layout
-import Footer from "./Layout/Footer";
-
 // Pages
 import UserOrders from "./Sections/Users/UserOrders";
 import UserAddress from "./Sections/Users/UserAddress";
@@ -22,18 +19,21 @@ import ErrorSnackbar from "./Logging/SnackBars/ErrorSnackbar";
 import NotFound from "./Layout/NotFound";
 import TextPage from "./Sections/Common/TextPage";
 import withAuthentication from "../firebase/withAuthentication";
+import HomePage1 from "./Sections/Home/HomePage1";
+import ShopPage from "./Sections/Order/ShopPage";
 
 const App = () => (
   <Router>
-    <div className="App">
+    <div className="min-h-screen">
       <SuccessSnackbar />
       <InfoSnackbar />
       <ErrorSnackbar />
       {/* <AlertsOverlay /> */}
       <Switch>
         <Route exact path="/" component={HomePage} />
-        <Route exact path="/home" component={HomePage} />
+        <Route exact path="/home" component={HomePage1} />
         <Route path="/order/:category_name" component={OrderMainPage} />
+        <Route path="/order1/:category_name" component={ShopPage} />
         <Route path="/order" component={OrderMainPage} />
         <Route exact path="/checkout/:id" component={Checkout} />
         {/* <Route exact path="/search/:string" component={OrderMainPage} /> */}
@@ -46,8 +46,13 @@ const App = () => (
           <NotFound />
         </Route>
       </Switch>
-      <Footer className="footer" />
     </div>
+    <footer className="mt-4 text-center bg-gray-100 ">
+      <p>
+        (c) 2021 coffeetwist Με επιφύλαξη όλων των δικαιωμάτων.Όροι χρήσης,
+        πολιτική ιδιωτικού απορρήτου.
+      </p>
+    </footer>
   </Router>
 );
 
