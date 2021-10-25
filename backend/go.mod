@@ -14,6 +14,7 @@ require (
 	github.com/myesui/uuid v1.0.0 // indirect
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/speps/go-hashids/v2 v2.0.1
+	github.com/steinfletcher/apitest v1.5.11
 	github.com/twinj/uuid v1.0.0
 	go.mongodb.org/mongo-driver v1.7.3
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519

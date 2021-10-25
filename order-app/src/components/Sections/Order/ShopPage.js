@@ -1,13 +1,14 @@
+/* eslint-disable no-restricted-globals */
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import "../../../css/Pages/orderpage.css";
 import PropTypes from "prop-types";
 import { Redirect } from "react-router";
 import { update_cart } from "../../../actions/orders";
-import AddIcon from "@material-ui/icons/Add";
-import MenuIcon from "@material-ui/icons/Menu";
-import RemoveIcon from "@material-ui/icons/Remove";
-import ClearIcon from "@material-ui/icons/Clear";
+// import AddIcon from "@material-ui/icons/Add";
+// import MenuIcon from "@material-ui/icons/Menu";
+// import RemoveIcon from "@material-ui/icons/Remove";
+// import ClearIcon from "@material-ui/icons/Clear";
 import { showInfoSnackbar } from "../../../actions/snackbar";
 // import AlertModal from "../../MainPanel/Pages/Alert/AlertModal";
 
@@ -132,16 +133,23 @@ class ShopPage extends Component {
   };
 
   removeFromCart = (index, order_item) => {
-    // console.log(order_item);
-    this.setState({
-      cart: [...this.state.cart.filter((item, idex) => idex !== index)],
-      totalPrice: this.state.totalPrice - order_item.totalPrice,
-    });
+    if (confirm("Διαγραφή προϊόντoς?") === true) {
+      this.setState({
+        cart: [...this.state.cart.filter((item, idex) => idex !== index)],
+        totalPrice: this.state.totalPrice - order_item.totalPrice,
+      });
+    } else {
+      return;
+    }
     // this.props.update_order(this.state.cart, this.state.totalPrice);
   };
 
   clearCart() {
-    this.setState({ cart: [], totalPrice: 0 });
+    if (confirm("Άδειασμα καλαθιού?") === true) {
+      this.setState({ cart: [], totalPrice: 0 });
+    } else {
+      return;
+    }
     // this.props.update_order(this.state.cart, this.state.totalPrice);
   }
 
@@ -241,19 +249,9 @@ class ShopPage extends Component {
       this.get_categories();
       this.get_ingredients();
     }
-    if (this.props.orderReducer.products.length > 0) {
+    if (this.props.products.length > 0) {
       let grouped = _.groupBy(this.props.products, "category");
-      let category = this.props.categories[0].name;
-      if (this.state.searchParam !== "") {
-        for (var i in this.props.products) {
-          if (this.props.products[i].name === this.state.searchParam) {
-            category = this.props.products[i].categroy;
-            break;
-          }
-        }
-      }
       this.setState({
-        selectedCategory: category,
         grouped: grouped,
         cart: this.props.orderReducer.products,
         totalPrice: this.props.orderReducer.totalPrice,
@@ -303,7 +301,7 @@ class ShopPage extends Component {
       );
     }
     if (this.state.continueOrder) {
-      return <Redirect to={`/checkout/${sessionStorage.getItem("userID")}`} />;
+      return <Redirect to={`/checkout1/${sessionStorage.getItem("userID")}`} />;
     }
     if (!this.props.isReady) {
       return (
@@ -320,7 +318,7 @@ class ShopPage extends Component {
             {modal}
             <div className="w-full md:inline-flex lg:inline-flex sm:grid text-center ">
               {/* Left column */}
-              <div className="flex-none w-1/6 ">
+              <div className="flex-none w-2/12 ">
                 <CategoryMenu
                   categories={this.props.categories}
                   onChange={(category) => this.changeCategory(category, false)}
@@ -328,7 +326,7 @@ class ShopPage extends Component {
                 />
               </div>
               {/* Center column */}
-              <div className="flex-none w-4/6">
+              <div className="flex-none w-7/12">
                 <SearchBar
                   onChange={this.onChange}
                   searchTerm={this.state.searchParam}
@@ -343,8 +341,22 @@ class ShopPage extends Component {
                 />
               </div>
               {/* Right column */}
-              <div className="flex-none w-1/6">
-                <Cart />
+              <div className="flex-none w-3/12">
+                <Cart
+                  cart={this.state.cart}
+                  changeQuantity={(bool, index) =>
+                    this.changeQuantity(bool, index)
+                  }
+                  removeFromCart={(index, item) =>
+                    this.removeFromCart(index, item)
+                  }
+                  totalPrice={this.state.totalPrice}
+                  continueOrder={this.continueOrder}
+                  clearCart={this.clearCart}
+                  showModal={(item, bool, bool1, index) =>
+                    this.showModal(item, bool, bool1, index)
+                  }
+                />
               </div>
             </div>
           </div>
@@ -371,13 +383,13 @@ export default connect(mapStateToProps, {
 
 const CategoryMenu = ({ categories, onChange, selectedCategory }) => {
   return (
-    <div class="w-full bg-white rounded-lg shadow-lg overflow-auto">
-      <ul class="divide-y-2 divide-gray-100">
+    <div className="w-full bg-white rounded-lg shadow-lg overflow-auto">
+      <ul className="divide-y-2 divide-gray-100">
         {categories.map((c, idx) => (
           <Link
             // exact
             to={`/order1/${c.name}`}
-            onClick={() => onChange(c.name)}
+            onClick={() => onChange(c.ID)}
             className={`block w-full   text-black-200 hover:text-gray-400 transition duration-150 inline-block`}
             key={idx}
           >
@@ -397,25 +409,143 @@ const CategoryMenu = ({ categories, onChange, selectedCategory }) => {
   );
 };
 
-const Cart = ({ categories, onChange, selectedCategory }) => {
-  return <div>menu</div>;
+const Cart = ({
+  cart,
+  showModal,
+  changeQuantity,
+  removeFromCart,
+  continueOrder,
+  clearCart,
+  totalPrice,
+}) => {
+  return (
+    <div className="w-full bg-white rounded-lg shadow-lg overflow-auto">
+      <div className=" w-full  rounded-b border-t-0 z-10">
+        {cart.map((i, indx) => {
+          return (
+            <div
+              key={indx}
+              className="p-2 flex bg-white hover:bg-gray-100 cursor-pointer border-b border-gray-100"
+            >
+              <div className="p-2 w-2/12">
+                <img
+                  src="https://dummyimage.com/50x50/bababa/0011ff&amp;text=50x50"
+                  alt="img product"
+                />
+              </div>
+              <div
+                className="flex-auto text-sm w-6/12"
+                onClick={() => showModal(i, true, false, indx)}
+              >
+                <div className="font-bold">{i.item.name}</div>
+                <div className="truncate">{i.item.description}</div>
+                <div className="text-gray-400">Ποσότητα: {i.quantity}</div>
+                <div className="text-gray-400 text-left">
+                  {i.optionAnswers.length > 0 && (
+                    <span>{i.optionAnswers.join()}</span>
+                  )}
+                </div>
+                <div className="text-gray-400">
+                  {i.extra_ingredients.length > 0 && (
+                    <ul>
+                      {i.extra_ingredients.map((ing, indx) => (
+                        <li className="text-left" key={indx}>
+                          + {ing}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+                <div className="text-gray-400 text-left">
+                  {i.comment && <span>{i.comment}</span>}
+                </div>
+              </div>
+              <div className="flex flex-col w-4/12 font-medium items-end">
+                <div
+                  onClick={() => removeFromCart(indx, i)}
+                  className="w-4 h-4 mb-6 hover:bg-red-200 rounded-full cursor-pointer text-red-700"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="100%"
+                    height="100%"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    className="feather feather-trash-2 "
+                  >
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                  </svg>
+                </div>
+                <div className="flex">
+                  <button
+                    onClick={() => changeQuantity(false, indx)}
+                    className="w-7 h-7 mx-2 hover:bg-blue-200 rounded-lg cursor-pointer text-white bg-blue-500 "
+                  >
+                    -
+                  </button>
+                  <button
+                    onClick={() => changeQuantity(true, indx)}
+                    className="w-7 h-7 mx-2  hover:bg-gray-400 rounded-lg cursor-pointer text-white bg-gray-600 "
+                  >
+                    +
+                  </button>
+                </div>
+                <div>
+                  <span>
+                    {i.quantity} x {(i.totalPrice / i.quantity).toFixed(2)} €
+                  </span>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+
+        <div className="p-4 justify-center flex">
+          <button
+            onClick={continueOrder}
+            className="text-base   hover:scale-110 focus:outline-none flex justify-center px-4 py-2 rounded font-bold cursor-pointer 
+        hover:bg-teal-700 hover:text-teal-100 
+        bg-teal-100 
+        text-teal-700 
+        border duration-200 ease-in-out 
+        border-teal-600 transition"
+          >
+            Συνέχεια {totalPrice.toFixed(2)} €
+          </button>
+        </div>
+        <button
+          onClick={clearCart}
+          className="text-gray-400 hover:text-gray-600 hover:underline focus:outline-none"
+        >
+          Άδειασμα
+        </button>
+      </div>
+    </div>
+  );
 };
 
 const SearchBar = ({ searchTerm, onChange, onSelect }) => {
   return (
-    <div class="flex items-center ">
+    <div className="flex items-center ">
       <div className="w-1/6"></div>
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        class="w-6 h-6  text-blue-600"
+        className="w-6 h-6  text-blue-600"
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"
       >
         <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
           d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
         />
       </svg>
@@ -425,20 +555,22 @@ const SearchBar = ({ searchTerm, onChange, onSelect }) => {
         placeholder="name"
         onChange={onChange}
         value={searchTerm}
-        class="w-2/3 py-2 border-b-2 border-blue-400 outline-none focus:border-green-400"
+        className="w-2/3 py-2 border-b-2 border-blue-400 outline-none focus:border-green-400"
       />
       <div className="w-1/6"></div>
     </div>
   );
 };
 const ItemsList = ({ products, selectedCategory, showModal }) => {
+  let items = products.filter((p) => p.category_id === selectedCategory);
   return (
     <div className="flex item-center mt-2">
       <div className="w-1/6"></div>
-      <div class=" bg-white rounded-lg  w-4/6 shadow-lg overflow-auto ">
-        <ul class="divide-y-2 divide-gray-100">
-          {products.map((p) => (
+      <div className=" bg-white rounded-lg  w-4/6 shadow-lg overflow-auto ">
+        <ul className="divide-y-2 divide-gray-100">
+          {items.map((p, idx) => (
             <ItemComponent
+              key={idx}
               item={p}
               showModal={(item, bool, bool1, idx) =>
                 showModal(item, bool, bool1, idx)
@@ -459,7 +591,7 @@ const ItemComponent = ({ item, showModal }) => {
   }
   return (
     <li
-      class="p-3 hover:bg-blue-600 hover:text-blue-200"
+      className="p-3 hover:bg-blue-600 hover:text-blue-200"
       onClick={() =>
         disabled === false ? showModal(item, false, false, 0) : null
       }

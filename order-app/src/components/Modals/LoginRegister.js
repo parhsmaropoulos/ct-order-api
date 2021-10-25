@@ -1,6 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { Component } from "react";
-import { Button } from "react-bootstrap";
 import { connect } from "react-redux";
 import "../../css/common/logregmodal.css";
 import { login, login_async, register_async } from "../../actions/user";
@@ -8,10 +7,6 @@ import { returnErrors } from "../../actions/messages";
 import PropTypes from "prop-types";
 import { CircularProgress } from "@material-ui/core";
 import { showErrorSnackbar } from "../../actions/snackbar";
-import { compose } from "recompose";
-import { Google } from "react-bootstrap-icons";
-import { withRouter } from "react-router";
-import { withFirebase } from "../../firebase/base";
 
 const tabs = [
   { name: "Σύνδεση", tab: "Login", href: "", current: false },
@@ -39,11 +34,9 @@ class LoginRegisterModal extends Component {
 
   static propTypes = {
     login: PropTypes.func.isRequired,
-    register: PropTypes.func.isRequired,
     showErrorSnackbar: PropTypes.func.isRequired,
     register_async: PropTypes.func.isRequired,
     login_async: PropTypes.func.isRequired,
-    glogin_async: PropTypes.func.isRequired,
   };
 
   componentDidMount() {
@@ -199,8 +192,9 @@ class LoginRegisterModal extends Component {
             <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
               {/* <!-- Tabs --> */}
               <ul id="tabs" className="flex w-full px-1 pt-2 align-middle ">
-                {tabs.map((t) => (
+                {tabs.map((t, i) => (
                   <li
+                    key={i}
                     className={`px-4 flex-1 text-center py-2 -mb-px font-semibold text-gray-800 border-b-2 border-blue-400 rounded-t opacity-50 ${
                       this.state.selectedTab === t.tab
                         ? "border-blue-400 border-b-4 -mb-px opacity-100"
@@ -263,44 +257,44 @@ export default connect(mapStateToProps, {
   login_async,
 })(LoginRegisterModal);
 
-class SignInGoogleBase extends Component {
-  constructor(props) {
-    super(props);
+// class SignInGoogleBase extends Component {
+//   constructor(props) {
+//     super(props);
 
-    this.state = { error: null };
-  }
+//     this.state = { error: null };
+//   }
 
-  onSubmit = (event) => {
-    this.props.firebase
-      .signWithGoogle()
-      .then((socialAuthUser) => {
-        this.setState({ error: null });
-        this.props.history.push("/home");
-      })
-      .catch((error) => {
-        this.setState({ error });
-      });
+//   onSubmit = (event) => {
+//     this.props.firebase
+//       .signWithGoogle()
+//       .then((socialAuthUser) => {
+//         this.setState({ error: null });
+//         this.props.history.push("/home");
+//       })
+//       .catch((error) => {
+//         this.setState({ error });
+//       });
 
-    event.preventDefault();
-  };
+//     event.preventDefault();
+//   };
 
-  render() {
-    const { error } = this.state;
+//   render() {
+//     const { error } = this.state;
 
-    return (
-      <form onSubmit={this.onSubmit}>
-        <div className="loginButtons">
-          <Button variant="outline-secondary" type="submit">
-            Log in with gmail <Google />
-          </Button>
-        </div>
-        {error && <p>{error.message}</p>}
-      </form>
-    );
-  }
-}
+//     return (
+//       <form onSubmit={this.onSubmit}>
+//         <div className="loginButtons">
+//           <Button variant="outline-secondary" type="submit">
+//             Log in with gmail <Google />
+//           </Button>
+//         </div>
+//         {error && <p>{error.message}</p>}
+//       </form>
+//     );
+//   }
+// }
 
-const SignInGoogle = compose(withRouter, withFirebase)(SignInGoogleBase);
+// const SignInGoogle = compose(withRouter, withFirebase)(SignInGoogleBase);
 
 const LoginForm = ({ onChange, onSubmit, email, password }) => {
   return (
@@ -375,7 +369,7 @@ const RegisterForm = ({ onChange, onSubmit, email, password, passowrd2 }) => {
               Email
             </label>
             <input
-              id="email-address"
+              id="email-address-reg"
               name="email"
               type="email"
               autoComplete="email"
@@ -390,7 +384,7 @@ const RegisterForm = ({ onChange, onSubmit, email, password, passowrd2 }) => {
               Password
             </label>
             <input
-              id="password"
+              id="password-reg"
               name="reg_password"
               type="password"
               autoComplete="current-password"
@@ -405,7 +399,7 @@ const RegisterForm = ({ onChange, onSubmit, email, password, passowrd2 }) => {
               Repear Password
             </label>
             <input
-              id="password"
+              id="password-reg-2"
               name="reg_password2"
               type="password"
               autoComplete="current-password"

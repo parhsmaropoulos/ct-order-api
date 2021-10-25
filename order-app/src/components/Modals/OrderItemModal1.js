@@ -1,24 +1,7 @@
 import React, { Component } from "react";
-import { Form } from "react-bootstrap";
 import "../../css/Pages/orderpage.css";
 import { connect } from "react-redux";
-import AddIcon from "@material-ui/icons/Add";
-import RemoveIcon from "@material-ui/icons/Remove";
 import PropTypes from "prop-types";
-import {
-  Checkbox,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  Typography,
-  Modal,
-  Grid,
-  Button,
-  Paper,
-  IconButton,
-  Divider,
-} from "@material-ui/core";
 import { showInfoSnackbar } from "../../actions/snackbar";
 
 class OrderItemModal extends Component {
@@ -37,6 +20,8 @@ class OrderItemModal extends Component {
     this.onSubmit = this.onSubmit.bind(this);
     this.onClose = this.onClose.bind(this);
     this.onAdd = this.onAdd.bind(this);
+    this.handleToggle = this.handleToggle.bind(this);
+    this.onChangeChoice = this.onChangeChoice.bind(this);
   }
 
   static propTypes = {
@@ -122,7 +107,7 @@ class OrderItemModal extends Component {
         }
       }
     });
-    if (found) {
+    if (found || this.props.item.choices.length === 0) {
       if (this.props.update) {
         this.props.onUpdate &&
           this.props.onUpdate(item, this.state.quantity, this.props.index);
@@ -188,13 +173,13 @@ class OrderItemModal extends Component {
     // console.log(props, state);
     if (
       props.item.custom === true &&
-      props.item.ngredients !== undefined &&
+      props.item.ingredients !== undefined &&
       state.loaded === false
     ) {
       let grouped_ingredients = [];
       let grouped;
       var _ = require("lodash");
-      grouped = _.groupBy(props.item.extra_ingredients, "category");
+      grouped = _.groupBy(props.item.ingredients, "category");
       for (var i in grouped) {
         grouped_ingredients.push(grouped[i]);
       }
@@ -226,7 +211,6 @@ class OrderItemModal extends Component {
   };
 
   render() {
-    console.log(this.props.item);
     let text = "";
     if (this.props.update) {
       // console.log("here to update");
@@ -301,7 +285,9 @@ class OrderItemModal extends Component {
             }`}
           >
             <div className="flex text-center">
-              <span className=" flex-1 w-8/10">{product.name}</span>
+              <span className=" flex-1 font-bold text-2xl w-8/10">
+                {product.name}
+              </span>
               <span className=" flex-none w-1/10 mx-2">
                 {(this.state.extraPrice + product.price).toFixed(2)} €
               </span>
@@ -327,8 +313,58 @@ class OrderItemModal extends Component {
               {product.custom === true ? (
                 <IngredientsList
                   ingredients={this.state.item_available_ingredients}
+                  updateItem={this.props.update ? this.props.updateItem : null}
+                  handleToggle={(ingredient) => this.handleToggle(ingredient)}
+                  selected_ingredients={this.state.extra_ingredients}
                 />
               ) : null}
+              {/* COMMENTS */}
+              <div className="flex flex-wrap mb-6 mt-6 text-center">
+                <span className="text-center text-xl font-bold">Σχόλια</span>
+                <div className="relative w-full appearance-none label-floating">
+                  <textarea
+                    className="autoexpand tracking-wide py-2 px-4 mb-3 leading-relaxed appearance-none block w-full bg-gray-200 border border-gray-200 rounded focus:outline-none focus:bg-white focus:border-gray-500"
+                    id="message"
+                    type="text"
+                    name="comment"
+                    value={this.state.comment}
+                    onChange={this.onChange}
+                    placeholder="Σχόλια.."
+                  ></textarea>
+                  <label
+                    htmlFor="message"
+                    className="absolute tracking-wide py-2 px-4 mb-4 opacity-0 leading-tight block top-0 left-0 cursor-text"
+                  >
+                    Σχόλια..
+                  </label>
+                </div>
+              </div>
+              {/* BUTTONS */}
+              <div className="flex">
+                <div className="flex-1">
+                  <button
+                    onClick={() => this.changeQuantity(false)}
+                    className="p-2 w-1/12 bg-blue-500 text-gray-100 text-lg rounded-lg focus:border-4 border-blue-300"
+                  >
+                    -
+                  </button>
+                  <span className="px-4">{this.state.quantity}</span>
+                  <button
+                    onClick={() => this.changeQuantity(true)}
+                    className="p-2 w-1/12 bg-gray-500 text-gray-100 text-lg rounded-lg focus:border-4 border-gray-300"
+                  >
+                    +
+                  </button>
+                </div>
+                <div className="flex-1">
+                  <button
+                    onClick={this.onAdd}
+                    className="p-2 pl-5 pr-5 bg-blue-500 text-gray-100 text-lg rounded-lg focus:border-4 border-blue-300"
+                  >
+                    {text}
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -347,121 +383,136 @@ export default connect(mapStateToProps, { showInfoSnackbar })(OrderItemModal);
 
 const ChoicesList = ({ choices, updateItem, onChangeChoice, options }) => {
   return (
-    <div className="flex ">
-      <div className="flex-none bg:w-1/6 md:w-1/6 sm:hidden"></div>
+    <div>
+      <span className="text-center font-bold text-lg">Επιλογές Προϊόντος</span>
       {choices.map((choice, indx) => (
-        <div key={indx} className="flex-grow">
-          <span className="text-center">
-            {choice.name}
-            {choice.required && "*"}
-          </span>
-          <div className="grid md:grid-cols-2 sm:grid-cols-1 bg:grid-cols-2">
-            {choice.options ? (
-              choice.options.map((option, index) => {
-                let show = false;
-                let update = updateItem !== null;
-                if (update) {
-                  for (var i in updateItem.options) {
-                    let update_option = updateItem.options[i];
-                    if (
-                      update_option.name === choice.name &&
-                      update_option.choice === option.name
-                    ) {
-                      show = true;
+        <div className="flex" key={indx}>
+          <div className="flex-none bg:w-1/6 md:w-1/6 sm:hidden"></div>
+          <div key={indx} className="flex-grow w-4/6">
+            <span className="text-center font-bold">
+              {choice.name}
+              {choice.required && "*"}
+            </span>
+            <div className="grid md:grid-cols-2 sm:grid-cols-1 bg:grid-cols-2">
+              {choice.options ? (
+                choice.options.map((option, index) => {
+                  let show = false;
+                  let update = updateItem !== null;
+                  if (update) {
+                    for (var i in updateItem.options) {
+                      let update_option = updateItem.options[i];
+                      if (
+                        update_option.name === choice.name &&
+                        update_option.choice === option.name
+                      ) {
+                        show = true;
+                      }
                     }
                   }
-                }
-                let checked = options.some((o) => o.choice === option.name);
-                if (update && show) {
-                  return (
-                    <div key={index}>
-                      <label
-                        class="inline-flex items-center"
+                  let checked = options.some((o) => o.choice === option.name);
+                  if (update && show) {
+                    return (
+                      <div key={index}>
+                        <label
+                          className="inline-flex items-center"
+                          onClick={() => onChangeChoice(choice.name, option)}
+                        >
+                          <input
+                            type="radio"
+                            className="form-radio"
+                            name={`${choice.name}`}
+                            value={`${option.name}`}
+                            id={`${option.name}${index}`}
+                            checked={checked}
+                            readOnly
+                          />
+                          <span className="ml-2">{option.name}</span>
+                          <span className="ml-2">{option.price} €</span>
+                        </label>
+                      </div>
+                    );
+                  } else {
+                    return (
+                      <div
+                        className="shadow-md py-1 "
                         onClick={() => onChangeChoice(choice.name, option)}
+                        key={index}
                       >
-                        <input
-                          type="radio"
-                          class="form-radio"
-                          name={`${choice.name}`}
-                          value={`${option.name}`}
-                          id={`${option.name}${index}`}
-                          checked={checked}
-                        />
-                        <span class="ml-2">{option.name}</span>
-                        <span class="ml-2">{option.price} €</span>
-                      </label>
-                    </div>
-                  );
-                } else {
-                  return (
-                    <div
-                      className="shadow-md py-1 "
-                      onClick={() => onChangeChoice(choice.name, option)}
-                      key={index}
-                    >
-                      <label class="inline-flex items-center">
-                        <input
-                          type="radio"
-                          class="form-radio"
-                          name={`${choice.name}`}
-                          value={`${option.name}`}
-                          id={`${option.name}${index}`}
-                          checked={checked}
-                        />
-                        <span class="ml-2">{option.name}</span>
-                        <span class="ml-2">{option.price} €</span>
-                      </label>
-                    </div>
-                  );
-                }
-              })
-            ) : (
-              <span></span>
-            )}
+                        <label className="inline-flex items-center">
+                          <input
+                            type="radio"
+                            className="form-radio"
+                            name={`${choice.name}`}
+                            value={`${option.name}`}
+                            id={`${option.name}${index}`}
+                            readOnly
+                            checked={checked}
+                          />
+                          <span className="ml-2">{option.name}</span>
+                          <span className="ml-2">{option.price} €</span>
+                        </label>
+                      </div>
+                    );
+                  }
+                })
+              ) : (
+                <span></span>
+              )}
+            </div>
           </div>
+          <div className="flex-none bg:w-1/6 md:w-1/6 sm:hidden"></div>
         </div>
       ))}
-      <div className="flex-none bg:w-1/6 md:w-1/6 sm:hidden"></div>
     </div>
   );
 };
 
-const IngredientsList = ({ ingredients, handleToggle }) => {
-  console.log(ingredients);
+const IngredientsList = ({
+  ingredients,
+  updateItem,
+  handleToggle,
+  selected_ingredients,
+}) => {
   return (
-    <div className="flex ">
-      <div className="flex-none bg:w-1/6 md:w-1/6 sm:hidden"></div>
-      {ingredients.map((ic, index) => (
-        <div className="flex-grow">
-          <span className="text-center">{ic[0].category}</span>
-          <div className="grid md:grid-cols-2 sm:grid-cols-1 bg:grid-cols-2">
-            {ic.map((ingredient, index) => {
-              let checked = ic.some((o) => o.choice === ingredient.name);
-              return (
-                <div
-                  className="shadow-md py-1 "
-                  onClick={() => handleToggle(ingredient)}
-                  key={index}
-                >
-                  <label class="inline-flex items-center">
-                    <input
-                      type="radio"
-                      class="form-radio"
-                      name={`${ingredient.name}`}
-                      value={`${ingredient.name}`}
-                      id={`${ingredient.name}${index}`}
-                      checked={checked}
-                    />
-                    <span class="ml-2">{ingredient.name}</span>
-                    <span class="ml-2">{ingredient.price} €</span>
-                  </label>
-                </div>
-              );
-            })}
+    <div className="py-3">
+      <span className="text-center font-bold text-lg">Επιλογές Υλικών</span>
+      {ingredients.map((ic, indx) => (
+        <div className="flex" key={indx}>
+          <div className="flex-none bg:w-1/6 md:w-1/6 sm:hidden"></div>
+          <div className="flex-grow  w-4/6">
+            <span className="text-center font-bold">{ic[0].category}</span>
+            <div className="grid md:grid-cols-2 sm:grid-cols-1 bg:grid-cols-2">
+              {ic.map((ingredient, index) => {
+                let checked = selected_ingredients.some(
+                  (i) => i === ingredient.name
+                );
+                return (
+                  <div
+                    className="shadow-md py-1 "
+                    onClick={() => handleToggle(ingredient)}
+                    key={index}
+                  >
+                    <label className="inline-flex items-center">
+                      <input
+                        type="radio"
+                        className="form-radio"
+                        name={`${ingredient.name}`}
+                        value={`${ingredient.name}`}
+                        id={`${ingredient.name}${index}`}
+                        checked={checked}
+                        readOnly
+                      />
+                      <span className="ml-2">{ingredient.name}</span>
+                      <span className="ml-2">{ingredient.price} €</span>
+                    </label>
+                  </div>
+                );
+              })}
+            </div>
           </div>
+          <div className="flex-none bg:w-1/6 md:w-1/6 sm:hidden"></div>
         </div>
       ))}
-      <div className="flex-none bg:w-1/6 md:w-1/6 sm:hidden"></div>
     </div>
   );
 };

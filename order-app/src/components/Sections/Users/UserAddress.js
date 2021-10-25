@@ -61,7 +61,6 @@ class UserAdress extends Component {
   };
 
   selectAddressModal = (showadd, showedit, address) => {
-    console.log(address);
     let updateAddress = true;
     if (showedit) {
       updateAddress = false;

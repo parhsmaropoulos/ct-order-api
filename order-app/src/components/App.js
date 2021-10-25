@@ -21,6 +21,9 @@ import TextPage from "./Sections/Common/TextPage";
 import withAuthentication from "../firebase/withAuthentication";
 import HomePage1 from "./Sections/Home/HomePage1";
 import ShopPage from "./Sections/Order/ShopPage";
+import Checkout1 from "./Sections/Order/Checkout1";
+import AccountPage from "./Sections/Users/AccountPage";
+import UserAddress1 from "./Sections/Users/UserAddress1";
 
 const App = () => (
   <Router>
@@ -36,9 +39,13 @@ const App = () => (
         <Route path="/order1/:category_name" component={ShopPage} />
         <Route path="/order" component={OrderMainPage} />
         <Route exact path="/checkout/:id" component={Checkout} />
+        <Route exact path="/checkout1/:id" component={Checkout1} />
         {/* <Route exact path="/search/:string" component={OrderMainPage} /> */}
         <Route exact path="/document/:type" component={TextPage} />
         <Route exact path="/account" component={MainPage} />
+        <Route exact path="/account1" component={AccountPage} />
+        {/* <Route exact path="orders" component={UserOrders1} /> */}
+        <Route exact path="/account1/addresses" component={UserAddress1} />
         <Route exact path="/account/orders" component={UserOrders} />
         <Route exact path="/account/addresses" component={UserAddress} />
         <Route exact path="/account/ratings" component={UserRatings} />
