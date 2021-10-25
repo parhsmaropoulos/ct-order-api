@@ -2,44 +2,22 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import { Button, Modal, Table } from "react-bootstrap";
-import { Link } from "react-router-dom";
-import "../../../css/Pages/accountpage.css";
-import { PencilFill } from "react-bootstrap-icons";
-import EditAddressModal from "../../Modals/EditAddressModal";
-// import { getUser, updateUser, getUserAddresses } from "../../../actions/user";
 import {
   auth_get_request,
   auth_put_request,
   auth_delete_request,
 } from "../../../actions/lib";
-import AddressModal from "../../Modals/AddressModal";
-import { MdRemoveCircle } from "react-icons/md";
-import { Grid, Container } from "@material-ui/core";
 import {
   GET_USER,
   GET_USER_ADDRESSES,
   UPDATE_USER,
 } from "../../../actions/actions";
 import withAuthorization from "../../../firebase/withAuthorization";
-import Header from "../../Layout/Header";
+
 import Header1 from "../../Layout/Header1";
 import { AccountMenu } from "./AccountPage";
 import AddressModal1 from "../../Modals/AddressModal1";
 import EditAddressModal1 from "../../Modals/EditAddressModal1";
-
-// const columns = [
-//   {
-//     field: "#",
-//     headerName: "#",
-//     width: 70,
-//   },
-//   { field: "Διευθηνση", headerName: "Διευθηνση" },
-//   { field: "Αριθμός", headerName: "Αριθμός" },
-//   { field: "Περιοχή", headerName: "Περιοχή" },
-//   { field: "Τ.Κ.", headerName: "Τ.Κ." },
-//   { field: "Actions", headerName: "Actions" },
-// ];
 
 class UserAddress1 extends Component {
   constructor(props) {
@@ -148,7 +126,7 @@ class UserAddress1 extends Component {
           <div className="text-center w-full">
             <button
               onClick={() => this.selectAddressModal(true)}
-              class="p-2 pl-5 pr-5 bg-blue-500 text-gray-100 text-lg rounded-lg focus:border-4 border-blue-300"
+              className="p-2 pl-5 pr-5 bg-blue-500 text-gray-100 text-lg rounded-lg focus:border-4 border-blue-300"
             >
               Προσθήκη
             </button>
@@ -174,51 +152,86 @@ export default withAuthorization(condition)(
 
 const AddressesList = ({ addresses, editAddress, removeAddress }) => {
   return (
-    <div class="bg-white shadow rounded-lg p-6 mt-6">
+    <section className="bg-white shadow rounded-lg p-6 mt-6 container">
       <div className="py-6">
         <span className="font-bold text-xl">
           <h1>Οι διευθήνσεις σου</h1>
         </span>
       </div>
       {addresses ? (
-        <table class="text-left w-full">
-          <thead class="bg-black flex text-white h-10 w-full">
-            <tr class="flex w-full text-center">
-              <th className="w-1/6">#</th>
-              <th className="w-1/6">Διευθηνση</th>
-              <th className="w-1/6">Αριθμός</th>
-              <th className="w-1/6">Περιοχή</th>
-              <th className="w-1/6">Τ.Κ.</th>
-              <th className="w-1/6">Επιλογές</th>
+        <table class="min-w-full border-collapse block md:table">
+          <thead class="block md:table-header-group">
+            <tr class="border border-grey-500 md:border-none block md:table-row absolute -top-full md:top-auto -left-full md:left-auto  md:relative ">
+              <th class="bg-gray-600 p-2 text-white font-bold md:border md:border-grey-500 text-left block md:table-cell">
+                #
+              </th>
+              <th class="bg-gray-600 p-2 text-white font-bold md:border md:border-grey-500 text-left block md:table-cell">
+                Διεύθυνση
+              </th>
+              <th class="bg-gray-600 p-2 text-white font-bold md:border md:border-grey-500 text-left block md:table-cell">
+                Αριθμός
+              </th>
+              <th class="bg-gray-600 p-2 text-white font-bold md:border md:border-grey-500 text-left block md:table-cell">
+                Περιοχή
+              </th>
+              <th class="bg-gray-600 p-2 text-white font-bold md:border md:border-grey-500 text-left block md:table-cell">
+                T.K.
+              </th>
+              <th class="bg-gray-600 p-2 text-white font-bold md:border md:border-grey-500 text-left block md:table-cell">
+                Επιλογές
+              </th>
             </tr>
           </thead>
-          {/* <!-- Remove the nasty inline CSS fixed height on production and replace it with a CSS class — this is just for demonstration purposes! --> */}
-          <tbody class="bg-grey-light flex flex-col items-center justify-between overflow-y-auto w-full">
-            {addresses.map((a, i) => {
-              return (
-                <tr class="flex text-center w-full mb-4" key={i}>
-                  <td className="w-1/6">{i}</td>
-                  <td className="w-1/6">{a.address_name}</td>
-                  <td className="w-1/6">{a.address_number}</td>
-                  <td className="w-1/6">{a.area_name}</td>
-                  <td className="w-1/6">{a.zipcode}</td>
-                  <td className="w-1/6">
-                    <span className="mr-3">
-                      <i
-                        class="fas fa-pencil-alt"
-                        onClick={() => editAddress(a)}
-                      ></i>
-                    </span>
-                    <span className="ml-3">
-                      <i
-                        class="fas fa-trash-alt"
-                        onClick={() => removeAddress(a)}
-                      ></i>
-                    </span>
-                  </td>
-                </tr>
-              );
-            })}
+          <tbody class="block md:table-row-group">
+            {addresses.map((a, i) => (
+              <tr class="bg-gray-300 border border-grey-500 md:border-none block md:table-row">
+                <td class="p-2 md:border md:border-grey-500 text-left block md:table-cell">
+                  <span class="inline-block w-1/3 md:hidden font-bold">#</span>
+                  {i}
+                </td>
+                <td class="p-2 md:border md:border-grey-500 text-left block md:table-cell">
+                  <span class="inline-block w-1/3 md:hidden font-bold">
+                    Διεύθυνση
+                  </span>
+                  {a.address_name}
+                </td>
+                <td class="p-2 md:border md:border-grey-500 text-left block md:table-cell">
+                  <span class="inline-block w-1/3 md:hidden font-bold">
+                    Αριθμός
+                  </span>
+                  {a.address_number}
+                </td>
+                <td class="p-2 md:border md:border-grey-500 text-left block md:table-cell">
+                  <span class="inline-block w-1/3 md:hidden font-bold">
+                    Περιοχή
+                  </span>
+                  {a.area_name}
+                </td>
+                <td class="p-2 md:border md:border-grey-500 text-left block md:table-cell">
+                  <span class="inline-block w-1/3 md:hidden font-bold">
+                    Τ.Κ
+                  </span>
+                  {a.zipcode}
+                </td>
+                <td class="p-2 md:border md:border-grey-500 text-left block md:table-cell">
+                  <span class="inline-block w-1/3 md:hidden font-bold">
+                    Επιλογές
+                  </span>
+                  <button
+                    onClick={() => editAddress(a)}
+                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 border border-blue-500 rounded"
+                  >
+                    <i className="fas fa-pencil-alt"></i>
+                  </button>
+                  <button
+                    onClick={() => removeAddress(a)}
+                    class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 border border-red-500 rounded"
+                  >
+                    <i className="fas fa-trash-alt"></i>
+                  </button>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       ) : (
@@ -226,6 +239,6 @@ const AddressesList = ({ addresses, editAddress, removeAddress }) => {
           <span>Δεν έχεις ακόμα καταχωρήσει διευθυνση</span>
         </div>
       )}
-    </div>
+    </section>
   );
 };

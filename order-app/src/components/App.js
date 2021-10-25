@@ -24,10 +24,11 @@ import ShopPage from "./Sections/Order/ShopPage";
 import Checkout1 from "./Sections/Order/Checkout1";
 import AccountPage from "./Sections/Users/AccountPage";
 import UserAddress1 from "./Sections/Users/UserAddress1";
+import UserOrders1 from "./Sections/Users/UserOrders1";
 
 const App = () => (
   <Router>
-    <div className="min-h-screen relative">
+    <div className="min-h-screen">
       <SuccessSnackbar />
       <InfoSnackbar />
       <ErrorSnackbar />
@@ -44,17 +45,17 @@ const App = () => (
         <Route exact path="/document/:type" component={TextPage} />
         <Route exact path="/account" component={MainPage} />
         <Route exact path="/account1" component={AccountPage} />
-        {/* <Route exact path="orders" component={UserOrders1} /> */}
+        <Route exact path="/account1/orders" component={UserOrders1} />
         <Route exact path="/account1/addresses" component={UserAddress1} />
         <Route exact path="/account/orders" component={UserOrders} />
         <Route exact path="/account/addresses" component={UserAddress} />
-        <Route exact path="/account/ratings" component={UserRatings} />
+        {/* <Route exact path="/account/ratings" component={UserRatings} /> */}
         <Route exact path="*">
           <NotFound />
         </Route>
       </Switch>
     </div>
-    <footer className="mt-4 text-center bg-gray-100 inset-x-0 absolute bottom-px">
+    <footer className="mt-4 text-center bg-gray-100 inset-x-0 relative bottom-px">
       <p>
         (c) 2021 coffeetwist Με επιφύλαξη όλων των δικαιωμάτων.Όροι χρήσης,
         πολιτική ιδιωτικού απορρήτου.
