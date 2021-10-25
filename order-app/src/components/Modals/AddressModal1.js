@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Button } from "react-bootstrap";
+import { showErrorSnackbar } from "../../actions/snackbar";
 import "../../css/Layout/general.css";
 import { connect } from "react-redux";
 import PlacesAutocomplete from "react-places-autocomplete";
@@ -39,6 +39,7 @@ class AddressModal1 extends Component {
   static propTypes = {
     userReducer: PropTypes.object.isRequired,
     updateUser: PropTypes.func.isRequired,
+    showErrorSnackbar: PropTypes.func.isRequired,
   };
 
   handleChange = (address) => {
@@ -46,7 +47,6 @@ class AddressModal1 extends Component {
   };
 
   handleSelect = (address) => {
-    console.log(address);
     geocodeByAddress(address)
       .then((results) => this.saveResults(results))
       .then((results) => getLatLng(results[0]))
@@ -61,7 +61,6 @@ class AddressModal1 extends Component {
   };
 
   saveResults = (results) => {
-    // console.log(results);
     var opts = results[0].address_components;
     this.setState({
       address: results[0].formatted_address,
@@ -84,7 +83,10 @@ class AddressModal1 extends Component {
 
   onAddAddress(e) {
     e.preventDefault();
-    // console.log(this.props);
+    if (!!this.state.addressName === false) {
+      this.props.showErrorSnackbar("Please select an address");
+      return false;
+    }
     const data = {
       id: sessionStorage.getItem("userID"),
       address: {
@@ -97,8 +99,12 @@ class AddressModal1 extends Component {
       },
       reason: "add_address",
     };
-    this.props.editAddress && this.props.editAddress(false, true, data.address);
+    if (this.validateAddress(data.address)) {
+      this.props.editAddress &&
+        this.props.editAddress(false, true, data.address);
+    }
   }
+
   showEditModal = () => {
     this.setState({ showEditModal: !this.state.showEditModal });
   };
@@ -212,7 +218,9 @@ const mapStateToProps = (state) => ({
   userReducer: state.userReducer,
 });
 
-export default connect(mapStateToProps, { updateUser })(AddressModal1);
+export default connect(mapStateToProps, { updateUser, showErrorSnackbar })(
+  AddressModal1
+);
 
 const AddressForm = ({ address, handleChange, handleSelect }) => {
   return (

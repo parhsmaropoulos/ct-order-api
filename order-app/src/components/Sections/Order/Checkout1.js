@@ -12,15 +12,16 @@ import {
 } from "../../../actions/orders";
 import { getUser } from "../../../actions/user";
 import { CircularProgress, Button } from "@material-ui/core";
-import AddressModal from "../../Modals/AddressModal";
-import EditAddressModal from "../../Modals/EditAddressModal";
+
 import { showErrorSnackbar } from "../../../actions/snackbar";
 import { auth_get_request, auth_post_request } from "../../../actions/lib";
 import { GET_USER, SEND_ORDER } from "../../../actions/actions";
-import EveryPayForm from "./EveryPayForm";
-import withAuthorization from "../../../firebase/withAuthorization";
 
-const availableTipOptions = [0.5, 1.0, 1.5, 2.0, 5.0, 10.0];
+import withAuthorization from "../../../firebase/withAuthorization";
+import AddressModal1 from "../../Modals/AddressModal1";
+import EditAddressModal1 from "../../Modals/EditAddressModal1";
+
+// const availableTipOptions = [0.5, 1.0, 1.5, 2.0, 5.0, 10.0];
 
 class Checkout extends Component {
   constructor(props) {
@@ -381,7 +382,7 @@ class Checkout extends Component {
     }
     if (this.state.showAddressModal) {
       addAddressModal = (
-        <AddressModal
+        <AddressModal1
           displayModal={this.state.showAddressModal}
           closeModal={() => this.selectAddressModal(false, false, "")}
           addAdress={(address) => this.onAddAddress(address)}
@@ -393,7 +394,7 @@ class Checkout extends Component {
     }
     if (this.state.showEditModal) {
       editAddressModal = (
-        <EditAddressModal
+        <EditAddressModal1
           address={this.state.selectedAddress}
           updateAddress={false}
           displayModal={this.state.showEditModal}

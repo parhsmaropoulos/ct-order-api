@@ -27,7 +27,7 @@ import UserAddress1 from "./Sections/Users/UserAddress1";
 
 const App = () => (
   <Router>
-    <div className="min-h-screen">
+    <div className="min-h-screen relative">
       <SuccessSnackbar />
       <InfoSnackbar />
       <ErrorSnackbar />
@@ -54,7 +54,7 @@ const App = () => (
         </Route>
       </Switch>
     </div>
-    <footer className="mt-4 text-center bg-gray-100 ">
+    <footer className="mt-4 text-center bg-gray-100 inset-x-0 absolute bottom-px">
       <p>
         (c) 2021 coffeetwist Με επιφύλαξη όλων των δικαιωμάτων.Όροι χρήσης,
         πολιτική ιδιωτικού απορρήτου.
