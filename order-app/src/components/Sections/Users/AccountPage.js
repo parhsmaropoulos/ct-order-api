@@ -7,7 +7,6 @@ import { auth_get_request, auth_put_request } from "../../../actions/lib";
 import { GET_USER, UPDATE_USER } from "../../../actions/actions";
 import withAuthorization from "../../../firebase/withAuthorization";
 import Header1 from "../../Layout/Header1";
-import Footer1 from "../../Layout/Footer1";
 
 class AccountPage extends Component {
   constructor(props) {

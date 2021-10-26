@@ -1,12 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import { Button, Modal, Row } from "react-bootstrap";
-
-import StarBorderIcon from "@material-ui/icons/StarBorder";
-import Rating from "@material-ui/lab/Rating";
-import Box from "@material-ui/core/Box";
-import Typography from "@material-ui/core/Typography";
 
 import {
   auth_get_request,
@@ -139,28 +133,6 @@ const OrdersList = ({ orders, showCommentModal }) => {
       </div>
       {orders ? (
         <table class="min-w-full border-collapse block md:table">
-          {/* <thead class="block md:table-header-group">
-            <tr class="border border-grey-500 md:border-none block md:table-row absolute -top-full md:top-auto -left-full md:left-auto  md:relative ">
-              <th class="bg-gray-600 p-2 text-white font-bold md:border md:border-grey-500 text-left block md:table-cell">
-                #
-              </th>
-              <th class="bg-gray-600 p-2 text-white font-bold md:border md:border-grey-500 text-left block md:table-cell">
-                Διεύθυνση
-              </th>
-              <th class="bg-gray-600 p-2 text-white font-bold md:border md:border-grey-500 text-left block md:table-cell">
-                Αριθμός
-              </th>
-              <th class="bg-gray-600 p-2 text-white font-bold md:border md:border-grey-500 text-left block md:table-cell">
-                Περιοχή
-              </th>
-              <th class="bg-gray-600 p-2 text-white font-bold md:border md:border-grey-500 text-left block md:table-cell">
-                T.K.
-              </th>
-              <th class="bg-gray-600 p-2 text-white font-bold md:border md:border-grey-500 text-left block md:table-cell">
-                Επιλογές
-              </th>
-            </tr>
-          </thead> */}
           <tbody class="block md:table-row-group">
             {orders.map((o, i) => {
               let date = moment(o.createdAt).format("YYYY-MM-DD");
