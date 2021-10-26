@@ -36,6 +36,8 @@ class UserOrders1 extends Component {
       showCommentModal: false,
       loaded: false,
     };
+    this.showCommentModal = this.showCommentModal.bind(this);
+    this.commentOrder = this.commentOrder.bind(this);
   }
   static propTypes = {
     userReducer: PropTypes.object.isRequired,
@@ -44,7 +46,7 @@ class UserOrders1 extends Component {
     auth_post_request: PropTypes.func.isRequired,
   };
 
-  showCommentModal = (bool, order) => {
+  showCommentModal = (order) => {
     this.setState({
       showCommentModal: !this.state.showCommentModal,
       selectedOrder: order,
@@ -52,6 +54,7 @@ class UserOrders1 extends Component {
   };
 
   async commentOrder() {
+    console.log(this.state);
     let data = {
       order_id: this.state.selectedOrder.ID,
       text: this.state.comment,
@@ -84,6 +87,9 @@ class UserOrders1 extends Component {
     }
   }
 
+  onClose = (e) => {
+    this.setState({ showCommentModal: false, selectedOrder: null });
+  };
   onChange = (e) => {
     this.setState({ [e.target.name]: e.target.value });
   };
@@ -91,11 +97,20 @@ class UserOrders1 extends Component {
   render() {
     return (
       <div className="min-h-screen">
-        {this.state.showCommentModal && <CommentModal />}
+        <CommentModal
+          show={this.state.showCommentModal}
+          onChange={this.onChange}
+          onClose={this.onClose}
+          comment={this.state.comment}
+          onSubmit={this.commentOrder}
+        />
         <Header1 />
         <AccountMenu />
 
-        <OrdersList orders={this.props.userReducer.orders} />
+        <OrdersList
+          orders={this.props.userReducer.orders}
+          showCommentModal={(o) => this.showCommentModal(0)}
+        />
       </div>
     );
   }
@@ -114,12 +129,12 @@ export default withAuthorization(condition)(
   })(UserOrders1)
 );
 
-const OrdersList = ({ orders }) => {
+const OrdersList = ({ orders, showCommentModal }) => {
   return (
     <section className="bg-white shadow rounded-lg p-6 mt-6 container">
       <div className="py-6">
         <span className="font-bold text-xl">
-          <h1>Οι διευθήνσεις σου</h1>
+          <h1>Οι παραγγελίες σου</h1>
         </span>
       </div>
       {orders ? (
@@ -179,18 +194,12 @@ const OrdersList = ({ orders }) => {
                     <span class="inline-block w-1/3 md:hidden font-bold">
                       Επιλογές
                     </span>
-                    <button
-                      //   onClick={() => editAddress(a)}
-                      class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 border border-blue-500 rounded"
+                    {/* <button
+                      onClick={() => showCommentModal(o)}
+                      class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-2 border border-yellow-500 rounded"
                     >
                       <i className="fas fa-pencil-alt"></i>
-                    </button>
-                    <button
-                      //   onClick={() => removeAddress(a)}
-                      class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 border border-red-500 rounded"
-                    >
-                      <i className="fas fa-trash-alt"></i>
-                    </button>
+                    </button> */}
                   </td>
                 </tr>
               );
@@ -206,60 +215,113 @@ const OrdersList = ({ orders }) => {
   );
 };
 
-const CommentModal = ({}) => {
+const CommentModal = ({ show, onClose, comment, onSubmit, onChange }) => {
   return (
-    <Modal
-      show={true}
-      autoFocus={true}
-      onHide={(e) => {
-        this.showCommentModal(false, null);
-      }}
-      id="alertModal"
+    <div
+      className={`fixed z-10 inset-0 overflow-y-auto ${show ? "" : "hidden"}`}
+      aria-labelledby="modal-title"
+      role="dialog"
+      aria-modal="true"
     >
-      <Modal.Header className="commentModalHeader">
-        <Button
-          variant="secondary"
-          onClick={(e) => {
-            this.showCommentModal(false, null);
-          }}
+      <div
+        className={`flex  justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0 ${
+          show ? "" : "hidden"
+        }`}
+      >
+        {/* <!--
+      Background overlay, show/hide based on modal state.
+
+      Entering: "ease-out duration-300"
+        From: "opacity-0"
+        To: "opacity-100"
+      Leaving: "ease-in duration-200"
+        From: "opacity-100"
+        To: "opacity-0"
+    --> */}
+        <div
+          className={`fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity ${
+            show
+              ? "ease-out duration-300 opacity-100"
+              : "ease-in duration-200 opacity-0 hidden"
+          }`}
+          onClick={onClose}
+          aria-hidden="true"
+        ></div>
+
+        {/* <!-- This element is to trick the browser into centering the modal contents. --> */}
+        <span
+          className="hidden inline-block align-middle h-screen"
+          aria-hidden="true"
         >
-          X
-        </Button>
-      </Modal.Header>
-      <Modal.Body>
-        <div className="commentModalBodyDiv">
-          <Row className="centered">
-            <div>
-              <Typography component="legend">
-                Εισάγετε το σχόλιο σας!
-              </Typography>
-              <textarea
-                name="comment"
-                type="textarea"
-                value={this.state.comment}
-                placeholder="Σχόλιο.."
-                cols="40"
-                onChange={(e) => this.onChange(e)}
-              />
+          &#8203;
+        </span>
+
+        {/* <!--
+      Modal panel, show/hide based on modal state.
+
+      
+      Entering: "ease-out duration-300"
+        From: "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+        To: "opacity-100 translate-y-0 sm:scale-100"
+      Leaving: "ease-in duration-200"
+        From: "opacity-100 translate-y-0 sm:scale-100"
+        To: "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+    --> */}
+        <div
+          className={`inline-block  align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle  sm:w-full md:w-8/12 lg:w-8/12 ${
+            show
+              ? "ease-out duration-300 opacity-100 translate-y-0 sm:scale-100"
+              : "ease-in duration-200 opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+          }`}
+        >
+          <div className="flex text-center">
+            <span className=" flex-1 font-bold text-2xl w-8/10">
+              Εισάγετε το σχόλιο σας!
+            </span>
+            <button
+              type="submit"
+              className="flex-none  w-1/10   py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              onClick={onClose}
+            >
+              X
+            </button>
+          </div>
+          <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4 text-center">
+            {/* COMMENTS */}
+            <div className="flex flex-wrap mb-6 mt-6 text-center">
+              <span className="text-center text-xl font-bold">Σχόλια</span>
+              <div className="relative w-full appearance-none label-floating">
+                <textarea
+                  className="autoexpand tracking-wide py-2 px-4 mb-3 leading-relaxed appearance-none block w-full bg-gray-200 border border-gray-200 rounded focus:outline-none focus:bg-white focus:border-gray-500"
+                  id="message"
+                  type="text"
+                  name="comment"
+                  value={comment}
+                  onChange={onChange}
+                  placeholder="Σχόλια.."
+                ></textarea>
+                <label
+                  htmlFor="message"
+                  className="absolute tracking-wide py-2 px-4 mb-4 opacity-0 leading-tight block top-0 left-0 cursor-text"
+                >
+                  Σχόλια..
+                </label>
+              </div>
             </div>
-          </Row>
-          <Row className="centered">
-            <Box component="fieldset" mb={3} borderColor="transparent">
-              <Typography component="legend">Βαθμολογία!</Typography>
-              <Rating
-                name="rating"
-                defaultValue={4}
-                precision={0.5}
-                onChange={(e) => this.onChange(e)}
-                emptyIcon={<StarBorderIcon fontSize="inherit" />}
-              />
-            </Box>
-          </Row>
+            {/* BUTTONS */}
+            <div className="flex">
+              <div className="flex-1">
+                <button
+                  onClick={onSubmit}
+                  className="p-2 pl-5 pr-5 bg-blue-500 text-gray-100 text-lg rounded-lg focus:border-4 border-blue-300"
+                >
+                  Αποθήκευση
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
-      </Modal.Body>
-      <Modal.Footer>
-        <Button onClick={() => this.commentOrder()}>Submit</Button>
-      </Modal.Footer>
-    </Modal>
+      </div>
+    </div>
   );
 };
