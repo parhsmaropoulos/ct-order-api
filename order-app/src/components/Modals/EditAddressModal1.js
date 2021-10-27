@@ -241,7 +241,7 @@ class EditAddressModal1 extends Component {
               <div className="flex-1 w-full text-center">
                 <button
                   onClick={this.onAddAddress}
-                  class="p-2 pl-5 pr-5 mb-5 bg-blue-500 text-gray-100 text-lg rounded-lg focus:border-4 border-blue-300"
+                  className="p-2 pl-5 pr-5 mb-5 bg-blue-500 text-gray-100 text-lg rounded-lg focus:border-4 border-blue-300"
                 >
                   Προσθήκη
                 </button>
@@ -266,17 +266,20 @@ export default connect(mapStateToProps, {
 
 const AddressForm = ({ onChange, state, onSubmit }) => {
   return (
-    <div class="bg-white shadow rounded-lg p-6">
+    <div className="bg-white shadow rounded-lg p-6">
       <div className="py-6">
         <span className="font-bold">
           <h1>Αλλαγή στοιχείων</h1>
         </span>
       </div>
-      <div class="grid lg:grid-cols-1 gap-6">
-        <div class="border focus-within:border-blue-500 focus-within:text-blue-500 transition-all duration-500 relative rounded p-1">
-          <div class="-mt-4 absolute tracking-wider px-1 uppercase text-xs">
+      <div className="grid lg:grid-cols-1 gap-6">
+        <div className="border focus-within:border-blue-500 focus-within:text-blue-500 transition-all duration-500 relative rounded p-1">
+          <div className="-mt-4 absolute tracking-wider px-1 uppercase text-xs">
             <p>
-              <label for="addressName" class="bg-white text-gray-600 px-1">
+              <label
+                htmlFor="addressName"
+                className="bg-white text-gray-600 px-1"
+              >
                 Όνομα Οδού
               </label>
             </p>
@@ -290,14 +293,17 @@ const AddressForm = ({ onChange, state, onSubmit }) => {
               value={state.addressName}
               onChange={onChange}
               type="text"
-              class="py-1 px-1 text-gray-900 outline-none block h-full w-full"
+              className="py-1 px-1 text-gray-900 outline-none block h-full w-full"
             />
           </p>
         </div>
-        <div class="border focus-within:border-blue-500 focus-within:text-blue-500 transition-all duration-500 relative rounded p-1">
-          <div class="-mt-4 absolute tracking-wider px-1 uppercase text-xs">
+        <div className="border focus-within:border-blue-500 focus-within:text-blue-500 transition-all duration-500 relative rounded p-1">
+          <div className="-mt-4 absolute tracking-wider px-1 uppercase text-xs">
             <p>
-              <label for="addressNumber" class="bg-white text-gray-600 px-1">
+              <label
+                htmlFor="addressNumber"
+                className="bg-white text-gray-600 px-1"
+              >
                 Αριθμός Οδού
               </label>
             </p>
@@ -311,14 +317,14 @@ const AddressForm = ({ onChange, state, onSubmit }) => {
               onChange={onChange}
               value={state.addressNumber}
               type="text"
-              class="py-1 px-1 outline-none block h-full w-full"
+              className="py-1 px-1 outline-none block h-full w-full"
             />
           </p>
         </div>
-        <div class="border focus-within:border-blue-500 focus-within:text-blue-500 transition-all duration-500 relative rounded p-1">
-          <div class="-mt-4 absolute tracking-wider px-1 uppercase text-xs">
+        <div className="border focus-within:border-blue-500 focus-within:text-blue-500 transition-all duration-500 relative rounded p-1">
+          <div className="-mt-4 absolute tracking-wider px-1 uppercase text-xs">
             <p>
-              <label for="areaName" class="bg-white text-gray-600 px-1">
+              <label htmlFor="areaName" className="bg-white text-gray-600 px-1">
                 Όνομα Περιοχής
               </label>
             </p>
@@ -334,14 +340,14 @@ const AddressForm = ({ onChange, state, onSubmit }) => {
               onChange={onChange}
               value={state.areaName}
               type="text"
-              class="py-1 px-1 outline-none block h-full w-full"
+              className="py-1 px-1 outline-none block h-full w-full"
             />
           </p>
         </div>
-        <div class="border f transition-all duration-500  relative rounded p-1">
-          <div class="-mt-4 absolute tracking-wider  px-1 uppercase text-xs">
+        <div className="border f transition-all duration-500  relative rounded p-1">
+          <div className="-mt-4 absolute tracking-wider  px-1 uppercase text-xs">
             <p>
-              <label for="zipCode" class="bg-white text-gray-600 px-1">
+              <label htmlFor="zipCode" className="bg-white text-gray-600 px-1">
                 Τ.Κ.
               </label>
             </p>
@@ -355,15 +361,15 @@ const AddressForm = ({ onChange, state, onSubmit }) => {
               tabindex="0"
               name="zipCode"
               type="text"
-              class="py-1 px-1 outline-none block bg-gray-200 h-full w-full"
+              className="py-1 px-1 outline-none block bg-gray-200 h-full w-full"
             />
           </p>
         </div>
       </div>
-      <div class="border-t mt-6 pt-3">
+      <div className="border-t mt-6 pt-3">
         <button
           onClick={onSubmit}
-          class="rounded text-gray-100 px-3 py-1 bg-blue-500 hover:shadow-inner hover:bg-blue-700 transition-all duration-300"
+          className="rounded text-gray-100 px-3 py-1 bg-blue-500 hover:shadow-inner hover:bg-blue-700 transition-all duration-300"
         >
           Ενημέρωση
         </button>

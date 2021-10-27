@@ -104,6 +104,7 @@ class OrderItemModal extends Component {
         });
         if (found === false) {
           alert(`Διαλέχτε μια επιλογή για την κατηγορία: ${c.name}`);
+          return;
         }
       }
     });
@@ -332,7 +333,7 @@ class OrderItemModal extends Component {
                     placeholder="Σχόλια.."
                   ></textarea>
                   <label
-                    htmlFor="message"
+                    htmlhtmlFor="message"
                     className="absolute tracking-wide py-2 px-4 mb-4 opacity-0 leading-tight block top-0 left-0 cursor-text"
                   >
                     Σχόλια..
@@ -344,14 +345,14 @@ class OrderItemModal extends Component {
                 <div className="flex-1">
                   <button
                     onClick={() => this.changeQuantity(false)}
-                    className="p-2 w-1/12 bg-blue-500 text-gray-100 text-lg rounded-lg focus:border-4 border-blue-300"
+                    className="p-2  w-7 md:w-1/12 bg-blue-500 text-gray-100 text-lg rounded-lg focus:border-4 border-blue-300"
                   >
                     -
                   </button>
                   <span className="px-4">{this.state.quantity}</span>
                   <button
                     onClick={() => this.changeQuantity(true)}
-                    className="p-2 w-1/12 bg-gray-500 text-gray-100 text-lg rounded-lg focus:border-4 border-gray-300"
+                    className="p-2 w-7 md:w-1/12 bg-gray-500 text-gray-100 text-lg rounded-lg focus:border-4 border-gray-300"
                   >
                     +
                   </button>

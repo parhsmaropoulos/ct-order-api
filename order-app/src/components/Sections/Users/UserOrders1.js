@@ -132,20 +132,20 @@ const OrdersList = ({ orders, showCommentModal }) => {
         </span>
       </div>
       {orders ? (
-        <table class="min-w-full border-collapse block md:table">
-          <tbody class="block md:table-row-group">
+        <table className="min-w-full border-collapse block md:table">
+          <tbody className="block md:table-row-group">
             {orders.map((o, i) => {
               let date = moment(o.createdAt).format("YYYY-MM-DD");
               return (
-                <tr class="bg-gray-300 border border-grey-500 md:border-none block md:table-row">
-                  <td class="p-2 md:border md:border-grey-500 text-left block md:table-cell">
-                    <span class="inline-block w-1/3 md:hidden font-bold">
+                <tr className="bg-gray-300 border border-grey-500 md:border-none block md:table-row">
+                  <td className="p-2 md:border md:border-grey-500 text-left block md:table-cell">
+                    <span className="inline-block w-1/3 md:hidden font-bold">
                       ΗΜ/ΝΙΑ
                     </span>
                     {date}
                   </td>
-                  <td class="p-2 md:border md:border-grey-500 text-left block md:table-cell">
-                    <span class="inline-block w-1/3 md:hidden font-bold">
+                  <td className="p-2 md:border md:border-grey-500 text-left block md:table-cell">
+                    <span className="inline-block w-1/3 md:hidden font-bold">
                       ΠΡΟΪΌΝΤΑ
                     </span>
                     <ul>
@@ -162,13 +162,13 @@ const OrdersList = ({ orders, showCommentModal }) => {
                       ))}
                     </ul>
                   </td>
-                  <td class="p-2 md:border md:border-grey-500 text-left block md:table-cell">
-                    <span class="inline-block w-1/3 md:hidden font-bold">
+                  <td className="p-2 md:border md:border-grey-500 text-left block md:table-cell">
+                    <span className="inline-block w-1/3 md:hidden font-bold">
                       Επιλογές
                     </span>
                     {/* <button
                       onClick={() => showCommentModal(o)}
-                      class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-2 border border-yellow-500 rounded"
+                      className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-2 border border-yellow-500 rounded"
                     >
                       <i className="fas fa-pencil-alt"></i>
                     </button> */}

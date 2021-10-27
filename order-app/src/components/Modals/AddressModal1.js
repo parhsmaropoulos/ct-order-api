@@ -201,7 +201,7 @@ class AddressModal1 extends Component {
               <div className="flex-1 w-full text-center">
                 <button
                   onClick={this.onAddAddress}
-                  class="p-2 pl-5 pr-5 bg-blue-500 text-gray-100 text-lg rounded-lg focus:border-4 border-blue-300"
+                  className="p-2 pl-5 pr-5 bg-blue-500 text-gray-100 text-lg rounded-lg focus:border-4 border-blue-300"
                 >
                   Συνέχεια
                 </button>

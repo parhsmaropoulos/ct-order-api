@@ -119,35 +119,35 @@ export const AccountMenu = () => {
   let selectedTab = sessionStorage.getItem("selectedTab");
   return (
     <nav className="font-sans flex  text-center  py-4 px-6 bg-white shadow  w-full">
-      <div class="w-full h-full bg:flex md:flex sm:flex-col bg:flex-row md:flex-row justify-center items-center">
+      <div className="w-full h-full bg:flex md:flex sm:flex-col bg:flex-row md:flex-row justify-center items-center">
         <a href="/account1" className="hover:no-underline ">
           <div
-            class={`flex h-full items-center bg-gray-500   hover:bg-black hover:bg-opacity-50 ${
+            className={`flex h-full items-center bg-gray-500   hover:bg-black hover:bg-opacity-50 ${
               selectedTab === "account" && "bg-gray-700"
             }`}
           >
-            <div class="mx-4 text-white">Ο λογαριασμός μου</div>
-            <div class=" h-8  lg:w-px sm:w-0 md:w-0 bg-gray-300"></div>
+            <div className="mx-4 text-white">Ο λογαριασμός μου</div>
+            <div className=" h-8  lg:w-px sm:w-0 md:w-0 bg-gray-300"></div>
           </div>
         </a>
         <a href="/account1/orders" className="hover:no-underline">
           <div
-            class={`flex h-full items-center bg-gray-500  hover:bg-black hover:bg-opacity-50 ${
+            className={`flex h-full items-center bg-gray-500  hover:bg-black hover:bg-opacity-50 ${
               selectedTab === "orders" && "bg-gray-700"
             }`}
           >
-            <div class="mx-4 text-white">Οι παραγγελίες μου</div>
-            <div class=" h-8  lg:w-px sm:w-0 md:w-0  bg-gray-300"></div>
+            <div className="mx-4 text-white">Οι παραγγελίες μου</div>
+            <div className=" h-8  lg:w-px sm:w-0 md:w-0  bg-gray-300"></div>
           </div>
         </a>
         <a href="/account1/addresses" className="hover:no-underline">
           <div
-            class={`flex h-full items-center bg-gray-500  hover:bg-black hover:bg-opacity-50 ${
+            className={`flex h-full items-center bg-gray-500  hover:bg-black hover:bg-opacity-50 ${
               selectedTab === "addresses" && "bg-gray-700"
             }`}
           >
-            <div class="mx-4 text-white">Διευθύνσεις</div>
-            <div class=" h-8  lg:w-px sm:w-0 md:w-0 bg-gray-300"></div>
+            <div className="mx-4 text-white">Διευθύνσεις</div>
+            <div className=" h-8  lg:w-px sm:w-0 md:w-0 bg-gray-300"></div>
           </div>
         </a>
       </div>
@@ -157,17 +157,17 @@ export const AccountMenu = () => {
 
 const UserInfoForm = ({ onChange, onSubmit, state }) => {
   return (
-    <div class="bg-white shadow rounded-lg p-6">
+    <div className="bg-white shadow rounded-lg p-6">
       <div className="py-6">
         <span className="font-bold">
           <h1>Αλλαγή στοιχείων</h1>
         </span>
       </div>
-      <div class="grid lg:grid-cols-2 gap-6">
-        <div class="border focus-within:border-blue-500 focus-within:text-blue-500 transition-all duration-500 relative rounded p-1">
-          <div class="-mt-4 absolute tracking-wider px-1 uppercase text-xs">
+      <div className="grid lg:grid-cols-2 gap-6">
+        <div className="border focus-within:border-blue-500 focus-within:text-blue-500 transition-all duration-500 relative rounded p-1">
+          <div className="-mt-4 absolute tracking-wider px-1 uppercase text-xs">
             <p>
-              <label for="name" class="bg-white text-gray-600 px-1">
+              <label htmlFor="name" className="bg-white text-gray-600 px-1">
                 Όνομα
               </label>
             </p>
@@ -181,14 +181,14 @@ const UserInfoForm = ({ onChange, onSubmit, state }) => {
               value={state.name}
               onChange={onChange}
               type="text"
-              class="py-1 px-1 text-gray-900 outline-none block h-full w-full"
+              className="py-1 px-1 text-gray-900 outline-none block h-full w-full"
             />
           </p>
         </div>
-        <div class="border focus-within:border-blue-500 focus-within:text-blue-500 transition-all duration-500 relative rounded p-1">
-          <div class="-mt-4 absolute tracking-wider px-1 uppercase text-xs">
+        <div className="border focus-within:border-blue-500 focus-within:text-blue-500 transition-all duration-500 relative rounded p-1">
+          <div className="-mt-4 absolute tracking-wider px-1 uppercase text-xs">
             <p>
-              <label for="surname" class="bg-white text-gray-600 px-1">
+              <label htmlFor="surname" className="bg-white text-gray-600 px-1">
                 Επίθετο
               </label>
             </p>
@@ -202,14 +202,14 @@ const UserInfoForm = ({ onChange, onSubmit, state }) => {
               onChange={onChange}
               value={state.surname}
               type="text"
-              class="py-1 px-1 outline-none block h-full w-full"
+              className="py-1 px-1 outline-none block h-full w-full"
             />
           </p>
         </div>
-        <div class="border focus-within:border-blue-500 focus-within:text-blue-500 transition-all duration-500 relative rounded p-1">
-          <div class="-mt-4 absolute tracking-wider px-1 uppercase text-xs">
+        <div className="border focus-within:border-blue-500 focus-within:text-blue-500 transition-all duration-500 relative rounded p-1">
+          <div className="-mt-4 absolute tracking-wider px-1 uppercase text-xs">
             <p>
-              <label for="phone" class="bg-white text-gray-600 px-1">
+              <label htmlFor="phone" className="bg-white text-gray-600 px-1">
                 Τηλέφωνο Επικοινωνίας
               </label>
             </p>
@@ -226,14 +226,14 @@ const UserInfoForm = ({ onChange, onSubmit, state }) => {
               value={state.phone}
               type="tel"
               placeholder="Τηλέφωνο επικοινωνίας: 69xxxxxxxx"
-              class="py-1 px-1 outline-none block h-full w-full"
+              className="py-1 px-1 outline-none block h-full w-full"
             />
           </p>
         </div>
-        <div class="border f transition-all duration-500  relative rounded p-1">
-          <div class="-mt-4 absolute tracking-wider  px-1 uppercase text-xs">
+        <div className="border f transition-all duration-500  relative rounded p-1">
+          <div className="-mt-4 absolute tracking-wider  px-1 uppercase text-xs">
             <p>
-              <label for="email" class="bg-white text-gray-600 px-1">
+              <label htmlFor="email" className="bg-white text-gray-600 px-1">
                 Email
               </label>
             </p>
@@ -246,15 +246,15 @@ const UserInfoForm = ({ onChange, onSubmit, state }) => {
               tabindex="0"
               type="email"
               disabled
-              class="py-1 px-1 outline-none block bg-gray-200 h-full w-full"
+              className="py-1 px-1 outline-none block bg-gray-200 h-full w-full"
             />
           </p>
         </div>
       </div>
-      <div class="border-t mt-6 pt-3">
+      <div className="border-t mt-6 pt-3">
         <button
           onClick={onSubmit}
-          class="rounded text-gray-100 px-3 py-1 bg-blue-500 hover:shadow-inner hover:bg-blue-700 transition-all duration-300"
+          className="rounded text-gray-100 px-3 py-1 bg-blue-500 hover:shadow-inner hover:bg-blue-700 transition-all duration-300"
         >
           Ενημέρωση
         </button>
@@ -265,17 +265,17 @@ const UserInfoForm = ({ onChange, onSubmit, state }) => {
 
 const UserPasswordResetForm = ({ onChange, onSubmit, state }) => {
   return (
-    <div class="bg-white shadow rounded-lg p-6">
+    <div className="bg-white shadow rounded-lg p-6">
       <div className="py-6">
         <span className="font-bold">
           <h1>Αλλαγή στοιχείων</h1>
         </span>
       </div>
-      <div class="grid lg:grid-cols-2 gap-6">
-        <div class="border focus-within:border-blue-500 focus-within:text-blue-500 transition-all duration-500 relative rounded p-1">
-          <div class="-mt-4 absolute tracking-wider px-1 uppercase text-xs">
+      <div className="grid lg:grid-cols-2 gap-6">
+        <div className="border focus-within:border-blue-500 focus-within:text-blue-500 transition-all duration-500 relative rounded p-1">
+          <div className="-mt-4 absolute tracking-wider px-1 uppercase text-xs">
             <p>
-              <label for="name" class="bg-white text-gray-600 px-1">
+              <label htmlFor="name" className="bg-white text-gray-600 px-1">
                 Όνομα
               </label>
             </p>
@@ -289,14 +289,14 @@ const UserPasswordResetForm = ({ onChange, onSubmit, state }) => {
               value={state.name}
               onChange={onChange}
               type="text"
-              class="py-1 px-1 text-gray-900 outline-none block h-full w-full"
+              className="py-1 px-1 text-gray-900 outline-none block h-full w-full"
             />
           </p>
         </div>
-        <div class="border focus-within:border-blue-500 focus-within:text-blue-500 transition-all duration-500 relative rounded p-1">
-          <div class="-mt-4 absolute tracking-wider px-1 uppercase text-xs">
+        <div className="border focus-within:border-blue-500 focus-within:text-blue-500 transition-all duration-500 relative rounded p-1">
+          <div className="-mt-4 absolute tracking-wider px-1 uppercase text-xs">
             <p>
-              <label for="surname" class="bg-white text-gray-600 px-1">
+              <label htmlFor="surname" className="bg-white text-gray-600 px-1">
                 Επίθετο
               </label>
             </p>
@@ -310,14 +310,14 @@ const UserPasswordResetForm = ({ onChange, onSubmit, state }) => {
               onChange={onChange}
               value={state.surname}
               type="text"
-              class="py-1 px-1 outline-none block h-full w-full"
+              className="py-1 px-1 outline-none block h-full w-full"
             />
           </p>
         </div>
-        <div class="border focus-within:border-blue-500 focus-within:text-blue-500 transition-all duration-500 relative rounded p-1">
-          <div class="-mt-4 absolute tracking-wider px-1 uppercase text-xs">
+        <div className="border focus-within:border-blue-500 focus-within:text-blue-500 transition-all duration-500 relative rounded p-1">
+          <div className="-mt-4 absolute tracking-wider px-1 uppercase text-xs">
             <p>
-              <label for="phone" class="bg-white text-gray-600 px-1">
+              <label htmlFor="phone" className="bg-white text-gray-600 px-1">
                 Τηλέφωνο Επικοινωνίας
               </label>
             </p>
@@ -334,14 +334,14 @@ const UserPasswordResetForm = ({ onChange, onSubmit, state }) => {
               value={state.phone}
               type="tel"
               placeholder="Τηλέφωνο επικοινωνίας: 69xxxxxxxx"
-              class="py-1 px-1 outline-none block h-full w-full"
+              className="py-1 px-1 outline-none block h-full w-full"
             />
           </p>
         </div>
-        <div class="border f transition-all duration-500  relative rounded p-1">
-          <div class="-mt-4 absolute tracking-wider  px-1 uppercase text-xs">
+        <div className="border f transition-all duration-500  relative rounded p-1">
+          <div className="-mt-4 absolute tracking-wider  px-1 uppercase text-xs">
             <p>
-              <label for="email" class="bg-white text-gray-600 px-1">
+              <label htmlFor="email" className="bg-white text-gray-600 px-1">
                 Email
               </label>
             </p>
@@ -354,15 +354,15 @@ const UserPasswordResetForm = ({ onChange, onSubmit, state }) => {
               tabindex="0"
               type="email"
               disabled
-              class="py-1 px-1 outline-none block bg-gray-200 h-full w-full"
+              className="py-1 px-1 outline-none block bg-gray-200 h-full w-full"
             />
           </p>
         </div>
       </div>
-      <div class="border-t mt-6 pt-3">
+      <div className="border-t mt-6 pt-3">
         <button
           onClick={onSubmit}
-          class="rounded text-gray-100 px-3 py-1 bg-blue-500 hover:shadow-inner hover:bg-blue-700 transition-all duration-300"
+          className="rounded text-gray-100 px-3 py-1 bg-blue-500 hover:shadow-inner hover:bg-blue-700 transition-all duration-300"
         >
           Ενημέρωση
         </button>

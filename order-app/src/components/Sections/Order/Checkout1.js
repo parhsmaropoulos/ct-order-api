@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import "../../../css/Pages/orderpage.css";
+import "./Checkout.css";
 import { Link } from "react-router-dom";
 import {
   send_order,
@@ -609,46 +609,48 @@ const PaymentDetails = ({ payWithCard, payWithCash, onSelect }) => {
       <h1 className="mb-8 font-extrabold text-gray-800 leading-6">
         2.Επιλογή πληρωμής
       </h1>
-      <div className="py4">
+      <div className="shadow-md">
         <div
-          className="border-2 border-gray-300 rounded-sm  px-10 py-6 "
-          id="card"
+          className="tab w-full overflow-hidden border-t"
+          onClick={() => onSelect("card")}
         >
-          <button
-            className=" text-gray-800 hover:text-blue-700 focus:outline-none"
-            type="button"
-            onClick={() => onSelect("card")}
+          <input
+            className="absolute opacity-0"
+            id="tab-single-one"
+            type="radio"
+            name="payWithCard"
+            checked={payWithCard}
+          />
+          <label
+            className="block p-5 leading-normal cursor-pointer"
+            htmlFor="tab-single-one"
           >
             Πληρωμή με κάρτα
-          </button>
+          </label>
+          <div className="tab-content overflow-hidden border-l-2 bg-gray-100 border-indigo-500 leading-normal">
+            <p className="p-5">Pay with card through everypay</p>
+          </div>
         </div>
         <div
-          className={` ${
-            payWithCard === false && "hidden"
-          } border border-b-0 px-10 py-6`}
+          className="tab w-full overflow-hidden border-t"
+          onClick={() => onSelect("cash")}
         >
-          Pay with card through everypay
-        </div>
-      </div>
-      <div className=" py-4 ">
-        <div
-          className="border-2 border-gray-300 rounded-sm  px-10 py-6 "
-          id="cash"
-        >
-          <button
-            className=" text-gray-800 hover:text-blue-700 focus:outline-none"
-            type="button"
-            onClick={() => onSelect("cash")}
+          <input
+            className="absolute opacity-0"
+            id="tab-single-one"
+            type="radio"
+            name="payWithCash"
+            checked={payWithCash}
+          />
+          <label
+            className="block p-5 leading-normal cursor-pointer"
+            htmlFor="tab-single-one"
           >
             Πληρωμή με μετρητά
-          </button>
-        </div>
-        <div
-          className={` ${
-            payWithCash === false && "hidden"
-          } border border-b-0 px-10 py-6`}
-        >
-          Πληρωμή με μετρητά
+          </label>
+          <div className="tab-content overflow-hidden border-l-2 bg-gray-100 border-indigo-500 leading-normal">
+            <p className="p-5">Pay with cash</p>
+          </div>
         </div>
       </div>
     </div>

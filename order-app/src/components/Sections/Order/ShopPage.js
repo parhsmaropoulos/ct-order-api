@@ -1,19 +1,11 @@
 /* eslint-disable no-restricted-globals */
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import "../../../css/Pages/orderpage.css";
 import PropTypes from "prop-types";
 import { Redirect } from "react-router";
 import { update_cart } from "../../../actions/orders";
-// import AddIcon from "@material-ui/icons/Add";
-// import MenuIcon from "@material-ui/icons/Menu";
-// import RemoveIcon from "@material-ui/icons/Remove";
-// import ClearIcon from "@material-ui/icons/Clear";
 import { showInfoSnackbar } from "../../../actions/snackbar";
-// import AlertModal from "../../MainPanel/Pages/Alert/AlertModal";
-
 import { CircularProgress } from "@material-ui/core";
-
 import { auth_get_request } from "../../../actions/lib";
 import {
   GET_CATEGORIES,
@@ -22,7 +14,6 @@ import {
   GET_ITEMS,
 } from "../../../actions/actions";
 import { Link } from "react-router-dom";
-
 import Header1 from "../../Layout/Header1";
 import OrderItemModal1 from "../../Modals/OrderItemModal1";
 
@@ -257,6 +248,14 @@ class ShopPage extends Component {
         totalPrice: this.props.orderReducer.totalPrice,
       });
     }
+    if (!!this.props.match.params.category_name) {
+      let cat = this.props.categories.filter((c) => {
+        return c.name === this.props.match.params.category_name;
+      });
+      if (cat) {
+        this.setState({ selectedCategory: cat.ID });
+      }
+    }
   }
   async get_items() {
     await this.props.auth_get_request("products/all", GET_ITEMS);
@@ -405,7 +404,7 @@ const CategoryMenu = ({ categories, onChange, selectedCategory }) => {
           </Link>
         ))}
       </div>
-      <div class="flex lg:hidden items-center space-x-4 overflow-y-auto md:max-w-lg xl:max-w-5xl 2xl:max-w-7xl lg:max-w-3xl whitespace-nowrap">
+      <div className="flex lg:hidden items-center space-x-4 overflow-y-auto md:max-w-lg xl:max-w-5xl 2xl:max-w-7xl lg:max-w-3xl whitespace-nowrap">
         {categories.map((c, idx) => (
           <Link
             // exact
