@@ -8,11 +8,11 @@ import {
   auth_get_request,
   auth_put_request,
   auth_post_request,
-} from "../../actions/lib";
+} from "../actions/lib";
 import GoogleMapReact from "google-map-react";
-import { ADD_ADDRESS, EDIT_ADDRESS } from "../../actions/actions";
+import { ADD_ADDRESS, EDIT_ADDRESS } from "../actions/actions";
 
-import Marker from "../Layout/Marker";
+import Marker from "../components/Layout/Marker";
 
 class EditAddressModal extends Component {
   constructor(props) {

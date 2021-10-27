@@ -580,7 +580,7 @@ const OrderDetails = ({
           type="text"
           className=" shadow rounded-lg bg-gray-100 outline-none focus:bg-gray-200"
           name="phone"
-          inputProps={{
+          inputprops={{
             pattern: "69[0-9]{8}",
           }}
           value={phone}

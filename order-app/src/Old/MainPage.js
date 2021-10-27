@@ -4,11 +4,11 @@ import PropTypes from "prop-types";
 import { Button, Col, Form, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import "../../../css/Pages/accountpage.css";
-import { auth_get_request, auth_put_request } from "../../../actions/lib";
+import { auth_get_request, auth_put_request } from "../actions/lib";
 
 import { Grid, Container } from "@material-ui/core";
-import { GET_USER, UPDATE_USER } from "../../../actions/actions";
-import withAuthorization from "../../../firebase/withAuthorization";
+import { GET_USER, UPDATE_USER } from "../actions/actions";
+import withAuthorization from "../firebase/withAuthorization";
 import Header from "../../Layout/Header";
 
 class MainPage extends Component {

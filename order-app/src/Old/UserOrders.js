@@ -13,13 +13,9 @@ import {
   auth_get_request,
   auth_put_request,
   auth_post_request,
-} from "../../../actions/lib";
-import {
-  GET_USER,
-  GET_USER_ORDERS,
-  UPDATE_ORDER,
-} from "../../../actions/actions";
-import withAuthorization from "../../../firebase/withAuthorization";
+} from "../actions/lib";
+import { GET_USER, GET_USER_ORDERS, UPDATE_ORDER } from "../actions/actions";
+import withAuthorization from "../firebase/withAuthorization";
 import Header from "../../Layout/Header";
 
 class UserOrders extends Component {

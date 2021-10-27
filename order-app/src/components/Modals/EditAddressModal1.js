@@ -327,7 +327,7 @@ const AddressForm = ({ onChange, state, onSubmit }) => {
             <input
               id="areaName"
               name="areaName"
-              inputProps={{
+              inputprops={{
                 pattern: "69[0-9]{8}",
               }}
               tabindex="0"

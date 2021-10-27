@@ -19,7 +19,7 @@ import {
   IconButton,
   Divider,
 } from "@material-ui/core";
-import { showInfoSnackbar } from "../../actions/snackbar";
+import { showInfoSnackbar } from "../actions/snackbar";
 
 class OrderItemModal extends Component {
   constructor(props) {
@@ -446,7 +446,7 @@ class OrderItemModal extends Component {
                                               }
                                               tabIndex={-1}
                                               disableRipple
-                                              inputProps={{
+                                              inputprops={{
                                                 "aria-labelledby": labelId,
                                               }}
                                             />

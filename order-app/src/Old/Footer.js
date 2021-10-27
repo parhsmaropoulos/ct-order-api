@@ -12,10 +12,10 @@ import { ArrowRightCircle } from "react-bootstrap-icons";
 import { SocialIcon } from "react-social-icons";
 import PropTypes from "prop-types";
 import { FormHelperText, Grid, TextField } from "@material-ui/core";
-import { subscribe } from "../../actions/user";
+import { subscribe } from "../actions/user";
 import { Link } from "react-router-dom";
-import { auth_post_request } from "../../actions/lib";
-import { SUBSCRIBE_USER } from "../../actions/actions";
+import { auth_post_request } from "../actions/lib";
+import { SUBSCRIBE_USER } from "../actions/actions";
 
 class Footer extends Component {
   /**

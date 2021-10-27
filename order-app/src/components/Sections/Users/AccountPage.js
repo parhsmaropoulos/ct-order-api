@@ -218,7 +218,7 @@ const UserInfoForm = ({ onChange, onSubmit, state }) => {
             <input
               id="phone"
               name="phone"
-              inputProps={{
+              inputprops={{
                 pattern: "69[0-9]{8}",
               }}
               tabindex="0"
@@ -326,7 +326,7 @@ const UserPasswordResetForm = ({ onChange, onSubmit, state }) => {
             <input
               id="phone"
               name="phone"
-              inputProps={{
+              inputprops={{
                 pattern: "69[0-9]{8}",
               }}
               tabindex="0"

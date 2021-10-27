@@ -14,9 +14,9 @@ import withAuthorization from "../../firebase/withAuthorization";
 import { compose } from "recompose";
 
 const navigationSignedIn = [
-  { name: "Προφίλ", href: "account", current: false },
-  { name: "Παραγγελίες", href: "account/orders", current: false },
-  { name: "Διευθύνσεις", href: "account/addresses", current: false },
+  { name: "Προφίλ", href: "account1", current: false },
+  { name: "Παραγγελίες", href: "account1/orders", current: false },
+  { name: "Διευθύνσεις", href: "account1/addresses", current: false },
   { name: "Αποσύνδεση", href: "", current: false },
 ];
 

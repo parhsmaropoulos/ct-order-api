@@ -318,7 +318,7 @@ class ShopPage extends Component {
             {modal}
             <div className="w-full md:inline-flex lg:inline-flex sm:grid text-center ">
               {/* Left column */}
-              <div className="flex-none w-2/12 ">
+              <div className="flex-none lg:w-2/12 md:w-full sm:w-full">
                 <CategoryMenu
                   categories={this.props.categories}
                   onChange={(category) => this.changeCategory(category, false)}
@@ -326,12 +326,12 @@ class ShopPage extends Component {
                 />
               </div>
               {/* Center column */}
-              <div className="flex-none w-7/12">
-                <SearchBar
+              <div className="flex-none lg:w-7/12 w-full">
+                {/* <SearchBar
                   onChange={this.onChange}
                   searchTerm={this.state.searchParam}
                   onSelect={this.onSearchChange}
-                />
+                /> */}
                 <ItemsList
                   products={this.props.products}
                   selectedCategory={this.state.selectedCategory}
@@ -341,7 +341,7 @@ class ShopPage extends Component {
                 />
               </div>
               {/* Right column */}
-              <div className="flex-none w-3/12">
+              <div className="flex-none lg:w-3/12 w-full mt-4">
                 <Cart
                   cart={this.state.cart}
                   changeQuantity={(bool, index) =>
@@ -383,18 +383,18 @@ export default connect(mapStateToProps, {
 
 const CategoryMenu = ({ categories, onChange, selectedCategory }) => {
   return (
-    <div className="w-full bg-white rounded-lg shadow-lg overflow-auto">
-      <ul className="divide-y-2 divide-gray-100">
+    <div className="w-full bg-white rounded-lg shadow-lg overflow-auto  ">
+      <div className=" divide-y-2 divide-gray-100 hidden md:flex md:flex-col">
         {categories.map((c, idx) => (
           <Link
             // exact
             to={`/order1/${c.name}`}
             onClick={() => onChange(c.ID)}
-            className={`block w-full   text-black-200 hover:text-gray-400 transition duration-150 inline-block`}
+            className={`block w-full text-black-200 hover:text-gray-400 transition duration-150 inline-block`}
             key={idx}
           >
             <li
-              className={`px-2 py-2 text-center rounded-sm mb-0.5 last:mb-0 hover:bg-gray-600 ${
+              className={`px-2 py-2 list-none  text-center rounded-sm mb-0.5 last:mb-0 hover:bg-gray-600 ${
                 selectedCategory === c.name && "bg-blue-300"
               } `}
             >
@@ -404,7 +404,28 @@ const CategoryMenu = ({ categories, onChange, selectedCategory }) => {
             </li>
           </Link>
         ))}
-      </ul>
+      </div>
+      <div class="flex lg:hidden items-center space-x-4 overflow-y-auto md:max-w-lg xl:max-w-5xl 2xl:max-w-7xl lg:max-w-3xl whitespace-nowrap">
+        {categories.map((c, idx) => (
+          <Link
+            // exact
+            to={`/order1/${c.name}`}
+            onClick={() => onChange(c.ID)}
+            className={`block w-full text-black-200 hover:text-gray-400 transition duration-150 inline-block`}
+            key={idx}
+          >
+            <li
+              className={`px-2 py-2 list-none  text-center rounded-sm mb-0.5 last:mb-0 hover:bg-gray-600 ${
+                selectedCategory === c.name && "bg-blue-300"
+              } `}
+            >
+              <div className=" text-center flex-grow">
+                <span className="text-m font-medium">{c.name}</span>
+              </div>
+            </li>
+          </Link>
+        ))}
+      </div>
     </div>
   );
 };
@@ -533,7 +554,7 @@ const Cart = ({
 
 const SearchBar = ({ searchTerm, onChange, onSelect }) => {
   return (
-    <div className="flex items-center ">
+    <div className=" items-center hidden lg:flex">
       <div className="w-1/6"></div>
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -565,8 +586,8 @@ const ItemsList = ({ products, selectedCategory, showModal }) => {
   let items = products.filter((p) => p.category_id === selectedCategory);
   return (
     <div className="flex item-center mt-2">
-      <div className="w-1/6"></div>
-      <div className=" bg-white rounded-lg  w-4/6 shadow-lg overflow-auto ">
+      <div className="hidden lg:flex lg:w-1/6"></div>
+      <div className=" bg-white rounded-lg w-full  lg:w-4/6 shadow-lg overflow-auto ">
         <ul className="divide-y-2 divide-gray-100">
           {items.map((p, idx) => (
             <ItemComponent
@@ -578,7 +599,7 @@ const ItemsList = ({ products, selectedCategory, showModal }) => {
             />
           ))}
         </ul>
-        <div className="w-1/6"></div>
+        <div className="hidden lg:flex lg:w-1/6"></div>
       </div>
     </div>
   );

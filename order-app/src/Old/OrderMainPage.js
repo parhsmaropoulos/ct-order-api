@@ -2,15 +2,15 @@ import React, { Component } from "react";
 import { Card, Col, ListGroup, Row, ThemeProvider } from "react-bootstrap";
 import { connect } from "react-redux";
 import "../../../css/Pages/orderpage.css";
-import OrderItemModal from "../../Modals/OrderItemModal";
+import OrderItemModal from "./OrderItemModal";
 import PropTypes from "prop-types";
 import { Redirect } from "react-router";
-import { update_cart } from "../../../actions/orders";
+import { update_cart } from "../actions/orders";
 import AddIcon from "@material-ui/icons/Add";
 import MenuIcon from "@material-ui/icons/Menu";
 import RemoveIcon from "@material-ui/icons/Remove";
 import ClearIcon from "@material-ui/icons/Clear";
-import { showInfoSnackbar } from "../../../actions/snackbar";
+import { showInfoSnackbar } from "../actions/snackbar";
 // import AlertModal from "../../MainPanel/Pages/Alert/AlertModal";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import {
@@ -26,13 +26,13 @@ import {
   Typography,
 } from "@material-ui/core";
 import { orange } from "@material-ui/core/colors";
-import { auth_get_request } from "../../../actions/lib";
+import { auth_get_request } from "../actions/lib";
 import {
   GET_CATEGORIES,
   GET_CHOICES,
   GET_INGREDIENTS,
   GET_ITEMS,
-} from "../../../actions/actions";
+} from "../actions/actions";
 import { Link } from "react-router-dom";
 import Header from "../../Layout/Header";
 
@@ -434,7 +434,7 @@ class OrderMainPage extends Component {
                       {...params}
                       label="Αναζήτηση Προϊόντος"
                       variant="outlined"
-                      InputProps={{ ...params.InputProps }}
+                      Inputprops={{ ...params.InputProps }}
                     />
                   )}
                 />

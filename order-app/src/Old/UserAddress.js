@@ -11,16 +11,12 @@ import {
   auth_get_request,
   auth_put_request,
   auth_delete_request,
-} from "../../../actions/lib";
+} from "../actions/lib";
 import AddressModal from "../../Modals/AddressModal";
 import { MdRemoveCircle } from "react-icons/md";
 import { Grid, Container } from "@material-ui/core";
-import {
-  GET_USER,
-  GET_USER_ADDRESSES,
-  UPDATE_USER,
-} from "../../../actions/actions";
-import withAuthorization from "../../../firebase/withAuthorization";
+import { GET_USER, GET_USER_ADDRESSES, UPDATE_USER } from "../actions/actions";
+import withAuthorization from "../firebase/withAuthorization";
 import Header from "../../Layout/Header";
 
 // const columns = [

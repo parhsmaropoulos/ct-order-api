@@ -9,8 +9,8 @@ import {
   order_accepted,
   order_declined,
   clearReducer,
-} from "../../../actions/orders";
-import { getUser } from "../../../actions/user";
+} from "../actions/orders";
+import { getUser } from "../actions/user";
 import {
   InputLabel,
   MenuItem,
@@ -33,12 +33,12 @@ import {
 import AddressModal from "../../Modals/AddressModal";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
-import EditAddressModal from "../../Modals/EditAddressModal";
-import { showErrorSnackbar } from "../../../actions/snackbar";
-import { auth_get_request, auth_post_request } from "../../../actions/lib";
-import { GET_USER, SEND_ORDER } from "../../../actions/actions";
-import EveryPayForm from "./EveryPayForm";
-import withAuthorization from "../../../firebase/withAuthorization";
+import EditAddressModal from "./EditAddressModal";
+import { showErrorSnackbar } from "../actions/snackbar";
+import { auth_get_request, auth_post_request } from "../actions/lib";
+import { GET_USER, SEND_ORDER } from "../actions/actions";
+import EveryPayForm from "../components/Sections/Order/EveryPayForm";
+import withAuthorization from "../firebase/withAuthorization";
 
 const availableTipOptions = [0.5, 1.0, 1.5, 2.0, 5.0, 10.0];
 
@@ -549,7 +549,7 @@ class Checkout extends Component {
                           id="phone"
                           type="tel"
                           name="phone"
-                          inputProps={{
+                          inputprops={{
                             pattern: "69[0-9]{8}",
                           }}
                           label="Τηλέφωνο επικοινωνίας"
