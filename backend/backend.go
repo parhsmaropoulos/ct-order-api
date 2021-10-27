@@ -1,13 +1,20 @@
 package main
 
 import (
-	"GoProjects/CoffeeTwist/backend/config"
-	handlers "GoProjects/CoffeeTwist/backend/handlers"
-	"GoProjects/CoffeeTwist/backend/lib"
-	"GoProjects/CoffeeTwist/backend/middleware"
-	models "GoProjects/CoffeeTwist/backend/models"
-	sse "GoProjects/CoffeeTwist/backend/sse"
-	websock "GoProjects/CoffeeTwist/backend/websocket"
+	// "GoProjects/CoffeeTwist/backend/src/config"
+	// handlers "GoProjects/CoffeeTwist/backend/src/handlers"
+	// "GoProjects/CoffeeTwist/backend/src/lib"
+	// "GoProjects/CoffeeTwist/backend/src/middleware"
+	// "GoProjects/CoffeeTwist/backend/src/models"
+	// sse "GoProjects/CoffeeTwist/backend/src/sse"
+	// websock "GoProjects/CoffeeTwist/backend/src/websocket"
+	"main/src/config"
+	"main/src/handlers"
+	"main/src/lib"
+	"main/src/middleware"
+	"main/src/models"
+	"main/src/sse"
+	websock "main/src/websocket"
 
 	"fmt"
 	"net/http"
@@ -69,7 +76,6 @@ func main() {
 	// Static folder for images/video etc
 	router.Static("/assets", "./assets")
 
-	router.LoadHTMLGlob("templates/*.html")
 
 	panel := router.Group("/panel/")
 	{
@@ -280,12 +286,11 @@ func main() {
 	})
 
 	port := ""
-	// Initialize redis
 	if lib.GoDotEnvVariable("STATE") == "local" {
 		port = "localhost:8080"
 	} else {
 		port = ":" + lib.GoDotEnvVariable("PORT")
 	}
-	fmt.Println("SERVER RUNNING ON :" + port)
+	fmt.Println("SERVER RUNNING ON: " + port)
 	router.Run(port)
 }
