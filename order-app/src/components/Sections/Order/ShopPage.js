@@ -40,6 +40,7 @@ class ShopPage extends Component {
       products: [],
       categories: [],
       isReady: false,
+      redirect: false,
     };
     this.addToCart = this.addToCart.bind(this);
     this.removeFromCart = this.removeFromCart.bind(this);
@@ -248,13 +249,11 @@ class ShopPage extends Component {
         totalPrice: this.props.orderReducer.totalPrice,
       });
     }
-    if (!!this.props.match.params.category_name) {
-      let cat = this.props.categories.filter((c) => {
-        return c.name === this.props.match.params.category_name;
+
+    if (!!this.props.match.params.category_name === true) {
+      this.setState({
+        param: this.props.match.params.category_name,
       });
-      if (cat) {
-        this.setState({ selectedCategory: cat.ID });
-      }
     }
   }
   async get_items() {
