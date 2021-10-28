@@ -333,7 +333,7 @@ class OrderItemModal extends Component {
                     placeholder="Σχόλια.."
                   ></textarea>
                   <label
-                    htmlhtmlFor="message"
+                    htmlFor="message"
                     className="absolute tracking-wide py-2 px-4 mb-4 opacity-0 leading-tight block top-0 left-0 cursor-text"
                   >
                     Σχόλια..

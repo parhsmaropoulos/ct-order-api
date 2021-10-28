@@ -120,7 +120,7 @@ export const AccountMenu = () => {
   return (
     <nav className="font-sans flex  text-center  py-4 px-6 bg-white shadow  w-full">
       <div className="w-full h-full bg:flex md:flex sm:flex-col bg:flex-row md:flex-row justify-center items-center">
-        <a href="/account1" className="hover:no-underline ">
+        <a href="/account" className="hover:no-underline ">
           <div
             className={`flex h-full items-center bg-gray-500   hover:bg-black hover:bg-opacity-50 ${
               selectedTab === "account" && "bg-gray-700"
@@ -130,7 +130,7 @@ export const AccountMenu = () => {
             <div className=" h-8  lg:w-px sm:w-0 md:w-0 bg-gray-300"></div>
           </div>
         </a>
-        <a href="/account1/orders" className="hover:no-underline">
+        <a href="/account/orders" className="hover:no-underline">
           <div
             className={`flex h-full items-center bg-gray-500  hover:bg-black hover:bg-opacity-50 ${
               selectedTab === "orders" && "bg-gray-700"
@@ -140,7 +140,7 @@ export const AccountMenu = () => {
             <div className=" h-8  lg:w-px sm:w-0 md:w-0  bg-gray-300"></div>
           </div>
         </a>
-        <a href="/account1/addresses" className="hover:no-underline">
+        <a href="/account/addresses" className="hover:no-underline">
           <div
             className={`flex h-full items-center bg-gray-500  hover:bg-black hover:bg-opacity-50 ${
               selectedTab === "addresses" && "bg-gray-700"
@@ -176,8 +176,8 @@ const UserInfoForm = ({ onChange, onSubmit, state }) => {
             <input
               id="name"
               name="name"
-              autocomplete="false"
-              tabindex="0"
+              autoComplete="false"
+              tabIndex="0"
               value={state.name}
               onChange={onChange}
               type="text"
@@ -197,8 +197,8 @@ const UserInfoForm = ({ onChange, onSubmit, state }) => {
             <input
               name="surname"
               id="surname"
-              autocomplete="false"
-              tabindex="0"
+              autoComplete="false"
+              tabIndex="0"
               onChange={onChange}
               value={state.surname}
               type="text"
@@ -221,7 +221,7 @@ const UserInfoForm = ({ onChange, onSubmit, state }) => {
               inputprops={{
                 pattern: "69[0-9]{8}",
               }}
-              tabindex="0"
+              tabIndex="0"
               onChange={onChange}
               value={state.phone}
               type="tel"
@@ -242,8 +242,8 @@ const UserInfoForm = ({ onChange, onSubmit, state }) => {
             <input
               value={state.email}
               id="email"
-              autocomplete="false"
-              tabindex="0"
+              autoComplete="false"
+              tabIndex="0"
               type="email"
               disabled
               className="py-1 px-1 outline-none block bg-gray-200 h-full w-full"
@@ -263,110 +263,110 @@ const UserInfoForm = ({ onChange, onSubmit, state }) => {
   );
 };
 
-const UserPasswordResetForm = ({ onChange, onSubmit, state }) => {
-  return (
-    <div className="bg-white shadow rounded-lg p-6">
-      <div className="py-6">
-        <span className="font-bold">
-          <h1>Αλλαγή στοιχείων</h1>
-        </span>
-      </div>
-      <div className="grid lg:grid-cols-2 gap-6">
-        <div className="border focus-within:border-blue-500 focus-within:text-blue-500 transition-all duration-500 relative rounded p-1">
-          <div className="-mt-4 absolute tracking-wider px-1 uppercase text-xs">
-            <p>
-              <label htmlFor="name" className="bg-white text-gray-600 px-1">
-                Όνομα
-              </label>
-            </p>
-          </div>
-          <p>
-            <input
-              id="name"
-              name="name"
-              autocomplete="false"
-              tabindex="0"
-              value={state.name}
-              onChange={onChange}
-              type="text"
-              className="py-1 px-1 text-gray-900 outline-none block h-full w-full"
-            />
-          </p>
-        </div>
-        <div className="border focus-within:border-blue-500 focus-within:text-blue-500 transition-all duration-500 relative rounded p-1">
-          <div className="-mt-4 absolute tracking-wider px-1 uppercase text-xs">
-            <p>
-              <label htmlFor="surname" className="bg-white text-gray-600 px-1">
-                Επίθετο
-              </label>
-            </p>
-          </div>
-          <p>
-            <input
-              name="surname"
-              id="surname"
-              autocomplete="false"
-              tabindex="0"
-              onChange={onChange}
-              value={state.surname}
-              type="text"
-              className="py-1 px-1 outline-none block h-full w-full"
-            />
-          </p>
-        </div>
-        <div className="border focus-within:border-blue-500 focus-within:text-blue-500 transition-all duration-500 relative rounded p-1">
-          <div className="-mt-4 absolute tracking-wider px-1 uppercase text-xs">
-            <p>
-              <label htmlFor="phone" className="bg-white text-gray-600 px-1">
-                Τηλέφωνο Επικοινωνίας
-              </label>
-            </p>
-          </div>
-          <p>
-            <input
-              id="phone"
-              name="phone"
-              inputprops={{
-                pattern: "69[0-9]{8}",
-              }}
-              tabindex="0"
-              onChange={onChange}
-              value={state.phone}
-              type="tel"
-              placeholder="Τηλέφωνο επικοινωνίας: 69xxxxxxxx"
-              className="py-1 px-1 outline-none block h-full w-full"
-            />
-          </p>
-        </div>
-        <div className="border f transition-all duration-500  relative rounded p-1">
-          <div className="-mt-4 absolute tracking-wider  px-1 uppercase text-xs">
-            <p>
-              <label htmlFor="email" className="bg-white text-gray-600 px-1">
-                Email
-              </label>
-            </p>
-          </div>
-          <p>
-            <input
-              value={state.email}
-              id="email"
-              autocomplete="false"
-              tabindex="0"
-              type="email"
-              disabled
-              className="py-1 px-1 outline-none block bg-gray-200 h-full w-full"
-            />
-          </p>
-        </div>
-      </div>
-      <div className="border-t mt-6 pt-3">
-        <button
-          onClick={onSubmit}
-          className="rounded text-gray-100 px-3 py-1 bg-blue-500 hover:shadow-inner hover:bg-blue-700 transition-all duration-300"
-        >
-          Ενημέρωση
-        </button>
-      </div>
-    </div>
-  );
-};
+// const UserPasswordResetForm = ({ onChange, onSubmit, state }) => {
+//   return (
+//     <div className="bg-white shadow rounded-lg p-6">
+//       <div className="py-6">
+//         <span className="font-bold">
+//           <h1>Αλλαγή στοιχείων</h1>
+//         </span>
+//       </div>
+//       <div className="grid lg:grid-cols-2 gap-6">
+//         <div className="border focus-within:border-blue-500 focus-within:text-blue-500 transition-all duration-500 relative rounded p-1">
+//           <div className="-mt-4 absolute tracking-wider px-1 uppercase text-xs">
+//             <p>
+//               <label htmlFor="name" className="bg-white text-gray-600 px-1">
+//                 Όνομα
+//               </label>
+//             </p>
+//           </div>
+//           <p>
+//             <input
+//               id="name"
+//               name="name"
+//               autoComplete="false"
+//               tabIndex="0"
+//               value={state.name}
+//               onChange={onChange}
+//               type="text"
+//               className="py-1 px-1 text-gray-900 outline-none block h-full w-full"
+//             />
+//           </p>
+//         </div>
+//         <div className="border focus-within:border-blue-500 focus-within:text-blue-500 transition-all duration-500 relative rounded p-1">
+//           <div className="-mt-4 absolute tracking-wider px-1 uppercase text-xs">
+//             <p>
+//               <label htmlFor="surname" className="bg-white text-gray-600 px-1">
+//                 Επίθετο
+//               </label>
+//             </p>
+//           </div>
+//           <p>
+//             <input
+//               name="surname"
+//               id="surname"
+//               autoComplete="false"
+//               tabIndex="0"
+//               onChange={onChange}
+//               value={state.surname}
+//               type="text"
+//               className="py-1 px-1 outline-none block h-full w-full"
+//             />
+//           </p>
+//         </div>
+//         <div className="border focus-within:border-blue-500 focus-within:text-blue-500 transition-all duration-500 relative rounded p-1">
+//           <div className="-mt-4 absolute tracking-wider px-1 uppercase text-xs">
+//             <p>
+//               <label htmlFor="phone" className="bg-white text-gray-600 px-1">
+//                 Τηλέφωνο Επικοινωνίας
+//               </label>
+//             </p>
+//           </div>
+//           <p>
+//             <input
+//               id="phone"
+//               name="phone"
+//               inputprops={{
+//                 pattern: "69[0-9]{8}",
+//               }}
+//               tabIndex="0"
+//               onChange={onChange}
+//               value={state.phone}
+//               type="tel"
+//               placeholder="Τηλέφωνο επικοινωνίας: 69xxxxxxxx"
+//               className="py-1 px-1 outline-none block h-full w-full"
+//             />
+//           </p>
+//         </div>
+//         <div className="border f transition-all duration-500  relative rounded p-1">
+//           <div className="-mt-4 absolute tracking-wider  px-1 uppercase text-xs">
+//             <p>
+//               <label htmlFor="email" className="bg-white text-gray-600 px-1">
+//                 Email
+//               </label>
+//             </p>
+//           </div>
+//           <p>
+//             <input
+//               value={state.email}
+//               id="email"
+//               autoComplete="false"
+//               tabIndex="0"
+//               type="email"
+//               disabled
+//               className="py-1 px-1 outline-none block bg-gray-200 h-full w-full"
+//             />
+//           </p>
+//         </div>
+//       </div>
+//       <div className="border-t mt-6 pt-3">
+//         <button
+//           onClick={onSubmit}
+//           className="rounded text-gray-100 px-3 py-1 bg-blue-500 hover:shadow-inner hover:bg-blue-700 transition-all duration-300"
+//         >
+//           Ενημέρωση
+//         </button>
+//       </div>
+//     </div>
+//   );
+// };

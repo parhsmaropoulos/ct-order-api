@@ -214,7 +214,8 @@ func GetTodayOrdersHandler(c *gin.Context) {
 	year, month, day := time.Now().Date()
 
 	today := fmt.Sprint(year, "-", month, "-", day)
-	result := models.GORMDB.Where(" DATE(created_at) = ?", today).Find(&orders)
+	tomoorow := fmt.Sprint(year, "-", month, "-", day+1)
+	result := models.GORMDB.Where(" created_at > ? and created_at < ?", today,tomoorow).Find(&orders)
 	if result.Error != nil {
 		ContexJsonResponse(c, "Error on orders search", http.StatusInternalServerError, nil, result.Error)
 		return

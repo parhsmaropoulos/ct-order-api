@@ -31,16 +31,17 @@ const App = () => (
         <Route exact path="/" component={HomePage1} />
         <Route exact path="/home" component={HomePage1} />
         {/* <Route path="/order/:category_name" component={OrderMainPage} /> */}
-        <Route path="/order1/:category_name" component={ShopPage} />
+        <Route path="/order/:category_name" component={ShopPage} />
+        <Route path="/order" component={ShopPage} />
         {/* <Route path="/order" component={OrderMainPage} /> */}
         {/* <Route exact path="/checkout/:id" component={Checkout} /> */}
-        <Route exact path="/checkout1/:id" component={Checkout1} />
+        <Route exact path="/checkout/:id" component={Checkout1} />
         {/* <Route exact path="/search/:string" component={OrderMainPage} /> */}
         <Route exact path="/document/:type" component={TextPage} />
         {/* <Route exact path="/account" component={MainPage} /> */}
-        <Route exact path="/account1" component={AccountPage} />
-        <Route exact path="/account1/orders" component={UserOrders1} />
-        <Route exact path="/account1/addresses" component={UserAddress1} />
+        <Route exact path="/account" component={AccountPage} />
+        <Route exact path="/account/orders" component={UserOrders1} />
+        <Route exact path="/account/addresses" component={UserAddress1} />
         {/* <Route exact path="/account/orders" component={UserOrders} />
         <Route exact path="/account/addresses" component={UserAddress} /> */}
         {/* <Route exact path="/account/ratings" component={UserRatings} /> */}

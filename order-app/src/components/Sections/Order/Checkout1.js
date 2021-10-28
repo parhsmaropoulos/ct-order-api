@@ -92,6 +92,7 @@ class Checkout extends Component {
   }
 
   handlePaymentChange = (type) => {
+    console.log(type);
     switch (type) {
       case "cash":
         // document.getElementById("tip-div").style.display = "block";
@@ -253,6 +254,7 @@ class Checkout extends Component {
       SSEdata,
       null
     );
+    localStorage.removeItem("cart");
   }
 
   validateFields = (order) => {
@@ -340,14 +342,15 @@ class Checkout extends Component {
         selectedAddress: this.props.userReducer.user.addresses[0],
       });
     }
-    if (this.props.userReducer.user.last_order !== null) {
+    if (this.props.userReducer.user.orders !== null) {
       let newDetails = this.state.userDetails;
-      let last = this.props.userReducer.user.last_order;
-      newDetails.bellName = last.Bell_name;
-      newDetails.floor = last.Floor;
+      let last = this.props.userReducer.user.orders[0];
+      newDetails.bellName = last.bell_name;
+      newDetails.floor = last.floor;
+      newDetails.comments = last.comments;
       this.setState({
         userDetails: newDetails,
-        phone: last.Phone,
+        phone: last.phone.length === 10 ? last.phone : null,
       });
     }
   }
@@ -405,6 +408,7 @@ class Checkout extends Component {
     if (this.props.orderReducer.pending && !this.props.orderReducer.recieved) {
       return (
         <div className="loading-div">
+          Παρακαλώ περιμένετε.
           <CircularProgress disableShrink />{" "}
         </div>
       );
@@ -412,17 +416,21 @@ class Checkout extends Component {
     if (this.props.orderReducer.sent && !this.props.orderReducer.pending) {
       return (
         <div className="loading-div">
-          Your order has been{" "}
-          {this.props.orderReducer.accepted ? <p>accepted</p> : <p>declined</p>}
+          Η παραγγελία σας{" "}
+          {this.props.orderReducer.accepted ? (
+            <p>έγινε αποδεκτή</p>
+          ) : (
+            <p>απορρίφθηκε</p>
+          )}
           {this.props.orderReducer.accepted ? (
             <span>
-              It will be there in {this.props.orderReducer.timeToDelivery}
+              Θα είναι εκεί σε {this.props.orderReducer.timeToDelivery}
             </span>
           ) : (
             <span></span>
           )}
           <Link to="/home">
-            <Button>OK</Button>
+            <Button>Επιστροφή</Button>
           </Link>
         </div>
       );
@@ -616,9 +624,10 @@ const PaymentDetails = ({ payWithCard, payWithCash, onSelect }) => {
         >
           <input
             className="absolute opacity-0"
-            id="tab-single-one"
+            id="tab-card"
             type="radio"
             name="payWithCard"
+            readOnly
             checked={payWithCard}
           />
           <label
@@ -637,8 +646,9 @@ const PaymentDetails = ({ payWithCard, payWithCash, onSelect }) => {
         >
           <input
             className="absolute opacity-0"
-            id="tab-single-one"
+            id="tab-cash"
             type="radio"
+            readOnly
             name="payWithCash"
             checked={payWithCash}
           />

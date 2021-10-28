@@ -57,7 +57,6 @@ const orderReducer = (state = defaultState, action) => {
         pending: false,
       };
     case ADD_ITEM:
-      console.log(action);
       let newProducts = [...state.products, action.product];
       let newPrice = state.totalPrice + action.totalPrice;
       return {

@@ -99,10 +99,12 @@ class ShopPage extends Component {
     let newTotalPrice =
       oldTotalPrice - cart_[index].totalPrice + order_item.totalPrice;
     cart_[index] = order_item;
+    localStorage.setItem("cart", JSON.stringify(cart_));
     this.setState({
       cart: cart_,
       totalPrice: newTotalPrice,
     });
+
     // this.props.update_order(this.state.cart, this.state.totalPrice);
   };
 
@@ -117,15 +119,26 @@ class ShopPage extends Component {
       extra_ingredients: item.extra_ingredients,
       quantity: quantity,
     };
+    localStorage.setItem(
+      "cart",
+      JSON.stringify([...this.state.cart, order_item])
+    );
     this.setState({
       cart: [...this.state.cart, order_item],
       totalPrice: this.state.totalPrice + order_item.totalPrice,
     });
+
     // this.props.update_order(this.state.cart, this.state.totalPrice);
   };
 
   removeFromCart = (index, order_item) => {
     if (confirm("Διαγραφή προϊόντoς?") === true) {
+      localStorage.setItem(
+        "cart",
+        JSON.stringify([
+          ...this.state.cart.filter((item, idex) => idex !== index),
+        ])
+      );
       this.setState({
         cart: [...this.state.cart.filter((item, idex) => idex !== index)],
         totalPrice: this.state.totalPrice - order_item.totalPrice,
@@ -138,6 +151,7 @@ class ShopPage extends Component {
 
   clearCart() {
     if (confirm("Άδειασμα καλαθιού?") === true) {
+      localStorage.setItem("cart", JSON.stringify([]));
       this.setState({ cart: [], totalPrice: 0 });
     } else {
       return;
@@ -194,6 +208,7 @@ class ShopPage extends Component {
       cur_item.totalPrice += price_per_unit;
       this.removeFromCart(index, cur_item);
     } else {
+      localStorage.setItem("cart", JSON.stringify(cur_cart));
       this.setState({
         cart: cur_cart,
         totalPrice: cartTotalPrice,
@@ -203,6 +218,7 @@ class ShopPage extends Component {
 
   componentWillUnmount() {
     this.props.update_cart(this.state.cart, this.state.totalPrice);
+    localStorage.setItem("cart", JSON.stringify(this.state.cart));
   }
   showAlert = (bool, msg) => {
     this.setState({
@@ -253,6 +269,16 @@ class ShopPage extends Component {
     if (!!this.props.match.params.category_name === true) {
       this.setState({
         param: this.props.match.params.category_name,
+      });
+    }
+    let cart = localStorage.getItem("cart");
+    if (cart) {
+      let c = JSON.parse(cart);
+      let totalPrice = 0;
+      c.forEach((i) => (totalPrice += i.totalPrice));
+      this.setState({
+        cart: JSON.parse(cart),
+        totalPrice: totalPrice,
       });
     }
   }
@@ -491,9 +517,9 @@ const Cart = ({
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                     className="feather feather-trash-2 "
                   >
                     <polyline points="3 6 5 6 21 6"></polyline>
@@ -550,36 +576,36 @@ const Cart = ({
   );
 };
 
-const SearchBar = ({ searchTerm, onChange, onSelect }) => {
-  return (
-    <div className=" items-center hidden lg:flex">
-      <div className="w-1/6"></div>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        className="w-6 h-6  text-blue-600"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="2"
-          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-        />
-      </svg>
-      <input
-        type="text"
-        name="searchParam"
-        placeholder="name"
-        onChange={onChange}
-        value={searchTerm}
-        className="w-2/3 py-2 border-b-2 border-blue-400 outline-none focus:border-green-400"
-      />
-      <div className="w-1/6"></div>
-    </div>
-  );
-};
+// const SearchBar = ({ searchTerm, onChange, onSelect }) => {
+//   return (
+//     <div className=" items-center hidden lg:flex">
+//       <div className="w-1/6"></div>
+//       <svg
+//         xmlns="http://www.w3.org/2000/svg"
+//         className="w-6 h-6  text-blue-600"
+//         fill="none"
+//         viewBox="0 0 24 24"
+//         stroke="currentColor"
+//       >
+//         <path
+//           strokeLinecap="round"
+//           strokeLinejoin="round"
+//           strokeWidth="2"
+//           d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+//         />
+//       </svg>
+//       <input
+//         type="text"
+//         name="searchParam"
+//         placeholder="name"
+//         onChange={onChange}
+//         value={searchTerm}
+//         className="w-2/3 py-2 border-b-2 border-blue-400 outline-none focus:border-green-400"
+//       />
+//       <div className="w-1/6"></div>
+//     </div>
+//   );
+// };
 const ItemsList = ({ products, selectedCategory, showModal }) => {
   let items = products.filter((p) => p.category_id === selectedCategory);
   return (

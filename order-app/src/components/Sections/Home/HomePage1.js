@@ -74,7 +74,7 @@ const GridTile = ({ category }) => {
   return (
     <div className="max-w-lg mx-auto">
       <div className="bg-white shadow-md border border-gray-200 rounded-lg max-w-sm mb-5">
-        <a href={`/order1/${category.name}`}>
+        <a href={`/order/${category.name}`}>
           <img
             className="rounded-t-lg"
             src="https://flowbite.com/docs/images/blog/image-1.jpg"
@@ -83,7 +83,7 @@ const GridTile = ({ category }) => {
           />
         </a>
         <div className="p-5">
-          <a href={`/order1/${category.name}`}>
+          <a href={`/order/${category.name}`}>
             <h5 className="text-gray-900 font-bold text-2xl tracking-tight mb-2">
               {category.name}
             </h5>

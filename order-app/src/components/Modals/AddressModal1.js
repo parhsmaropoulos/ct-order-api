@@ -34,6 +34,7 @@ class AddressModal1 extends Component {
     this.onAddAddress = this.onAddAddress.bind(this);
     this.handleChange = this.handleChange.bind(this);
     this.handleSelect = this.handleSelect.bind(this);
+    this.validateZip = this.validateZip.bind(this);
   }
 
   static propTypes = {
@@ -99,11 +100,21 @@ class AddressModal1 extends Component {
       },
       reason: "add_address",
     };
-    if (this.validateAddress(data.address)) {
+    if (this.validateZip(data.address) === true) {
       this.props.editAddress &&
         this.props.editAddress(false, true, data.address);
     }
   }
+
+  validateZip = (address) => {
+    if (["165 61", "165 62", "165 63"].includes(address.zipcode) === false) {
+      this.props.showErrorSnackbar(
+        "Δυστυχώς η διεύθυνση είναι εκτός ορίων (Γλυφάδα,Ελληνικό,Αργυρούπολη)"
+      );
+      return false;
+    }
+    return true;
+  };
 
   showEditModal = () => {
     this.setState({ showEditModal: !this.state.showEditModal });

@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Button, Col, Form } from "react-bootstrap";
 import "../../css/Layout/general.css";
 import { connect } from "react-redux";
 // import { updateUser, addUserAddress } from "../../actions/user";
@@ -288,8 +287,8 @@ const AddressForm = ({ onChange, state, onSubmit }) => {
             <input
               id="addressName"
               name="addressName"
-              autocomplete="false"
-              tabindex="0"
+              autoComplete="false"
+              tabIndex="0"
               value={state.addressName}
               onChange={onChange}
               type="text"
@@ -312,8 +311,8 @@ const AddressForm = ({ onChange, state, onSubmit }) => {
             <input
               name="addressNumber"
               id="addressNumber"
-              autocomplete="false"
-              tabindex="0"
+              autoComplete="false"
+              tabIndex="0"
               onChange={onChange}
               value={state.addressNumber}
               type="text"
@@ -336,7 +335,7 @@ const AddressForm = ({ onChange, state, onSubmit }) => {
               inputprops={{
                 pattern: "69[0-9]{8}",
               }}
-              tabindex="0"
+              tabIndex="0"
               onChange={onChange}
               value={state.areaName}
               type="text"
@@ -357,8 +356,8 @@ const AddressForm = ({ onChange, state, onSubmit }) => {
               onChange={onChange}
               value={state.zipCode}
               id="zipCode"
-              autocomplete="false"
-              tabindex="0"
+              autoComplete="false"
+              tabIndex="0"
               name="zipCode"
               type="text"
               className="py-1 px-1 outline-none block bg-gray-200 h-full w-full"

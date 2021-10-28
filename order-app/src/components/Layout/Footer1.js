@@ -6,7 +6,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import "../../css/Layout/footer.css";
-import { SocialIcon } from "react-social-icons";
 import PropTypes from "prop-types";
 import { subscribe } from "../../actions/user";
 import { Link } from "react-router-dom";
