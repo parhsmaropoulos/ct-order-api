@@ -33,7 +33,7 @@ import {
 import AddressModal from "../../Modals/AddressModal";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
-import EditAddressModal from "./EditAddressModal";
+import EditAddressModal from "../../Modals/EditAddressModal";
 import { showErrorSnackbar } from "../actions/snackbar";
 import { auth_get_request, auth_post_request } from "../actions/lib";
 import { GET_USER, SEND_ORDER } from "../actions/actions";
@@ -549,7 +549,7 @@ class Checkout extends Component {
                           id="phone"
                           type="tel"
                           name="phone"
-                          inputprops={{
+                          inputProps={{
                             pattern: "69[0-9]{8}",
                           }}
                           label="Τηλέφωνο επικοινωνίας"
