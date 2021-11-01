@@ -17,6 +17,11 @@ import { Link } from "react-router-dom";
 import Header1 from "../../Layout/Header1";
 import OrderItemModal1 from "../../Modals/OrderItemModal1";
 
+import moment from "moment-timezone";
+moment.tz.setDefault("Europe/Athens");
+const startTime = 8;
+const endTime = 22;
+
 var _ = require("lodash");
 
 class ShopPage extends Component {
@@ -73,9 +78,14 @@ class ShopPage extends Component {
         // this.showAlert(true, "You have to login first!");
         this.props.showInfoSnackbar("You have to login first!");
       } else {
-        this.setState({
-          continueOrder: true,
-        });
+        let now = moment();
+        if (now.hour() > startTime && now.hour() < endTime) {
+          this.setState({
+            continueOrder: true,
+          });
+        } else {
+          this.props.showInfoSnackbar("Το κατάστημα λειτουργεί 8-22!");
+        }
       }
     } else {
       // return <Alert variant="secondary">Your card is empty!</Alert>;
@@ -267,9 +277,13 @@ class ShopPage extends Component {
     }
 
     if (!!this.props.match.params.category_name === true) {
-      this.setState({
-        param: this.props.match.params.category_name,
-      });
+      let param = this.props.match.params.category_name;
+      console.log(this.state.categories);
+      let cat = this.state.categories.find((c) => c.name === param);
+      console.log(cat);
+      // this.setState({
+      //   selectedCategory: cat.ID,
+      // });
     }
     let cart = localStorage.getItem("cart");
     if (cart) {
@@ -412,7 +426,7 @@ const CategoryMenu = ({ categories, onChange, selectedCategory }) => {
         {categories.map((c, idx) => (
           <Link
             // exact
-            to={`/order1/${c.name}`}
+            to={`/order/${c.name}`}
             onClick={() => onChange(c.ID)}
             className={`block w-full text-black-200 hover:text-gray-400 transition duration-150 inline-block`}
             key={idx}
@@ -433,7 +447,7 @@ const CategoryMenu = ({ categories, onChange, selectedCategory }) => {
         {categories.map((c, idx) => (
           <Link
             // exact
-            to={`/order1/${c.name}`}
+            to={`/order/${c.name}`}
             onClick={() => onChange(c.ID)}
             className={`block w-full text-black-200 hover:text-gray-400 transition duration-150 inline-block`}
             key={idx}

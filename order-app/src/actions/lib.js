@@ -97,27 +97,18 @@ export const auth_post_request =
 
 export const post_request = (url, data, dispatch_type) => async (dispatch) => {
   try {
-    let auth_config = config;
-    try {
-      const res = await axios.post(current_url + url, data, auth_config);
-      console.log(res);
-      dispatch({
-        type: dispatch_type,
-        data: res.data.data,
-      });
-      return res;
-    } catch (e) {
-      console.log(e);
-      dispatch({
-        type: SNACKBAR_ERROR,
-        message: "Error with get request",
-      });
-    }
+    const res = await axios.post(current_url + url, data);
+    console.log(res);
+    dispatch({
+      type: dispatch_type,
+      data: res.data.data,
+    });
+    return res;
   } catch (e) {
-    //handle e
+    console.log(e);
     dispatch({
       type: SNACKBAR_ERROR,
-      message: "Error with token",
+      message: "Error with get request",
     });
   }
 };

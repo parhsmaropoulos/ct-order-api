@@ -313,7 +313,6 @@ export const subscribe = (data) => (dispatch) => {
   axios
     .post(current_url + "subscribes/new", body, config)
     .then((res) => {
-      console.log(res);
       dispatch({
         type: SUBSCRIBE_USER,
         payload: res.data,

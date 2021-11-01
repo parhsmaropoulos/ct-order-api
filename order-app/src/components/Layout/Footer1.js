@@ -9,8 +9,9 @@ import "../../css/Layout/footer.css";
 import PropTypes from "prop-types";
 import { subscribe } from "../../actions/user";
 import { Link } from "react-router-dom";
-import { auth_post_request } from "../../actions/lib";
+import { post_request } from "../../actions/lib";
 import { SUBSCRIBE_USER } from "../../actions/actions";
+import { showErrorSnackbar } from "../../actions/snackbar";
 
 class Footer1 extends Component {
   /**
@@ -32,6 +33,7 @@ class Footer1 extends Component {
   static propTypes = {
     // isAuthenticated: PropTypes.bool,
     subscribe: PropTypes.func.isRequired,
+    showErrorSnackbar: PropTypes.func.isRequired,
   };
 
   /**
@@ -49,27 +51,13 @@ class Footer1 extends Component {
   async onSubscribe() {
     const re =
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    if (re.test(this.state.newsletterEmail)) {
-      document.getElementById("inputNewsLetterHelperText").style.display =
-        "none";
-      document.getElementById("inputNewsLetterHelperText").style.color =
-        "green";
-      document.getElementById("inputNewsLetterHelperText").innerHTML =
-        "Success";
+    if (re.test(document.getElementById("newsLetterEmail").value)) {
       const data = {
-        email: this.state.newsletterEmail,
+        email: document.getElementById("newsLetterEmail").value,
       };
-      const res = await auth_post_request(
-        "subscribes/new",
-        data,
-        SUBSCRIBE_USER
-      );
-      console.log(res);
-      // this.props.subscribe(data);
-      this.setState({ newsletterEmail: "" });
+      this.props.subscribe(data);
     } else {
-      document.getElementById("inputNewsLetterHelperText").style.display =
-        "block";
+      this.props.showErrorSnackbar("Παρακαλώ βάλτε σωστό email.");
     }
   }
 
@@ -99,21 +87,30 @@ class Footer1 extends Component {
         {/* 
              ########################## News Letter Column ################################
            */}
-        <div>
+        <div className="flex-col">
           <label
             htmlFor="newsLetterEmail"
             className="block text-sm font-medium text-gray-700"
           >
             Εγγραφή NewsLetter
           </label>
-          <div className="mt-1 w-1/2 rounded-md shadow-sm">
-            <input
-              type="email"
-              name="newsLetterEmail"
-              id="newsLetterEmail"
-              className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md"
-              placeholder="mail@example.com"
-            />
+          <div className="flex">
+            <div className="mt-1 w-1/2 rounded-md shadow-sm">
+              <input
+                type="email"
+                name="newsLetterEmail"
+                id="newsLetterEmail"
+                className="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-7 pr-12 sm:text-sm border-gray-300 rounded-md"
+                placeholder="mail@example.com"
+                onChange={this.onChange}
+              />
+            </div>
+            <div
+              className="align-middle mt-2 cursor-pointer"
+              onClick={this.onSubscribe}
+            >
+              <i className="fas fa-arrow-right"></i>
+            </div>
           </div>
         </div>
         {/* 
@@ -161,4 +158,6 @@ class Footer1 extends Component {
 
 const mapStateToProps = (state) => ({});
 
-export default connect(mapStateToProps, { subscribe })(Footer1);
+export default connect(mapStateToProps, { subscribe, showErrorSnackbar })(
+  Footer1
+);
