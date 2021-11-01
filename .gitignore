@@ -4,6 +4,7 @@ Temp_DBS
 admin-panel/node_modules
 admin-panel/utils
 admin-panel/.env
+admin-panel/ssh
 
 Design
 
@@ -12,3 +13,4 @@ backend/vendor
 backend/.env
 backend/config/*.json
 backend/tests
+backend/ssh
