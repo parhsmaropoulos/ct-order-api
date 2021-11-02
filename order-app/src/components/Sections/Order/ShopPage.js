@@ -278,9 +278,7 @@ class ShopPage extends Component {
 
     if (!!this.props.match.params.category_name === true) {
       let param = this.props.match.params.category_name;
-      console.log(this.state.categories);
       let cat = this.state.categories.find((c) => c.name === param);
-      console.log(cat);
       // this.setState({
       //   selectedCategory: cat.ID,
       // });
@@ -621,6 +619,9 @@ const Cart = ({
 //   );
 // };
 const ItemsList = ({ products, selectedCategory, showModal }) => {
+  if (!!selectedCategory === false) {
+    selectedCategory = 3;
+  }
   let items = products.filter((p) => p.category_id === selectedCategory);
   return (
     <div className="flex item-center mt-2">
