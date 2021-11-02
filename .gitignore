@@ -1,10 +1,10 @@
 .VSCodeCounter
 Temp_DBS
 
-admin-panel/node_modules
-admin-panel/utils
-admin-panel/.env
-admin-panel/ssh
+order-app/node_modules
+order-app/utils
+order-app/.env
+order-app/ssh
 
 Design
 
