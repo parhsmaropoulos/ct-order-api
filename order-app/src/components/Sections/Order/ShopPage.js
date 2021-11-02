@@ -672,12 +672,11 @@ const ItemComponent = ({ item, showModal }) => {
             {item.price.toFixed(2)} €
           </span>
         </div>
-        <div className="text-right">
-          <img
-            src={`http://localhost:8080/assets/images/${item.image}`}
-            alt="item-imag"
-          />
-        </div>
+        {!!item.image === true && (
+          <div className="text-right">
+            <img src={`/assets/img/${item.image}`} alt="item-imag" />
+          </div>
+        )}
       </div>
     </li>
   );

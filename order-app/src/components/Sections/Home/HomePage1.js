@@ -107,8 +107,8 @@ const GridTile = ({ category }) => {
         <a href={`/order/${category.name}`}>
           <img
             className="rounded-t-lg"
-            src="https://flowbite.com/docs/images/blog/image-1.jpg"
-            // src={`assets/images/${c.image}`}
+            // src="https://flowbite.com/docs/images/blog/image-1.jpg"
+            src={`assets/img/${category.image}`}
             alt=""
           />
         </a>
