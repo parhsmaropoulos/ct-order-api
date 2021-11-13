@@ -289,7 +289,7 @@ func main() {
 	if lib.GoDotEnvVariable("STATE") == "local" {
 		port = "localhost:8080"
 	} else {
-		port = ":" + lib.GoDotEnvVariable("PORT")
+		port = "ec2-54-170-72-108.eu-west-1.compute.amazonaws.com"
 	}
 	fmt.Println("SERVER RUNNING ON: " + port)
 	router.Run(port)
