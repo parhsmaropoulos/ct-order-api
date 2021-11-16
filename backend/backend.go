@@ -10,7 +10,6 @@ import (
 	// websock "GoProjects/CoffeeTwist/backend/src/websocket"
 	"main/src/config"
 	"main/src/handlers"
-	"main/src/lib"
 	"main/src/middleware"
 	"main/src/models"
 	"main/src/sse"
@@ -285,7 +284,7 @@ func main() {
 		fmt.Print("Hello there")
 	})
 
-	port = "localhost:8080"
+	port := "localhost:8080"
 	fmt.Println("SERVER RUNNING ON: " + port)
 	router.Run(port)
 }
