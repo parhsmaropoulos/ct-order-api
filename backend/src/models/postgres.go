@@ -16,9 +16,8 @@ var SQLDB *sql.DB
 
 func init() {
 	fmt.Println("init 1")
-	fmt.Print(lib.GoDotEnvVariable("STATE"))
 	psqlInfo := fmt.Sprintf("host =%s port=%s user=%s "+
-		"password=%s dbname = %s sslmode=disable",
+		"password=%s dbname = %s sslmode=disable ",
 		lib.GoDotEnvVariable("DATABASE_HOST"),
 		lib.GoDotEnvVariable("DATABASE_PORT"),
 		lib.GoDotEnvVariable("DATABASE_USERNAME"),
