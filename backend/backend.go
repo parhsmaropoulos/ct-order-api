@@ -38,6 +38,8 @@ func CORS() gin.HandlerFunc {
 }
 
 func main() {
+
+	gin.ForceConsoleColor()
 	// Initialize Mongo DB session / collections (old)
 	// Initialize Psql DB (new)
 	// It runs auto as we import it
@@ -284,7 +286,7 @@ func main() {
 		fmt.Print("Hello there")
 	})
 
-	port := "localhost:8080"
+	port := ":8080"
 	fmt.Println("SERVER RUNNING ON: " + port)
 	router.Run(port)
 }

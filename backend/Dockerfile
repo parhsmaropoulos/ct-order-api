@@ -45,8 +45,8 @@ WORKDIR /home/ctadmin/ct-api/backend
 RUN go mod download
 RUN  go build 
 
-# EXPOSE 5432
-# EXPOSE 8080
+EXPOSE 5432
+EXPOSE 8080
 # ENTRYPOINT ["./app/bin"]
 CMD ./main
 # CMD tail -f /dev/null
