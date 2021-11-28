@@ -64,4 +64,8 @@ func UnsubscribeHandler(c *gin.Context) {
 	ContexJsonResponse(c, "Unsubscribes successfully", 200, result, result.Error)
 }
 
+func HealthCheck(c *gin.Context){
+	ContexJsonResponse(c, "ok",200,nil,nil)
+}
+
 // TODO GET subscrtibes

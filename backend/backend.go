@@ -141,6 +141,7 @@ func main() {
 	{
 		subscribes.POST("/new", handlers.SubscribeHandler)
 		subscribes.DELETE("/unsubscribe", handlers.UnsubscribeHandler)
+		subscribes.GET("/healthcheck", handlers.HealthCheck)
 
 	}
 	token := router.Group("/token/")
