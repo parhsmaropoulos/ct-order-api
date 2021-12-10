@@ -337,7 +337,7 @@ class ShopPage extends Component {
       );
     }
     if (this.state.continueOrder) {
-      return <Redirect to={`/checkout1/${sessionStorage.getItem("userID")}`} />;
+      return <Redirect to={`/checkout/${sessionStorage.getItem("userID")}`} />;
     }
     if (!this.props.isReady) {
       return (

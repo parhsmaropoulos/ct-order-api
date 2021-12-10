@@ -270,7 +270,7 @@ class Checkout extends Component {
       this.props.showErrorSnackbar("Please enter floor and bell name");
       return false;
     } else if (
-      !!order.phone &&
+      !!order.phone === true &&
       ((mobilePhoneRegex.test(order.phone) === false &&
         homePhoneRegex.test(order.phone) === false) ||
         order.phone.length !== 10)
@@ -342,7 +342,7 @@ class Checkout extends Component {
         selectedAddress: this.props.userReducer.user.addresses[0],
       });
     }
-    if (this.props.userReducer.user.orders !== null) {
+    if (this.props.userReducer.user.orders.length) {
       let newDetails = this.state.userDetails;
       let last = this.props.userReducer.user.orders[0];
       newDetails.bellName = last.bell_name;
@@ -387,7 +387,7 @@ class Checkout extends Component {
       addAddressModal = (
         <AddressModal1
           displayModal={this.state.showAddressModal}
-          closeModal={() => this.selectAddressModal(false, false, "")}
+          onClose={() => this.selectAddressModal(false, false, "")}
           addAdress={(address) => this.onAddAddress(address)}
           editAddress={(showAdd, showEdit, address) =>
             this.selectAddressModal(showAdd, showEdit, address)
@@ -401,7 +401,7 @@ class Checkout extends Component {
           address={this.state.selectedAddress}
           updateAddress={false}
           displayModal={this.state.showEditModal}
-          closeModal={() => this.showEditModal(false)}
+          onClose={() => this.showEditModal(false)}
         />
       );
     }
@@ -537,11 +537,15 @@ const OrderDetails = ({
               className="focus:ring-indigo-500 w-full border-b-2 border-t-0 border-l-0 border-r-0 border-black focus:border-indigo-500 h-full py-0 pl-2 pr-7 border-transparent bg-transparent text-gray-500 sm:text-sm rounded-md"
               onChange={onAddressChange}
             >
-              {addresses.map((a, i) => (
-                <option value={i} key={i}>
-                  {a.address_name} {a.address_number},{a.area_name}
-                </option>
-              ))}
+              {addresses ? (
+                addresses.map((a, i) => (
+                  <option value={i} key={i}>
+                    {a.address_name} {a.address_number},{a.area_name}
+                  </option>
+                ))
+              ) : (
+                <option>Δεν υπάρχουν διευθύνσεις</option>
+              )}
               <option value="new" key={0}>
                 Προσθήκη νέας
               </option>
