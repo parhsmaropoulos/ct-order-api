@@ -377,7 +377,7 @@ class ShopPage extends Component {
                 />
               </div>
               {/* Right column */}
-              <div className="flex-none lg:w-3/12 w-full mt-4">
+              <div className="flex-none lg:w-3/12 lg:flex-col md:w-full sm:w-full mt-4">
                 <Cart
                   cart={this.state.cart}
                   changeQuantity={(bool, index) =>
@@ -420,7 +420,7 @@ export default connect(mapStateToProps, {
 const CategoryMenu = ({ categories, onChange, selectedCategory }) => {
   return (
     <div className="w-full bg-white rounded-lg shadow-lg overflow-auto  ">
-      <div className=" divide-y-2 divide-gray-100 hidden md:flex md:flex-col">
+      <div className=" divide-y-2 divide-gray-100 hidden lg:flex lg:flex-col">
         {categories.map((c, idx) => (
           <Link
             // exact

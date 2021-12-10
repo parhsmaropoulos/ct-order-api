@@ -9,8 +9,6 @@ import "../../css/Layout/footer.css";
 import PropTypes from "prop-types";
 import { subscribe } from "../../actions/user";
 import { Link } from "react-router-dom";
-import { post_request } from "../../actions/lib";
-import { SUBSCRIBE_USER } from "../../actions/actions";
 import { showErrorSnackbar } from "../../actions/snackbar";
 
 class Footer1 extends Component {

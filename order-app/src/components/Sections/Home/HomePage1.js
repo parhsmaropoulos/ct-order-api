@@ -6,8 +6,8 @@ import { v4 as uuidv4 } from "uuid";
 import { GET_CATEGORIES, SUBSCRIBE_USER } from "../../../actions/actions";
 
 import Header1 from "../../Layout/Header1";
-import Footer1 from "../../Layout/Footer1";
 import moment from "moment-timezone";
+import Footer2 from "../../Layout/Footer2";
 moment.tz.setDefault("Europe/Athens");
 const startTime = 8;
 const endTime = 22;
@@ -29,7 +29,6 @@ class HomePage1 extends Component {
     productReducer: PropTypes.object.isRequired,
   };
   componentDidMount() {
-    // console.log(this.props);
     let now = moment();
     let showBanner = false;
     if (now.hour() < startTime || now.hour() > endTime) {
@@ -72,7 +71,7 @@ class HomePage1 extends Component {
         </header>
         <main className="min-h-screen">
           <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-            {/* <!-- Replace with your content --> */}
+            {/* <!-- Replace Tile --> */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {this.props.productReducer.categories.length > 0 ? (
                 this.props.productReducer.categories.map((c, indx) => {
@@ -85,7 +84,7 @@ class HomePage1 extends Component {
             {/* <!-- /End replace --> */}
           </div>
         </main>
-        <Footer1
+        <Footer2
           className="footer"
           onSubscribe={(data) => this.onSubscribe(data)}
         />
@@ -105,12 +104,16 @@ const GridTile = ({ category }) => {
     <div className="max-w-lg mx-auto">
       <div className="bg-white shadow-md border border-gray-200 rounded-lg max-w-sm mb-5">
         <a href={`/order`}>
-          <img
-            className="rounded-t-lg"
-            // src="https://flowbite.com/docs/images/blog/image-1.jpg"
-            src={`assets/img/${category.image}`}
-            alt=""
-          />
+          {!!category.image === true ? (
+            <img
+              className="rounded-t-lg w-100 h-50"
+              // src="https://flowbite.com/docs/images/blog/image-1.jpg"
+              src={`assets/img/${category.image}`}
+              alt=""
+            />
+          ) : (
+            <div className="rounded-t-lg w-100 h-50 bg-gray"></div>
+          )}
         </a>
         <div className="p-5">
           <a href={`/order`}>

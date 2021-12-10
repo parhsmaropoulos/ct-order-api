@@ -4,8 +4,6 @@ import "../css/App/App.css";
 // Routing
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
-// import HomePage from "./Sections/Home/HomePage";
-
 // Pages
 import SuccessSnackbar from "./Logging/SnackBars/SuccessSnackbar";
 import InfoSnackbar from "./Logging/SnackBars/InfoSnackbar";
@@ -26,36 +24,21 @@ const App = () => (
       <SuccessSnackbar />
       <InfoSnackbar />
       <ErrorSnackbar />
-      {/* <AlertsOverlay /> */}
       <Switch>
         <Route exact path="/" component={HomePage1} />
         <Route exact path="/home" component={HomePage1} />
-        {/* <Route path="/order/:category_name" component={OrderMainPage} /> */}
         <Route path="/order/:category_name" component={ShopPage} />
         <Route path="/order" component={ShopPage} />
-        {/* <Route path="/order" component={OrderMainPage} /> */}
-        {/* <Route exact path="/checkout/:id" component={Checkout} /> */}
         <Route exact path="/checkout/:id" component={Checkout1} />
-        {/* <Route exact path="/search/:string" component={OrderMainPage} /> */}
         <Route exact path="/document/:type" component={TextPage} />
-        {/* <Route exact path="/account" component={MainPage} /> */}
         <Route exact path="/account" component={AccountPage} />
         <Route exact path="/account/orders" component={UserOrders1} />
         <Route exact path="/account/addresses" component={UserAddress1} />
-        {/* <Route exact path="/account/orders" component={UserOrders} />
-        <Route exact path="/account/addresses" component={UserAddress} /> */}
-        {/* <Route exact path="/account/ratings" component={UserRatings} /> */}
         <Route exact path="*">
           <NotFound />
         </Route>
       </Switch>
     </div>
-    <footer className="mt-4 text-center bg-gray-100 inset-x-0 relative bottom-px">
-      <p>
-        (c) 2021 coffeetwist Με επιφύλαξη όλων των δικαιωμάτων.Όροι χρήσης,
-        πολιτική ιδιωτικού απορρήτου.
-      </p>
-    </footer>
   </Router>
 );
 
