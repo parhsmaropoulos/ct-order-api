@@ -86,12 +86,12 @@ class EditAddressModal1 extends Component {
     e.preventDefault();
   };
 
-  onAddAddress(e) {
+  onAddAddress = (e) => {
     e.preventDefault();
-    let addressname = document.getElementById("formGridAddressName").value;
-    let addressnumber = document.getElementById("formGridAddressNumber").value;
-    let areaname = document.getElementById("formGridAreaName").value;
-    let zipcode = document.getElementById("formGridZipCode").value;
+    let addressname = document.getElementById("addressName").value;
+    let addressnumber = document.getElementById("addressNumber").value;
+    let areaname = document.getElementById("areaName").value;
+    let zipcode = document.getElementById("zipCode").value;
     const data = {
       // user_id: sessionStorage.getItem("userID"),
       area_name: areaname,
@@ -127,8 +127,8 @@ class EditAddressModal1 extends Component {
       cityName: "",
       areaName: "",
     });
-    this.props.onClose();
-  }
+    this.onClose();
+  };
 
   onClose(e) {
     this.setState({

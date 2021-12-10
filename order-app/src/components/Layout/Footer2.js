@@ -62,9 +62,9 @@ class Footer2 extends Component {
   render() {
     return (
       <div>
-        <div class="bg-gray-100">
-          <div class="max-w-6xl m-auto text-gray-800 flex flex-wrap justify-center">
-            <div class="p-5 w-48 ">
+        <div className="bg-gray-100">
+          <div className="max-w-6xl m-auto text-gray-800 flex flex-wrap justify-center">
+            <div className="p-5 w-48 ">
               <a href="https://www.facebook.com/coffeetwistt">
                 <button className="bg-transparent m-3 p-1 font-semibold text-black inline-flex items-center space-x-2 rounded">
                   <i className="fab fa-facebook fa-2x "></i>
@@ -76,7 +76,7 @@ class Footer2 extends Component {
                 </button>
               </a>
             </div>
-            <div class="p-5 w-48 ">
+            <div className="p-5 w-48 ">
               <label
                 htmlFor="newsLetterEmail"
                 className="block text-sm font-medium text-gray-700"
@@ -100,50 +100,50 @@ class Footer2 extends Component {
                 <i className="fas fa-arrow-right"></i>
               </div>
             </div>
-            <div class="p-5 w-48 ">
-              <a class="my-3 block" href="/#">
+            <div className="p-5 w-48 ">
+              <a className="my-3 block" href="/#">
                 Όροι χρήσης
               </a>
-              <a class="my-3 block" href="/#">
+              <a className="my-3 block" href="/#">
                 Επικοινωνία
               </a>
-              <a class="my-3 block" href="/#">
+              <a className="my-3 block" href="/#">
                 Πως λειτουργεί
               </a>
-              <a class="my-3 block" href="/#">
+              <a className="my-3 block" href="/#">
                 Ποιοί Είμαστε
               </a>
             </div>
-            <div class="p-5 w-48 ">
-              <a class="my-3 block" href="/#">
+            <div className="p-5 w-48 ">
+              <a className="my-3 block" href="/#">
                 Πολιτική Προστασίας
               </a>
-              <a class="my-3 block" href="/#">
+              <a className="my-3 block" href="/#">
                 Πολιτική cookies
               </a>
-              <a class="my-3 block" href="/#">
+              <a className="my-3 block" href="/#">
                 Πολιτική Αξιολόγησης
               </a>
-              <a class="my-3 block" href="/#">
+              <a className="my-3 block" href="/#">
                 Πολιτική Απορρήτου
               </a>
             </div>
           </div>
         </div>
 
-        <div class="bg-gray-100 pt-2 ">
+        <div className="bg-gray-100 pt-2 ">
           <div
-            class="flex pb-5 px-3 m-auto pt-5 border-t text-gray-800 text-sm flex-col
+            className="flex pb-5 px-3 m-auto pt-5 border-t text-gray-800 text-sm flex-col
       md:flex-row max-w-6xl"
           >
-            <div class="mt-2">
+            <div className="mt-2">
               © 2021 CoffeeTwist Με επιφύλαξη όλων των δικαιωμάτων.Όροι χρήσης,
               πολιτική ιδιωτικού απορρήτου.
             </div>
-            {/* <div class="md:flex-auto md:flex-row-reverse mt-2 flex-row flex">
-              <a href="/#" class="w-6 mx-1">
+            {/* <div className="md:flex-auto md:flex-row-reverse mt-2 flex-row flex">
+              <a href="/#" className="w-6 mx-1">
                 <svg
-                  class="fill-current cursor-pointer text-gray-500 hover:text-gray-400"
+                  className="fill-current cursor-pointer text-gray-500 hover:text-gray-400"
                   width="100%"
                   height="100%"
                   viewBox="0 0 24 24"
@@ -173,9 +173,9 @@ class Footer2 extends Component {
                   ></path>
                 </svg>
               </a>
-              <a href="/#" class="w-6 mx-1">
+              <a href="/#" className="w-6 mx-1">
                 <svg
-                  class="fill-current cursor-pointer text-gray-500 hover:text-gray-400"
+                  className="fill-current cursor-pointer text-gray-500 hover:text-gray-400"
                   width="100%"
                   height="100%"
                   viewBox="0 0 24 24"
@@ -196,9 +196,9 @@ class Footer2 extends Component {
                   ></path>
                 </svg>
               </a>
-              <a href="/#" class="w-6 mx-1">
+              <a href="/#" className="w-6 mx-1">
                 <svg
-                  class="fill-current cursor-pointer text-gray-500 hover:text-gray-400"
+                  className="fill-current cursor-pointer text-gray-500 hover:text-gray-400"
                   width="100%"
                   height="100%"
                   viewBox="0 0 24 24"
@@ -232,9 +232,9 @@ class Footer2 extends Component {
                   </g>
                 </svg>
               </a>
-              <a href="/#" class="w-6 mx-1">
+              <a href="/#" className="w-6 mx-1">
                 <svg
-                  class="fill-current cursor-pointer text-gray-500 hover:text-gray-400"
+                  className="fill-current cursor-pointer text-gray-500 hover:text-gray-400"
                   width="100%"
                   height="100%"
                   viewBox="0 0 24 24"
@@ -264,9 +264,9 @@ class Footer2 extends Component {
                   ></path>
                 </svg>
               </a>
-              <a href="/#" class="w-6 mx-1">
+              <a href="/#" className="w-6 mx-1">
                 <svg
-                  class="fill-current cursor-pointer text-gray-500 hover:text-gray-400"
+                  className="fill-current cursor-pointer text-gray-500 hover:text-gray-400"
                   width="100%"
                   height="100%"
                   viewBox="0 0 24 24"
