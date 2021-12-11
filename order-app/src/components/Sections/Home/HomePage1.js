@@ -75,7 +75,7 @@ class HomePage1 extends Component {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {this.props.productReducer.categories.length > 0 ? (
                 this.props.productReducer.categories.map((c, indx) => {
-                  return <GridTile category={c} key={indx} />;
+                  return <CategoryBlock category={c} key={indx} />;
                 })
               ) : (
                 <div>None yet</div>
@@ -125,6 +125,41 @@ const GridTile = ({ category }) => {
             {category.description}
           </p>
         </div>
+      </div>
+    </div>
+  );
+};
+
+const CategoryBlock = ({ category }) => {
+  return (
+    <div className="w-full h-full py-5 flex justify-center items-center">
+      <div className="relative pl-1 flex justify-center rounded-xl hover:scale-105 duration-500 transform transition cursor-pointer">
+        <a href={`/order`}>
+          <div className="w-52 pb-2 bg-white rounded-xl shadow-xl z-10">
+            <div className="relative">
+              {/* <!-- :src="image.largeImageURL"     --> */}
+              <img
+                // src="https://cdn.pixabay.com/photo/2010/12/13/10/05/berries-2277_640.jpg"
+                src={
+                  category.image
+                    ? `assets/img/${category.image}`
+                    : "https://www.google.com/url?sa=i&url=https%3A%2F%2Ftowardsdatascience.com%2F3-numpy-image-transformations-on-baby-yoda-c27c1409b411&psig=AOvVaw1PLnZoPfbzcT2OIuhJhCKa&ust=1639340297137000&source=images&cd=vfe&ved=0CAsQjRxqFwoTCIiCrNLI3PQCFQAAAAAdAAAAABAD"
+                }
+                className="max-h-60 max-w-100 object-cover rounded-t-xl"
+                alt=""
+              />
+            </div>
+            <div className="px-2 py-1">
+              {/* <!-- Product Title --> */}
+              <div className="text-sm md:text-base font-bold pr-2">
+                {category.name}
+              </div>
+              <p className="pb-1 md:pb-2 text-xs md:text-sm text-gray-500">
+                {category.description}
+              </p>
+            </div>
+          </div>
+        </a>
       </div>
     </div>
   );
