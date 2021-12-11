@@ -10,7 +10,7 @@ import moment from "moment-timezone";
 import Footer2 from "../../Layout/Footer2";
 moment.tz.setDefault("Europe/Athens");
 const startTime = 8;
-const endTime = 22;
+const endTime = 24;
 
 class HomePage1 extends Component {
   constructor(props) {
