@@ -720,7 +720,7 @@ const ItemRow = ({ product }) => {
       <div className="flex-col flex">
         <div className="flex-1 font-bold">
           <div className="flex">
-            <span className="text-left w-1/2">
+            <span className="text-left w-1/2 p-2">
               {product.quantity} <small>x</small> {product.item.name}
             </span>
             <span className="text-right w-1/2">
