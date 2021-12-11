@@ -20,7 +20,7 @@ import OrderItemModal1 from "../../Modals/OrderItemModal1";
 import moment from "moment-timezone";
 moment.tz.setDefault("Europe/Athens");
 const startTime = 8;
-const endTime = 22;
+const endTime = 24;
 
 var _ = require("lodash");
 
@@ -347,27 +347,74 @@ class ShopPage extends Component {
       );
     } else {
       return (
-        <div className="flex">
-          <div className="w-1/12 flex-none"></div>
-          <div className="flex-grow ">
-            <Header1 />
-            {modal}
-            <div className="w-full md:inline-flex lg:inline-flex sm:grid text-center ">
-              {/* Left column */}
-              <div className="flex-none lg:w-2/12 md:w-full sm:w-full">
-                <CategoryMenu
+        <div>
+          {/* Large screen */}
+          <div className="hidden lg:flex">
+            <div className="w-1/12 flex-none"></div>
+            <div className="flex-grow ">
+              <Header1 />
+              {modal}
+              <div className="w-full md:inline-flex lg:inline-flex sm:grid text-center ">
+                {/* Left column */}
+                <div className="flex-none lg:w-2/12 md:w-full sm:w-full">
+                  <CategoryMenu
+                    categories={this.props.categories}
+                    onChange={(category) =>
+                      this.changeCategory(category, false)
+                    }
+                    selectedCategory={this.state.selectedCategory}
+                  />
+                </div>
+                {/* Center column */}
+                <div className="flex-none lg:w-7/12 md:w-full sm:w-full">
+                  {/* <SearchBar
+                  onChange={this.onChange}
+                  searchTerm={this.state.searchParam}
+                  onSelect={this.onSearchChange}
+                /> */}
+                  <ItemsList
+                    products={this.props.products}
+                    selectedCategory={this.state.selectedCategory}
+                    showModal={(item, bool, bool1, idx) =>
+                      this.showModal(item, bool, bool1, idx)
+                    }
+                  />
+                </div>
+                {/* Right column */}
+                <div className="flex-none lg:w-3/12 lg:flex-col md:w-full sm:w-full mt-4">
+                  <Cart
+                    cart={this.state.cart}
+                    changeQuantity={(bool, index) =>
+                      this.changeQuantity(bool, index)
+                    }
+                    removeFromCart={(index, item) =>
+                      this.removeFromCart(index, item)
+                    }
+                    totalPrice={this.state.totalPrice}
+                    continueOrder={this.continueOrder}
+                    clearCart={this.clearCart}
+                    showModal={(item, bool, bool1, index) =>
+                      this.showModal(item, bool, bool1, index)
+                    }
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="w-1/12 flex-none"></div>
+          </div>
+          {/* Small screen */}
+          <div className="lg:hidden">
+            <div className="flex flex-col bg-white m-auto p-auto">
+              <Header1 />
+              {modal}
+              <div className="flex overflow-x-scroll pb-10 hide-scroll-bar">
+                <MobileCategoryMenu
                   categories={this.props.categories}
                   onChange={(category) => this.changeCategory(category, false)}
                   selectedCategory={this.state.selectedCategory}
                 />
               </div>
-              {/* Center column */}
-              <div className="flex-none lg:w-7/12 w-full">
-                {/* <SearchBar
-                  onChange={this.onChange}
-                  searchTerm={this.state.searchParam}
-                  onSelect={this.onSearchChange}
-                /> */}
+              <div className="my-5">
                 <ItemsList
                   products={this.props.products}
                   selectedCategory={this.state.selectedCategory}
@@ -376,8 +423,7 @@ class ShopPage extends Component {
                   }
                 />
               </div>
-              {/* Right column */}
-              <div className="flex-none lg:w-3/12 lg:flex-col md:w-full sm:w-full mt-4">
+              <div className="my-5">
                 <Cart
                   cart={this.state.cart}
                   changeQuantity={(bool, index) =>
@@ -396,7 +442,6 @@ class ShopPage extends Component {
               </div>
             </div>
           </div>
-          <div className="w-1/12 flex-none"></div>
         </div>
       );
     }
@@ -431,7 +476,7 @@ const CategoryMenu = ({ categories, onChange, selectedCategory }) => {
           >
             <li
               className={`px-2 py-2 list-none  text-center rounded-sm mb-0.5 last:mb-0 hover:bg-gray-600 ${
-                selectedCategory === c.name && "bg-blue-300"
+                selectedCategory === c.ID && "bg-blue-300"
               } `}
             >
               <div className=" text-center flex-grow">
@@ -462,6 +507,26 @@ const CategoryMenu = ({ categories, onChange, selectedCategory }) => {
           </Link>
         ))}
       </div>
+    </div>
+  );
+};
+
+const MobileCategoryMenu = ({ categories, onChange, selectedCategory }) => {
+  return (
+    <div className="flex flex-nowrap lg:ml-40 md:ml-20 ml-10 ">
+      {categories.map((c, idx) => (
+        <Link to={`/order/${c.name}`}>
+          <div className="inline-block px-3" onClick={() => onChange(c.ID)}>
+            <div
+              className={`max-w-xs p-3 overflow-hidden rounded-lg shadow-md bg-white hover:shadow-xl transition-shadow duration-300 ease-in-out ${
+                selectedCategory === c.ID && "bg-blue-300"
+              }`}
+            >
+              {c.name}
+            </div>
+          </div>
+        </Link>
+      ))}
     </div>
   );
 };
@@ -577,12 +642,14 @@ const Cart = ({
             Συνέχεια {totalPrice.toFixed(2)} €
           </button>
         </div>
-        <button
-          onClick={clearCart}
-          className="text-gray-400 hover:text-gray-600 hover:underline focus:outline-none"
-        >
-          Άδειασμα
-        </button>
+        <div className="text-center">
+          <button
+            onClick={clearCart}
+            className="text-gray-400  hover:text-gray-600 hover:underline focus:outline-none"
+          >
+            Άδειασμα
+          </button>
+        </div>
       </div>
     </div>
   );
