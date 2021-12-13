@@ -80,7 +80,6 @@ export const auth_post_request =
         });
         return res;
       } catch (e) {
-        console.log(e.response);
         dispatch({
           type: SNACKBAR_ERROR,
           message: "Error with post request",

@@ -217,7 +217,7 @@ func main() {
 		product_categories.GET("/all", handlers.GetAllProductCategoriesHandler)
 
 		// CREATE NEW
-		product_categories.POST("/create_product_category",middleware.AuthMiddleware(), handlers.RegisterProductCategoryHandler)
+		product_categories.POST("/create_product_category",handlers.RegisterProductCategoryHandler)
 
 		// GET SINGLE ?
 		// DELETE ?
