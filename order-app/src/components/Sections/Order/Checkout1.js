@@ -342,7 +342,10 @@ class Checkout extends Component {
         selectedAddress: this.props.userReducer.user.addresses[0],
       });
     }
-    if (this.props.userReducer.user.orders.length) {
+    if (
+      this.props.userReducer.user.orders &&
+      this.props.userReducer.user.orders.length
+    ) {
       let newDetails = this.state.userDetails;
       let last = this.props.userReducer.user.orders[0];
       newDetails.bellName = last.bell_name;
@@ -544,7 +547,7 @@ const OrderDetails = ({
                   </option>
                 ))
               ) : (
-                <option>Δεν υπάρχουν διευθύνσεις</option>
+                <option value="">Δεν υπάρχουν διευθύνσεις</option>
               )}
               <option value="new" key={0}>
                 Προσθήκη νέας
@@ -568,7 +571,7 @@ const OrderDetails = ({
             className="w-full shadow rounded-lg bg-gray-100 outline-none focus:bg-gray-200"
             placeholder="Κoυδούνι"
             name="bellName"
-            value={userDetails.bellName}
+            value={userDetails.bellName ? userDetails.bellName : ""}
             onChange={onChange}
           />
         </div>
@@ -580,7 +583,7 @@ const OrderDetails = ({
             className="w-full shadow rounded-lg bg-gray-100 outline-none focus:bg-gray-200"
             placeholder="Όροφος"
             name="floorNumber"
-            value={userDetails.floor}
+            value={userDetails.floor ? userDetails.floor : ""}
             onChange={onChange}
           />
         </div>
@@ -595,7 +598,7 @@ const OrderDetails = ({
           inputprops={{
             pattern: "69[0-9]{8}",
           }}
-          value={phone}
+          value={phone ? phone : ""}
           onChange={onChange}
           placeholder="Τηλέφωνο επικοινωνίας: 69xxxxxxxx"
         />

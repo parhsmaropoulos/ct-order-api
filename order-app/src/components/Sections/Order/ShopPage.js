@@ -515,7 +515,7 @@ const MobileCategoryMenu = ({ categories, onChange, selectedCategory }) => {
   return (
     <div className="flex flex-nowrap lg:ml-40 md:ml-20 ml-10 ">
       {categories.map((c, idx) => (
-        <Link to={`/order/${c.name}`}>
+        <Link to={`/order/${c.name}`} key={idx}>
           <div className="inline-block px-3" onClick={() => onChange(c.ID)}>
             <div
               className={`max-w-xs p-3 overflow-hidden rounded-lg shadow-md bg-white hover:shadow-xl transition-shadow duration-300 ease-in-out ${

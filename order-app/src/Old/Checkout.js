@@ -441,7 +441,7 @@ class Checkout extends Component {
             <span></span>
           )}
           <Link to="/home">
-            <Button>OK</Button>
+            <Button onClick={this.props.clearReducer}>OK</Button>
           </Link>
         </div>
       );

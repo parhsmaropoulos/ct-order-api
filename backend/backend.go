@@ -89,7 +89,7 @@ func main() {
 		// is called in a separate goroutine for each
 		// request to "/events/".
 		sse_events.GET("/events/:id", func(c *gin.Context) {
-
+			
 			b.ServeHTTP(c.Writer, c.Request, c.Param("id"))
 		})
 
