@@ -134,7 +134,7 @@ const CategoryBlock = ({ category }) => {
   return (
     <div className="w-full h-full py-5 flex justify-center items-center">
       <div className="relative pl-1 flex justify-center rounded-xl hover:scale-105 duration-500 transform transition cursor-pointer">
-        <a href={`/order`}>
+        <a href={`/order/${category.name}`}>
           <div className="w-52 pb-2 bg-white rounded-xl shadow-xl z-10">
             <div className="relative">
               {/* <!-- :src="image.largeImageURL"     --> */}
@@ -143,7 +143,7 @@ const CategoryBlock = ({ category }) => {
                 src={
                   category.image
                     ? `assets/img/${category.image}`
-                    : "https://www.google.com/url?sa=i&url=https%3A%2F%2Ftowardsdatascience.com%2F3-numpy-image-transformations-on-baby-yoda-c27c1409b411&psig=AOvVaw1PLnZoPfbzcT2OIuhJhCKa&ust=1639340297137000&source=images&cd=vfe&ved=0CAsQjRxqFwoTCIiCrNLI3PQCFQAAAAAdAAAAABAD"
+                    : "assets/img/ct-logo.jpeg"
                 }
                 className="max-h-60 max-w-100 object-cover rounded-t-xl"
                 alt=""

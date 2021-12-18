@@ -264,7 +264,7 @@ class ShopPage extends Component {
     if (this.props.isReady === false) {
       this.get_items();
       this.get_choices();
-      this.get_categories();
+      this.get_categories(this.props.match.params.category_name);
       this.get_ingredients();
     }
     if (this.props.products.length > 0) {
@@ -274,14 +274,6 @@ class ShopPage extends Component {
         cart: this.props.orderReducer.products,
         totalPrice: this.props.orderReducer.totalPrice,
       });
-    }
-
-    if (!!this.props.match.params.category_name === true) {
-      let param = this.props.match.params.category_name;
-      let cat = this.state.categories.find((c) => c.name === param);
-      // this.setState({
-      //   selectedCategory: cat.ID,
-      // });
     }
     let cart = localStorage.getItem("cart");
     if (cart) {
@@ -297,8 +289,14 @@ class ShopPage extends Component {
   async get_items() {
     await this.props.auth_get_request("products/all", GET_ITEMS);
   }
-  async get_categories() {
+  async get_categories(param) {
     await this.props.auth_get_request("product_category/all", GET_CATEGORIES);
+    if (param) {
+      let cat = this.props.categories.find((c) => c.name === param);
+      this.setState({
+        selectedCategory: cat.ID,
+      });
+    }
   }
   async get_choices() {
     await this.props.auth_get_request("product_choices/all", GET_CHOICES);

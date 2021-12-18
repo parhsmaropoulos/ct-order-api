@@ -224,7 +224,6 @@ export const getUser = (id) => (dispatch) => {
   axios
     .get(`${current_url}user/${id}`, authHeaders)
     .then((res) => {
-      // console.log(res);
       dispatch({
         type: GET_USER,
         payload: res.data,
