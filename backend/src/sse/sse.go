@@ -109,7 +109,12 @@ func (b *Broker) Start() {
 // This Broker method handles and HTTP request at the "/events/" URL.
 //
 func (b *Broker) ServeHTTP(w http.ResponseWriter, r *http.Request, new_id string) {
-
+	// Set the headers related to event streaming.
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Content-Type", "text/event-stream")
+	w.Header().Set("Cache-Control", "no-cache")
+	w.Header().Set("Connection", "keep-alive")
+	w.Header().Set("Transfer-Encoding", "chunked")
 	// Make sure that the writer supports flushing.
 	//
 	f, ok := w.(http.Flusher)
@@ -139,12 +144,6 @@ func (b *Broker) ServeHTTP(w http.ResponseWriter, r *http.Request, new_id string
 		log.Println("HTTP connection just closed.")
 	}()
 
-	// Set the headers related to event streaming.
-	w.Header().Set("Content-Type", "text/event-stream")
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Cache-Control", "no-cache")
-	w.Header().Set("Connection", "keep-alive")
-	w.Header().Set("Transfer-Encoding", "chunked")
 
 	// Don't close the connection, instead loop endlessly.
 	for {
