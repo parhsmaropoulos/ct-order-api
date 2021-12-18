@@ -188,7 +188,7 @@ func SendOrder(b *Broker, c *gin.Context) {
 	}
 	if err := c.ShouldBindJSON(&input); err != nil {
 		sentry.CaptureMessage("Error on sendOrder sse: "+ err.Error())
-		sentry.ExtractStacktrace(err)
+		// sentry.ExtractStacktrace(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "message": err})
 		return
 	}
@@ -218,7 +218,7 @@ func AcceptOrder(b *Broker, c *gin.Context) {
 	}
 	if err := c.ShouldBindJSON(&input); err != nil {
 		sentry.CaptureMessage("Error on accepetOrder sse: "+ err.Error())
-		sentry.ExtractStacktrace(err)
+		// sentry.ExtractStacktrace(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "message": err})
 		return
 	}

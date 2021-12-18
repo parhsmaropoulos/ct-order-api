@@ -28,7 +28,7 @@ func LoginHandler(c *gin.Context) {
 	}
 	if err := c.ShouldBindJSON(&input); err != nil {
 		sentry.CaptureMessage("Error on login: "+ err.Error())
-		sentry.ExtractStacktrace(err)
+		// sentry.ExtractStacktrace(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}

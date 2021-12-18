@@ -8,12 +8,12 @@ import (
 func ContexJsonResponse(c *gin.Context, message string, code int, data interface{}, err error) {
 	var erro string
 	if err != nil {
+		sentry.CaptureMessage("ContexJsonResponse error: "+ err.Error())
+		// sentry.ExtractStacktrace(err)
 		erro = err.Error()
 	} else {
 		erro = ""
 	}
-	sentry.CaptureMessage("ContexJsonResponse error: "+ err.Error())
-	sentry.ExtractStacktrace(err)
 	c.JSON(code, gin.H{
 		"code":    code,
 		"message": message,
