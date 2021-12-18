@@ -166,7 +166,7 @@ func (b *Broker) ServeHTTP(w http.ResponseWriter, r *http.Request, new_id string
 	}
 
 	// Done.
-	log.Println("Finished HTTP request at ", r.URL.Path)
+	log.Println("Finished HTTP request at ", r.URL)
 }
 
 func SendOrder(b *Broker, c *gin.Context) {
@@ -198,6 +198,7 @@ func SendOrder(b *Broker, c *gin.Context) {
 	if er != nil {
 		panic(er)
 	}
+	fmt.Print(b)
 	b.Messages <- string(out)
 	// c.JSON(200, gin.H{
 	// 	"message": "order send",
