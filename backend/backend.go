@@ -96,10 +96,7 @@ func main() {
 		// is called in a separate goroutine for each
 		// request to "/events/".
 		sse_events.GET("/events/:id", func(c *gin.Context) {
-			if c.Request.Method == "OPTIONS" {
-				c.AbortWithStatus(204)
-				return
-			}
+			log.Print(c.Writer.Header())
 			b.ServeHTTP(c.Writer, c.Request, c.Param("id"))
 		})
 
