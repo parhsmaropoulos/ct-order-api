@@ -82,7 +82,6 @@ func (b *Broker) Start() {
 				// only admin gets it.
 				// else send the response to the client is came from.
 				if reason == "SendOrder" {
-
 					for s := range b.Clients {
 						client := b.Clients[s]
 						if client == "admin" {
@@ -109,6 +108,14 @@ func (b *Broker) Start() {
 // This Broker method handles and HTTP request at the "/events/" URL.
 //
 func (b *Broker) ServeHTTP(w http.ResponseWriter, r *http.Request, new_id string) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE")
+	w.Header().Set("Content-Type", "text/event-stream")
+	w.Header().Set("Cache-Control", "no-cache")
+	w.Header().Set("Connection", "keep-alive")
+	w.Header().Set("Transfer-Encoding", "chunked")
 	// Make sure that the writer supports flushing.
 	//
 	f, ok := w.(http.Flusher)
@@ -225,6 +232,7 @@ func AcceptOrder(b *Broker, c *gin.Context) {
 	if er != nil {
 		panic(er)
 	}
+	log.Print("Marshal", string(out))
 	b.Messages <- string(out)
 	// c.JSON(200, gin.H{
 	// 	"message": "order accepted",

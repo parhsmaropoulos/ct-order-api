@@ -20,6 +20,7 @@ import { GET_USER, SEND_ORDER } from "../../../actions/actions";
 import withAuthorization from "../../../firebase/withAuthorization";
 import AddressModal1 from "../../Modals/AddressModal1";
 import EditAddressModal1 from "../../Modals/EditAddressModal1";
+import { current_url } from "../../../utils/util";
 
 // const availableTipOptions = [0.5, 1.0, 1.5, 2.0, 5.0, 10.0];
 
@@ -27,7 +28,7 @@ class Checkout extends Component {
   constructor(props) {
     super(props);
     this.eventSource = new EventSource(
-      `http://localhost:8080/sse/events/${props.match.params.id}`
+      `${current_url}sse/events/${props.match.params.id}`
     );
     this.state = {
       id: 0,
@@ -84,6 +85,7 @@ class Checkout extends Component {
 
   recieveOrder(response) {
     let data = JSON.parse(response.data);
+    console.log(data);
     if (data.accepted === true) {
       this.props.order_accepted(data.time);
     } else {
