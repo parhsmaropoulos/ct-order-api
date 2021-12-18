@@ -6,6 +6,7 @@ require (
 	cloud.google.com/go/firestore v1.6.0 // indirect
 	firebase.google.com/go v3.13.0+incompatible
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+	github.com/getsentry/sentry-go v0.11.0 // indirect
 	github.com/gin-gonic/gin v1.7.4
 	github.com/gorilla/websocket v1.4.2
 	github.com/johnfercher/maroto v0.33.0

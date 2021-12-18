@@ -6,6 +6,7 @@ import (
 	"main/src/models"
 	"net/http"
 
+	"github.com/getsentry/sentry-go"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -26,6 +27,8 @@ func LoginHandler(c *gin.Context) {
 		Password string `json:"password"`
 	}
 	if err := c.ShouldBindJSON(&input); err != nil {
+		sentry.CaptureMessage("Error on login: "+ err.Error())
+		sentry.ExtractStacktrace(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -67,7 +70,6 @@ func LoginHandler(c *gin.Context) {
 func LogoutHandler(c *gin.Context) {
 	if c.Request.Method != "POST" {
 		ContexJsonResponse(c, "Wrong request method", http.StatusRequestTimeout, nil, nil)
-
 		return
 	}
 

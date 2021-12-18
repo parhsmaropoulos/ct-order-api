@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"github.com/getsentry/sentry-go"
 	"github.com/gin-gonic/gin"
 )
 
@@ -11,6 +12,8 @@ func ContexJsonResponse(c *gin.Context, message string, code int, data interface
 	} else {
 		erro = ""
 	}
+	sentry.CaptureMessage("ContexJsonResponse error: "+ err.Error())
+	sentry.ExtractStacktrace(err)
 	c.JSON(code, gin.H{
 		"code":    code,
 		"message": message,

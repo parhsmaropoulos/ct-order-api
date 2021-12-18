@@ -8,16 +8,18 @@ import (
 	// "GoProjects/CoffeeTwist/backend/src/models"
 	// sse "GoProjects/CoffeeTwist/backend/src/sse"
 	// websock "GoProjects/CoffeeTwist/backend/src/websocket"
+	"log"
 	"main/src/config"
 	"main/src/handlers"
 	"main/src/middleware"
 	"main/src/models"
 	"main/src/sse"
 	websock "main/src/websocket"
-
-	"fmt"
 	"net/http"
 
+	"fmt"
+
+	"github.com/getsentry/sentry-go"
 	"github.com/gin-gonic/gin"
 )
 
@@ -38,7 +40,12 @@ func CORS() gin.HandlerFunc {
 }
 
 func main() {
-
+	err := sentry.Init(sentry.ClientOptions{
+		Dsn: "https://3a967255398645168f9952309ce82ae7@o1093527.ingest.sentry.io/6112834",
+	})
+	if err != nil {
+		log.Fatalf("sentry.Init: %s", err)
+	}
 	gin.ForceConsoleColor()
 	// Initialize Mongo DB session / collections (old)
 	// Initialize Psql DB (new)
@@ -89,7 +96,7 @@ func main() {
 		// is called in a separate goroutine for each
 		// request to "/events/".
 		sse_events.GET("/events/:id", func(c *gin.Context) {
-			
+
 			b.ServeHTTP(c.Writer, c.Request, c.Param("id"))
 		})
 
@@ -283,8 +290,9 @@ func main() {
 		if c.Request.URL.Path != "/" {
 			http.NotFound(c.Writer, c.Request)
 			return
+		}else{
+			handlers.ContexJsonResponse(c,"Wrong url", 401,nil,nil)
 		}
-		fmt.Print("Hello there")
 	})
 
 	port := ":8080"

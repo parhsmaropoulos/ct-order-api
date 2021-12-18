@@ -7,6 +7,7 @@ import (
 	"main/src/models"
 	"net/http"
 
+	"github.com/getsentry/sentry-go"
 	"github.com/gin-gonic/gin"
 )
 
@@ -113,6 +114,7 @@ func (b *Broker) ServeHTTP(w http.ResponseWriter, r *http.Request, new_id string
 	//
 	f, ok := w.(http.Flusher)
 	if !ok {
+		sentry.CaptureMessage("Streaming unsupported!")
 		http.Error(w, "Streaming unsupported!", http.StatusInternalServerError)
 		return
 	}
@@ -139,6 +141,7 @@ func (b *Broker) ServeHTTP(w http.ResponseWriter, r *http.Request, new_id string
 
 	// Set the headers related to event streaming.
 	w.Header().Set("Content-Type", "text/event-stream")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Cache-Control", "no-cache")
 	w.Header().Set("Connection", "keep-alive")
 	w.Header().Set("Transfer-Encoding", "chunked")
@@ -184,6 +187,8 @@ func SendOrder(b *Broker, c *gin.Context) {
 		From string `json:"from"`
 	}
 	if err := c.ShouldBindJSON(&input); err != nil {
+		sentry.CaptureMessage("Error on sendOrder sse: "+ err.Error())
+		sentry.ExtractStacktrace(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "message": err})
 		return
 	}
@@ -212,6 +217,8 @@ func AcceptOrder(b *Broker, c *gin.Context) {
 		From     string `json:"from"`
 	}
 	if err := c.ShouldBindJSON(&input); err != nil {
+		sentry.CaptureMessage("Error on accepetOrder sse: "+ err.Error())
+		sentry.ExtractStacktrace(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "message": err})
 		return
 	}
