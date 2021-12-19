@@ -8,6 +8,7 @@ import { GET_CATEGORIES, SUBSCRIBE_USER } from "../../../actions/actions";
 import Header1 from "../../Layout/Header1";
 import moment from "moment-timezone";
 import Footer2 from "../../Layout/Footer2";
+import { current_url } from "../../../utils/util";
 moment.tz.setDefault("Europe/Athens");
 const startTime = 8;
 const endTime = 24;
@@ -142,8 +143,8 @@ const CategoryBlock = ({ category }) => {
                 // src="https://cdn.pixabay.com/photo/2010/12/13/10/05/berries-2277_640.jpg"
                 src={
                   category.image
-                    ? `assets/img/${category.image}`
-                    : "assets/img/ct-logo.jpeg"
+                    ? `${current_url}assets/img/${category.image}`
+                    : `${current_url}assets/img/ct-logo.jpeg`
                 }
                 className="max-h-60 max-w-100 object-cover rounded-t-xl"
                 alt=""
