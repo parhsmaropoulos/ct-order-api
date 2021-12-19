@@ -107,7 +107,11 @@ func (b *Broker) Start() {
 
 // This Broker method handles and HTTP request at the "/events/" URL.
 //
-func (b *Broker) ServeHTTP(w http.ResponseWriter, r *http.Request, new_id string) {
+// func (b *Broker) ServeHTTP(w http.ResponseWriter, r *http.Request, new_id string) {
+	func (b *Broker) ServeHTTP(c *gin.Context) {
+	new_id := c.Param("id")
+	w := c.Writer
+	r := *c.Request
 	w.Header().Set("Content-Type", "text/event-stream")
 	w.Header().Set("Cache-Control", "no-cache")
 	w.Header().Set("Connection", "keep-alive")

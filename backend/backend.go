@@ -95,10 +95,10 @@ func main() {
 		// this because it has a ServeHTTP method.  That method
 		// is called in a separate goroutine for each
 		// request to "/events/".
-		sse_events.GET("/events/:id", func(c *gin.Context) {
-			log.Print(c.Writer.Header())
-			b.ServeHTTP(c.Writer, c.Request, c.Param("id"))
-		})
+		// sse_events.GET("/events/:id", func(c *gin.Context) {
+		// 	b.ServeHTTP(c.Writer, c.Request, c.Param("id"))
+		// })
+		sse_events.GET("/events/:id", b.ServeHTTP)
 
 		sse_events.POST("/sendorder/:id", func(c *gin.Context) {
 			sse.SendOrder(b, c)
