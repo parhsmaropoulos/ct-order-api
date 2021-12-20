@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"main/src/handlers"
 	"main/src/models"
 	"net/http"
 
@@ -124,7 +125,7 @@ func (b *Broker) Start() {
 		http.Error(w, "Streaming unsupported!", http.StatusInternalServerError)
 		return
 	}
-
+	handlers.ContexJsonResponse(c, "connected successfully", 200, nil,nil)
 	id = new_id
 	// Create a new channel, over which the broker can
 	// send this client messages.
