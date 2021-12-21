@@ -13,8 +13,7 @@ import (
 	"main/src/handlers"
 	"main/src/middleware"
 	"main/src/models"
-	"main/src/sse"
-	websock "main/src/websocket"
+	"main/src/websocket"
 	"net/http"
 
 	"fmt"
@@ -55,9 +54,6 @@ func main() {
 	// Initialize gin router
 	router := gin.Default()
 	router.Use(CORS())
-	// Initialize websocket pool
-	pool := websock.NewPool()
-	go pool.Start()
 
 	// configure firebase auth
 	firebaseAuth := func(c *gin.Context) {
@@ -68,19 +64,6 @@ func main() {
 		c.Set("firebaseAuth",config.SetupAdminFirebase())}
 
 	// router.Use(firebaseAdminAuth,firebaseAuth)
-
-	// SSE
-	// Make a new Broker instance
-	b := &sse.Broker{
-		Clients: make(map[chan string]string, 2),
-		NewClients: make(chan (chan string), 2),
-		DefunctClients: make(chan (chan string), 2),
-		Messages: make(chan string, 2),
-	}
-
-	// Start processing events
-	b.Start()
-
 	// Static folder for images/video etc
 	router.Static("/assets", "./assets")
 
@@ -89,25 +72,40 @@ func main() {
 	{
 		panel.GET("/", models.HomePage)
 	}
-	sse_events := router.Group("/sse/")
+
+	//Start pool
+	
+	pool := websocket.NewPool()
+	go pool.Start()
+	ws := router.Group("/ws/")
 	{
-		// Make b the HTTP handler for "/events/".  It can do
-		// this because it has a ServeHTTP method.  That method
-		// is called in a separate goroutine for each
-		// request to "/events/".
-		// sse_events.GET("/events/:id", func(c *gin.Context) {
-		// 	b.ServeHTTP(c.Writer, c.Request, c.Param("id"))
-		// })
-		sse_events.GET("/events/:id", b.ServeHTTP)
 
-		sse_events.POST("/sendorder/:id", func(c *gin.Context) {
-			sse.SendOrder(b, c)
-		})
-
-		sse_events.POST("/acceptorder", func(c *gin.Context) {
-			sse.AcceptOrder(b, c)
+		ws.GET("/:id", func(c *gin.Context) {
+			websocket.ServeWs(c, pool)
 		})
 	}
+	// sse_events := router.Group("/sse/")
+	// {
+	// 	// Make b the HTTP handler for "/events/".  It can do
+	// 	// this because it has a ServeHTTP method.  That method
+	// 	// is called in a separate goroutine for each
+	// 	// request to "/events/".
+	// 	// sse_events.GET("/events/:id", b.ServeHTTP)
+
+	// 	// sse_events.POST("/sendorder/:id", func(c *gin.Context) {
+	// 	// 	sse.SendOrder(b, c)
+	// 	// })
+
+	// 	// sse_events.POST("/acceptorder", func(c *gin.Context) {
+	// 	// 	sse.AcceptOrder(b, c)
+	// 	// })
+
+	// 	sse_events.GET("/events/:id", stream.Stream )
+
+	// 	sse_events.POST("/acceptorder", stream.AcceptOrder )
+
+	// 	sse_events.POST("/sendorder", stream.Stream )
+	// }
 
 	users := router.Group("/user/").Use(firebaseAuth)
 	{

@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"main/src/handlers"
 	"main/src/models"
 	"net/http"
 
@@ -21,20 +20,16 @@ type Broker struct {
 	// Create a map of clients, the keys of the map are the channels
 	// over which we can push messages to attached clients.  (The values
 	// are int for id.)
-	//
 	Clients map[chan string]string
 
 	// Channel into which new clients can be pushed
-	//
 	NewClients chan chan string
 
 	// Channel into which disconnected clients should be pushed
-	//
 	DefunctClients chan chan string
 
 	// Channel into which messages are pushed to be broadcast out
 	// to attahed clients.
-	//
 	Messages chan string
 }
 
@@ -109,14 +104,15 @@ func (b *Broker) Start() {
 // This Broker method handles and HTTP request at the "/events/" URL.
 //
 // func (b *Broker) ServeHTTP(w http.ResponseWriter, r *http.Request, new_id string) {
-	func (b *Broker) ServeHTTP(c *gin.Context) {
+func (b *Broker) ServeHTTP(c *gin.Context) {
 	new_id := c.Param("id")
 	w := c.Writer
 	r := *c.Request
-	w.Header().Set("Content-Type", "text/event-stream")
-	w.Header().Set("Cache-Control", "no-cache")
-	w.Header().Set("Connection", "keep-alive")
-	w.Header().Set("Transfer-Encoding", "chunked")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+    w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+    w.Header().Set("Content-Type", "text/event-stream")
+    w.Header().Set("Cache-Control", "no-cache")
+    w.Header().Set("Connection", "keep-alive")
 	// Make sure that the writer supports flushing.
 	//
 	f, ok := w.(http.Flusher)
@@ -125,7 +121,8 @@ func (b *Broker) Start() {
 		http.Error(w, "Streaming unsupported!", http.StatusInternalServerError)
 		return
 	}
-	handlers.ContexJsonResponse(c, "connected successfully", 200, nil,nil)
+
+	// handlers.ContexJsonResponse(c, "connected successfully", 200, nil,nil)
 	id = new_id
 	// Create a new channel, over which the broker can
 	// send this client messages.

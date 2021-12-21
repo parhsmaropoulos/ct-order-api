@@ -1,9 +1,11 @@
 package websocket
 
 import (
-	"fmt"
+	"errors"
 	"log"
+	"main/src/models"
 
+	"github.com/getsentry/sentry-go"
 	"github.com/gorilla/websocket"
 )
 
@@ -13,10 +15,15 @@ type Client struct {
 	Pool *Pool
 }
 
-type Message struct {
-	Type int    `json:"type"`
-	Body string `json:"body"`
-	From string `json:"sender_id"`
+
+type MessageBody struct {
+	ID      string       `json:"id"`
+	Order   models.Order `json:"order"`
+	From string `json:"from"`
+	To string `json:"to"`
+	Time int8 `json:"time"`
+	Accepted bool `json:"accepted"`
+
 }
 
 func (c *Client) Read() {
@@ -25,17 +32,16 @@ func (c *Client) Read() {
 		c.Conn.Close()
 	}()
 	for {
-		messageType, p, err := c.Conn.ReadMessage()
-		if err != nil {
-			log.Println(err)
-			return
+		var message MessageBody
+		err := c.Conn.ReadJSON(&message)
+		if !errors.Is(err, nil) {
+			log.Printf("error occurred: %v", err)
+			sentry.CaptureMessage("ContexJsonResponse error: "+ err.Error())
+			delete(c.Pool.Clients, c)
+			break
 		}
-		// Read json from connection
-		message := Message{Type: messageType, Body: string(p), From: c.ID}
-		// Unmarshal bytes of message to body
 
-		// fmt.Print(message)
+		// Send a message to hub
 		c.Pool.Broadcast <- message
-		fmt.Printf("Message Received: %+v\n", message)
 	}
 }
