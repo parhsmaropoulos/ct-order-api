@@ -20,16 +20,17 @@ import { GET_USER, SEND_ORDER } from "../../../actions/actions";
 import withAuthorization from "../../../firebase/withAuthorization";
 import AddressModal1 from "../../Modals/AddressModal1";
 import EditAddressModal1 from "../../Modals/EditAddressModal1";
-import { current_url } from "../../../utils/util";
+import { sendMsg, WebSocketConnect, socket } from "../../../utils/socket";
 
 // const availableTipOptions = [0.5, 1.0, 1.5, 2.0, 5.0, 10.0];
 
 class Checkout extends Component {
   constructor(props) {
     super(props);
-    this.eventSource = new EventSource(
-      `${current_url}sse/events/${props.match.params.id}`
-    );
+    WebSocketConnect();
+    socket.onmessage = (msg) => {
+      this.recieveOrder(msg);
+    };
     this.state = {
       id: 0,
       availableAddress: [],
@@ -250,12 +251,9 @@ class Checkout extends Component {
     SSEdata.id = String(newOrder.ID);
     SSEdata.order = newOrder;
     SSEdata.from = String(sessionStorage.getItem("userID"));
-    SSEdata.user_details = {};
-    await this.props.auth_post_request(
-      `sse/sendorder/${SSEdata.from}`,
-      SSEdata,
-      null
-    );
+    SSEdata.to = "admin";
+
+    sendMsg(JSON.stringify(SSEdata));
     localStorage.removeItem("cart");
   }
 
@@ -335,7 +333,6 @@ class Checkout extends Component {
   }
 
   async componentDidMount() {
-    this.eventSource.onmessage = (e) => this.recieveOrder(e);
     if (this.props.userReducer.user === null) {
       await this.GetUser();
     }

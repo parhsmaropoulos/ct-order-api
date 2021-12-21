@@ -303,11 +303,11 @@ const LoginForm = ({ onChange, onSubmit, email, password }) => {
         <input type="hidden" name="remember" defaultValue="true" />
         <div className="rounded-md shadow-sm -space-y-px">
           <div>
-            <label htmlFor="email-address" className="sr-only">
+            <label htmlFor="email_address" className="sr-only">
               Email
             </label>
             <input
-              id="email-address"
+              id="email_address"
               name="email"
               type="email"
               autoComplete="email"
@@ -365,11 +365,11 @@ const RegisterForm = ({ onChange, onSubmit, email, password, passowrd2 }) => {
         <input type="hidden" name="remember" defaultValue="true" />
         <div className="rounded-md shadow-sm -space-y-px">
           <div>
-            <label htmlFor="email-address" className="sr-only">
+            <label htmlFor="email_address_reg" className="sr-only">
               Email
             </label>
             <input
-              id="email-address-reg"
+              id="email_address_reg"
               name="email"
               type="email"
               autoComplete="email"
@@ -380,11 +380,11 @@ const RegisterForm = ({ onChange, onSubmit, email, password, passowrd2 }) => {
             />
           </div>
           <div>
-            <label htmlFor="password" className="sr-only">
+            <label htmlFor="password_reg" className="sr-only">
               Password
             </label>
             <input
-              id="password-reg"
+              id="password_reg"
               name="reg_password"
               type="password"
               autoComplete="current-password"
@@ -395,11 +395,11 @@ const RegisterForm = ({ onChange, onSubmit, email, password, passowrd2 }) => {
             />
           </div>
           <div>
-            <label htmlFor="password" className="sr-only">
+            <label htmlFor="password_reg_2" className="sr-only">
               Repear Password
             </label>
             <input
-              id="password-reg-2"
+              id="password_reg_2"
               name="reg_password2"
               type="password"
               autoComplete="current-password"
