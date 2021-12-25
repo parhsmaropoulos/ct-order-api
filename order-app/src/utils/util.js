@@ -6,4 +6,5 @@ export const options = {
 export const live_url = "https://api.ct-dashboard.gr/";
 export const local_url = "http://localhost:8080/";
 
+// export const current_url = live_url;
 export const current_url = local_url;

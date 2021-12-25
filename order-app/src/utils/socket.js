@@ -1,8 +1,8 @@
 const socket = new WebSocket(
-  `ws://${
+  `${
     process.env.REACT_APP_ENV === "dev"
-      ? "localhost:8080"
-      : "api.ct-dashboard.gr"
+      ? "ws://localhost:8080"
+      : "wss://api.ct-dashboard.gr"
   }/ws/${sessionStorage.getItem("userID")}`
 );
 

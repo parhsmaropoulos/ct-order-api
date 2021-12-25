@@ -35,8 +35,11 @@ func (c *Client) Read() {
 		var message MessageBody
 		err := c.Conn.ReadJSON(&message)
 		if !errors.Is(err, nil) {
+			if websocket.IsUnexpectedCloseError(err,websocket.CloseGoingAway, websocket.CloseAbnormalClosure){
+				sentry.CaptureMessage("ContexJsonResponse error: "+ err.Error())
+				break
+			}
 			log.Printf("error occurred: %v", err)
-			sentry.CaptureMessage("ContexJsonResponse error: "+ err.Error())
 			delete(c.Pool.Clients, c)
 			break
 		}

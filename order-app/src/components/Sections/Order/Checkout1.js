@@ -20,14 +20,14 @@ import { GET_USER, SEND_ORDER } from "../../../actions/actions";
 import withAuthorization from "../../../firebase/withAuthorization";
 import AddressModal1 from "../../Modals/AddressModal1";
 import EditAddressModal1 from "../../Modals/EditAddressModal1";
-import { sendMsg, WebSocketConnect, socket } from "../../../utils/socket";
+import { sendMsg, socket } from "../../../utils/socket";
 
 // const availableTipOptions = [0.5, 1.0, 1.5, 2.0, 5.0, 10.0];
 
 class Checkout extends Component {
   constructor(props) {
     super(props);
-    WebSocketConnect();
+
     socket.onmessage = (msg) => {
       this.recieveOrder(msg);
     };
@@ -86,7 +86,7 @@ class Checkout extends Component {
 
   recieveOrder(response) {
     let data = JSON.parse(response.data);
-    console.log(data);
+    // console.log(data);
     if (data.accepted === true) {
       this.props.order_accepted(data.time);
     } else {
