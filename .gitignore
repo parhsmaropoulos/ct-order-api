@@ -8,7 +8,10 @@ order-app/ssh
 
 Design
 
-backend/assets
+backend/assets/css
+backend/assets/js
+backend/assets/pdfs
+backend/assets/img/*.jpeg
 backend/vendor
 backend/.env
 backend/config/*.json

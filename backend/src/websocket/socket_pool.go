@@ -24,6 +24,7 @@ func (pool *Pool) Start() {
 	for {
 		select {
 		case client := <-pool.Register:
+			// Prevent duplicates
 			pool.Clients[client] = true
 			fmt.Println("Size of Connection Pool: ", len(pool.Clients))
 			fmt.Println("New user id:", client.ID)
