@@ -15,11 +15,14 @@ import (
 	"main/src/models"
 	"main/src/websocket"
 	"net/http"
+	"time"
 
 	"fmt"
 
 	"github.com/getsentry/sentry-go"
+	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 )
 
 func CORS() gin.HandlerFunc {
@@ -54,6 +57,20 @@ func main() {
 	// Initialize gin router
 	router := gin.Default()
 	router.Use(CORS())
+
+	logger, _ := zap.NewProduction()
+	defer logger.Sync() // flushes buffer, if any
+	
+	// Add a ginzap middleware, which:
+	//   - Logs all requests, like a combined access and error log.
+	//   - Logs to stdout.
+	//   - RFC3339 with UTC time format.
+	router.Use(ginzap.Ginzap(logger, time.RFC3339, true))
+
+	// Logs all panic to error log
+	//   - stack means whether output the stack info.
+	router.Use(ginzap.RecoveryWithZap(logger, true))
+
 
 	// configure firebase auth
 	firebaseAuth := func(c *gin.Context) {
