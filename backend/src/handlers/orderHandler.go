@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"main/src/models"
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/now"
 )
 
 // Create a new order
@@ -211,10 +211,8 @@ func GetTodayOrdersHandler(c *gin.Context) {
 	// db := models.OpenConnection()
 	var orders []models.Order
 
-	year, month, day := time.Now().Date()
-
-	today := fmt.Sprint(year, "-", month, "-", day)
-	tomoorow := fmt.Sprint(year, "-", month, "-", day+1)
+	today := now.BeginningOfDay()
+	tomoorow := now.EndOfDay()
 	result := models.GORMDB.Where(" created_at > ? and created_at < ?", today,tomoorow).Find(&orders)
 	if result.Error != nil {
 		ContexJsonResponse(c, "Error on orders search", http.StatusInternalServerError, nil, result.Error)
