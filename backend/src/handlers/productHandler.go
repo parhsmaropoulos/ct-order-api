@@ -50,48 +50,14 @@ func RegisterProductHandler(c *gin.Context) {
 	c.Request.ParseMultipartForm(10 << 20)
 	// Check if there is a  file
 	if len(c.Request.MultipartForm.File) != 0 {
-		// Retrieve file
-		file, handler, err := c.Request.FormFile("file")
-		// c.SaveUploadedFile(file, "saved/"+file.Filename)
-		if err != nil {
-			ContexJsonResponse(c, "Error on form file read", 500, nil, err)
-			return
-		}
-		filename := fmt.Sprintf("%s-*.png", strings.Split(handler.Filename, ".")[0])
-		// Write temporary file
-		tempFile, err := ioutil.TempFile("assets/images", filename)
-		if err != nil {
-			ContexJsonResponse(c, "Error on tmp file creation", 500, nil, err)
-			return
-		}
 
-		defer tempFile.Close()
-		imageName = strings.Split(tempFile.Name(), "\\")[2]
-		_, err = file.Seek(0, 0)
-		if err != nil {
-			ContexJsonResponse(c, "Error on seek file method", 500, nil, err)
+		er, filename := handleFileupload(c)
+		if er != nil {
+			ContexJsonResponse(c, "Error on file upload", 500, nil, er)
 			return
 		}
-		fileBytes, err := ioutil.ReadAll(file)
-		if err != nil {
-			ContexJsonResponse(c, "Error on file read", 500, nil, err)
-			return
-		}
-		// img, _, err := image.Decode(file)
-		bytesBuffer := bytes.NewBuffer(fileBytes)
-		img, _, err := image.Decode(bytesBuffer)
-		if err != nil {
-			ContexJsonResponse(c, "Error on image decode", 500, nil, err)
-			return
-		}
-		resized := resize.Thumbnail(100, 100, img, resize.NearestNeighbor)
-		errs := png.Encode(tempFile, resized)
-		if errs != nil {
-			ContexJsonResponse(c, "Error on image encode to file", 500, nil, errs)
-			return
-		}
+		imageName = filename
 	}
-
 	// 	// Get the product values
 	product.Name = c.Request.FormValue("name")
 	product.Description = c.Request.FormValue("description")

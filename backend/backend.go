@@ -11,6 +11,7 @@ import (
 	"log"
 	"main/src/config"
 	"main/src/handlers"
+	"main/src/lib"
 	"main/src/middleware"
 	"main/src/models"
 	"main/src/websocket"
@@ -57,10 +58,15 @@ func main() {
 	// Initialize gin router
 	router := gin.Default()
 	router.Use(CORS())
-
+	// Setup s3 aws
+	sess := lib.ConnectAws()
+	router.Use(func(c *gin.Context) {
+		c.Set("sess", sess)
+		c.Next()
+	})
 	logger, _ := zap.NewProduction()
 	defer logger.Sync() // flushes buffer, if any
-	
+
 	// Add a ginzap middleware, which:
 	//   - Logs all requests, like a combined access and error log.
 	//   - Logs to stdout.
@@ -71,19 +77,19 @@ func main() {
 	//   - stack means whether output the stack info.
 	router.Use(ginzap.RecoveryWithZap(logger, true))
 
-
 	// configure firebase auth
 	firebaseAuth := func(c *gin.Context) {
-		c.Set("firebaseAuth",config.SetupFirebase())}
+		c.Set("firebaseAuth", config.SetupFirebase())
+	}
 
 	// configure admin firebase auth
 	firebaseAdminAuth := func(c *gin.Context) {
-		c.Set("firebaseAuth",config.SetupAdminFirebase())}
+		c.Set("firebaseAuth", config.SetupAdminFirebase())
+	}
 
 	// router.Use(firebaseAdminAuth,firebaseAuth)
 	// Static folder for images/video etc
 	router.Static("/assets", "./assets")
-
 
 	panel := router.Group("/panel/")
 	{
@@ -91,7 +97,7 @@ func main() {
 	}
 
 	//Start pool
-	
+
 	pool := websocket.NewPool()
 	go pool.Start()
 	ws := router.Group("/ws/")
@@ -156,8 +162,6 @@ func main() {
 		// CREATE NEW
 		users.POST("/new_comment", handlers.RegisterCommentHandler)
 
-
-
 	}
 	subscribes := router.Group("/subscribes/")
 	{
@@ -177,19 +181,19 @@ func main() {
 		products.GET("/all", handlers.GetAllProductsHandler)
 
 		// GET SINGLE
-		products.GET("/:id",middleware.AuthMiddleware(), handlers.GetSingleProductByIdHandler)
+		products.GET("/:id", middleware.AuthMiddleware(), handlers.GetSingleProductByIdHandler)
 
 		// CREATE
-		products.POST("/create_product",middleware.AuthMiddleware(), handlers.RegisterProductHandler)
+		products.POST("/create_product", middleware.AuthMiddleware(), handlers.RegisterProductHandler)
 
 		// CREATE
-		products.DELETE("/:id",middleware.AuthMiddleware(), handlers.RegisterProductHandler)
+		products.DELETE("/:id", middleware.AuthMiddleware(), handlers.RegisterProductHandler)
 
 		// UPDATE VALUES
-		products.PUT("/:id/update_values",middleware.AuthMiddleware(), handlers.UpdateProductValuesByIdHandler)
+		products.PUT("/:id/update_values", middleware.AuthMiddleware(), handlers.UpdateProductValuesByIdHandler)
 
 		// CHANGE AVAILABILITY
-		products.PUT("/:id/change_availability",middleware.AuthMiddleware(), handlers.ChangeAvailabilityOfProductByIdHandler)
+		products.PUT("/:id/change_availability", middleware.AuthMiddleware(), handlers.ChangeAvailabilityOfProductByIdHandler)
 	}
 
 	product_choices := router.Group("/product_choices/").Use(firebaseAdminAuth)
@@ -198,38 +202,38 @@ func main() {
 		product_choices.GET("/all", handlers.GetAllProductChoicesHandler)
 
 		// GET SINGLE
-		product_choices.GET("/:id", middleware.AuthMiddleware(),handlers.GetSingleProductChoiceByIdHandler)
+		product_choices.GET("/:id", middleware.AuthMiddleware(), handlers.GetSingleProductChoiceByIdHandler)
 
 		// CREATE
-		product_choices.POST("/new_product_choice",middleware.AuthMiddleware(), handlers.RegisterProductChoiceHandler)
+		product_choices.POST("/new_product_choice", middleware.AuthMiddleware(), handlers.RegisterProductChoiceHandler)
 
 		// UPDATE SINGLE
-		product_choices.PUT("/:id/update_product_choice",middleware.AuthMiddleware(), handlers.UpdateProductChoiceByIdHandler)
+		product_choices.PUT("/:id/update_product_choice", middleware.AuthMiddleware(), handlers.UpdateProductChoiceByIdHandler)
 
 		// DELETE SINGLE
-		product_choices.DELETE("/:id",middleware.AuthMiddleware(), handlers.UpdateProductChoiceByIdHandler)
+		product_choices.DELETE("/:id", middleware.AuthMiddleware(), handlers.UpdateProductChoiceByIdHandler)
 
 	}
 
 	ingredients := router.Group("/ingredients/").Use(firebaseAdminAuth)
 	{
 		// CREATE NEW
-		ingredients.POST("/create_ingredient",middleware.AuthMiddleware(), handlers.RegisterIngredientHandler)
+		ingredients.POST("/create_ingredient", middleware.AuthMiddleware(), handlers.RegisterIngredientHandler)
 
 		// UPDATE VALUES
-		ingredients.PUT("/:id/update_values",middleware.AuthMiddleware(), handlers.UpdateIngredientValuesByIdHandler)
+		ingredients.PUT("/:id/update_values", middleware.AuthMiddleware(), handlers.UpdateIngredientValuesByIdHandler)
 
 		// CHANGE AVAILABILITY
-		ingredients.PUT("/:id/change_availability",middleware.AuthMiddleware(), handlers.ChangeAvailabilityOfIngredientByIdHandler)
+		ingredients.PUT("/:id/change_availability", middleware.AuthMiddleware(), handlers.ChangeAvailabilityOfIngredientByIdHandler)
 
 		// GET ALL
 		ingredients.GET("/all", handlers.GetAllIngredientsHandler)
 
 		// GET SINGLE
-		ingredients.GET("/:id",middleware.AuthMiddleware(), handlers.GetSingleIngredientByIdHandler)
+		ingredients.GET("/:id", middleware.AuthMiddleware(), handlers.GetSingleIngredientByIdHandler)
 
 		// DELETE
-		ingredients.DELETE("/:id", middleware.AuthMiddleware(),handlers.DeleteIngredientByIdHandler)
+		ingredients.DELETE("/:id", middleware.AuthMiddleware(), handlers.DeleteIngredientByIdHandler)
 
 	}
 
@@ -239,21 +243,21 @@ func main() {
 		product_categories.GET("/all", handlers.GetAllProductCategoriesHandler)
 
 		// CREATE NEW
-		product_categories.POST("/create_product_category",handlers.RegisterProductCategoryHandler)
+		product_categories.POST("/create_product_category", handlers.RegisterProductCategoryHandler)
 
 		// GET SINGLE ?
 		// DELETE ?
-		product_categories.DELETE("/:id", middleware.AuthMiddleware(),handlers.DeleteProductCategoryByIdHandler)
+		product_categories.DELETE("/:id", middleware.AuthMiddleware(), handlers.DeleteProductCategoryByIdHandler)
 
 	}
 
 	orders := router.Group("/orders/").Use(firebaseAdminAuth)
 	{
 		// GET ALL
-		orders.GET("/all", middleware.AuthMiddleware(),handlers.GetAllOrdersHandler)
+		orders.GET("/all", middleware.AuthMiddleware(), handlers.GetAllOrdersHandler)
 
 		// GET TODAY
-		orders.GET("/today", middleware.AuthMiddleware(),handlers.GetTodayOrdersHandler)
+		orders.GET("/today", middleware.AuthMiddleware(), handlers.GetTodayOrdersHandler)
 
 		// GET SINGLE
 		orders.GET("/:id", handlers.GetSingleOrderByIdHandler)
@@ -262,7 +266,7 @@ func main() {
 	payments := router.Group("/payments/").Use(firebaseAuth)
 	{
 		// CREATE NEW
-		payments.POST("/new_payment",  middleware.AuthMiddleware(),handlers.NewPaymentHandler)
+		payments.POST("/new_payment", middleware.AuthMiddleware(), handlers.NewPaymentHandler)
 	}
 
 	admin := router.Group("/admin/").Use(firebaseAdminAuth)
@@ -273,7 +277,7 @@ func main() {
 
 		// ADMIN ORDER ACTION
 		admin.PUT("/orders/:id/accept_order", middleware.AuthMiddleware(), handlers.AcceptOrderByIdHandler)
-		admin.PUT("/orders/:id/cancel_order",  middleware.AuthMiddleware(),handlers.CancelOrderByIdHandler)
+		admin.PUT("/orders/:id/cancel_order", middleware.AuthMiddleware(), handlers.CancelOrderByIdHandler)
 		admin.PUT("/orders/:id/complete_order", middleware.AuthMiddleware(), handlers.CompleteOrderByIdHandler)
 
 		// Fetch orders
@@ -305,8 +309,8 @@ func main() {
 		if c.Request.URL.Path != "/" {
 			http.NotFound(c.Writer, c.Request)
 			return
-		}else{
-			handlers.ContexJsonResponse(c,"Wrong url", 401,nil,nil)
+		} else {
+			handlers.ContexJsonResponse(c, "Wrong url", 401, nil, nil)
 		}
 	})
 
