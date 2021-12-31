@@ -153,8 +153,6 @@ func RegisterProductHandler(c *gin.Context) {
 
 	product.Image = imageName
 
-	product.Price = math.Round((product.Price * 100) / 100)
-
 	result := models.GORMDB.Create(&product)
 
 	if result.Error != nil {
