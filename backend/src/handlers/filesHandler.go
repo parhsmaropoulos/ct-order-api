@@ -26,6 +26,8 @@ func handleFileupload(c *gin.Context) (err error, fileName string) {
 	myBucket := lib.GoDotEnvVariable("BUCKET_NAME")
 	myRegion := lib.GoDotEnvVariable("AWS_REGION")
 
+	env := lib.GoDotEnvVariable("GIN_ENV")
+
 	// parse incoming image file
 	file, header, err := c.Request.FormFile("file")
 
@@ -56,28 +58,38 @@ func handleFileupload(c *gin.Context) (err error, fileName string) {
 
 	resized := resize.Thumbnail(300, 200, img, resize.NearestNeighbor)
 
-	buf := new(bytes.Buffer)
-	err = jpeg.Encode(buf, resized, nil)
-	if err != nil {
-		log.Println(err)
-		return err, ""
-	}
-	send_s3 := buf.Bytes()
+	filepath := ""
+	if env == "production" {
+		buf := new(bytes.Buffer)
+		err = jpeg.Encode(buf, resized, nil)
+		if err != nil {
+			log.Println(err)
+			return err, ""
+		}
+		send_s3 := buf.Bytes()
 
-	//upload to the s3 bucket
-	up, err := uploader.Upload(&s3manager.UploadInput{
-		Bucket: aws.String(myBucket),
-		ACL:    aws.String("public-read"),
-		Key:    aws.String(filename),
-		Body:   bytes.NewReader(send_s3),
-	})
+		//upload to the s3 bucket
+		up, err := uploader.Upload(&s3manager.UploadInput{
+			Bucket: aws.String(myBucket),
+			ACL:    aws.String("public-read"),
+			Key:    aws.String(filename),
+			Body:   bytes.NewReader(send_s3),
+		})
 
-	if err != nil {
-		log.Println("image save error --> ", err)
-		ContexJsonResponse(c, "Error save image", http.StatusInternalServerError, up, err)
-		return err, ""
+		if err != nil {
+			log.Println("image save error --> ", err)
+			ContexJsonResponse(c, "Error save image", http.StatusInternalServerError, up, err)
+			return err, ""
+		}
+		filepath = "https://" + myBucket + "." + "s3-" + myRegion + ".amazonaws.com/" + filename
+	} else {
+		err = jpeg.Encode(out, resized, nil)
+		if err != nil {
+			log.Println(err)
+			return err, ""
+		}
+		filepath = fullFileName
 	}
-	filepath := "https://" + myBucket + "." + "s3-" + myRegion + ".amazonaws.com/" + filename
 	return nil, filepath
 
 }
