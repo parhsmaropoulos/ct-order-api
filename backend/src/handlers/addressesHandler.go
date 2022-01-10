@@ -182,7 +182,7 @@ func DeleteAddressHandler(c *gin.Context) {
 	result := models.GORMDB.Where("id = ?", address.ID).Delete(&address)
 
 	if result.Error != nil {
-		ContexJsonResponse(c, "Internal server error on address deletion", http.StatusInternalServerError, nil, result.Error)
+		ContexJsonResponse(c, "Internal server error on address deletion", http.StatusInternalServerError, address.ID, result.Error)
 		return
 	}
 	ContexJsonResponse(c, "Address deleted successfully", 200, nil, nil)
