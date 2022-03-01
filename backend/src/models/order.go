@@ -24,7 +24,7 @@ type OrderProduct struct {
 	Extra_Ingredients pq.StringArray `json:"extra_ingredients" gorm:"type:varchar[]"`
 	Item_Name         string         `json:"item_name"`
 	Option_Answers    pq.StringArray `json:"option_answers" gorm:"type:varchar[]"`
-	Quantity          int32         `json:"quantity"`
+	Quantity          int32          `json:"quantity"`
 	Total_Price       float64        `json:"total_price"`
 	// Options []struct {
 	// 	Name   string  `json:"name"`
@@ -44,7 +44,6 @@ func (c *OrderProduct) Scan(value interface{}) error {
 	}
 	return json.Unmarshal(b, &c)
 }
-
 
 type OrderProducts []OrderProduct
 
@@ -75,20 +74,20 @@ type Order struct {
 	Tips     float64 `json:"tips"`
 	Comments string  `json:"comments"`
 
-	Name      string  `json:"name"`
-	Surname   string  `json:"surname"`
-	Phone     int64   `json:"phone"`
-	Bell_name string  `json:"bell_name"`
-	Floor     string  `json:"floor"`
+	Name      string `json:"name"`
+	Surname   string `json:"surname"`
+	Phone     int64  `json:"phone"`
+	Bell_name string `json:"bell_name"`
+	Floor     string `json:"floor"`
 	// Address   Address `json:"address"`
-	
-	Client_Area_Name string `json:"client_area_name" gorm:""`
-	Client_City_Name string `json:"client_city_name"`
-	Client_Address_Name string `json:"client_address_name"`
-	Client_Address_Number string `json:"client_address_number"`
-	Client_Zip string `json:"client_zip"`
-	Client_Lat float64 `json:"client_lat"`
-	Client_Lon float64 `json:"client_lon"`
+
+	Client_Area_Name      string  `json:"client_area_name" gorm:""`
+	Client_City_Name      string  `json:"client_city_name"`
+	Client_Address_Name   string  `json:"client_address_name"`
+	Client_Address_Number string  `json:"client_address_number"`
+	Client_Zip            string  `json:"client_zip"`
+	Client_Lat            float64 `json:"client_lat"`
+	Client_Lon            float64 `json:"client_lon"`
 
 	Delivery_time int32   `json:"delivery_time"`
 	Comment       Comment `json:"comment"`
@@ -101,12 +100,12 @@ type Order struct {
 }
 
 func Round(num float64) int {
-    return int(num + math.Copysign(0.5, num))
+	return int(num + math.Copysign(0.5, num))
 }
 
 func ToFixed(num float64, precision int) float64 {
-    output := math.Pow(10, float64(precision))
-    return float64(Round(num * output)) / output
+	output := math.Pow(10, float64(precision))
+	return float64(Round(num*output)) / output
 }
 
 func GeneratePDFReciept(order Order) bytes.Buffer {
@@ -121,39 +120,39 @@ func GeneratePDFReciept(order Order) bytes.Buffer {
 
 	m := pdf.NewMaroto(consts.Portrait, consts.A5)
 	// m.SetPageMargins(10, 15, 10)
-// HEADER
+	// HEADER
 	m.RegisterHeader(func() {
 		m.Row(20, func() {
-			m.Col(12,func() {
+			m.Col(12, func() {
 				m.Text("COFFEE TWIST", props.Text{
 					Align:       consts.Left,
 					Extrapolate: false,
 				})
 				m.Text("ΠΡΟΣΟΧΗ ΔΕΝ ΕΙΝΑΙ ΑΠΟΔΕΙΞΗ", props.Text{
-					Top: 5,
+					Top:         5,
 					Align:       consts.Left,
 					Extrapolate: false,
 				})
 				m.Text("***** ΔΕΛΤΙΟ ΠΑΡΑΓΓΕΛΙΑΣ *****", props.Text{
-					Top: 10,
+					Top:         10,
 					Align:       consts.Left,
 					Extrapolate: false,
 				})
-				m.Text(fmt.Sprintf("%d-%d-%d  %d-%d-%d  ", order.CreatedAt.Day(),order.CreatedAt.Month(),order.CreatedAt.Year(),order.CreatedAt.Hour(),order.CreatedAt.Minute(),order.CreatedAt.Second()), props.Text{
-					Top: 15,
+				m.Text(fmt.Sprintf("%d-%d-%d  %d-%d-%d  ", order.CreatedAt.Day(), order.CreatedAt.Month(), order.CreatedAt.Year(), order.CreatedAt.Hour(), order.CreatedAt.Minute(), order.CreatedAt.Second()), props.Text{
+					Top:         15,
 					Align:       consts.Left,
 					Extrapolate: false,
 				})
-				m.Text(fmt.Sprintf("ΑΡΙΘΜΟΣ ΠΑΡΑΓΓΕΛΙΑΣ %d ",order.ID), props.Text{
+				m.Text(fmt.Sprintf("ΑΡΙΘΜΟΣ ΠΑΡΑΓΓΕΛΙΑΣ %d ", order.ID), props.Text{
 
-					Top: 20,
+					Top:         20,
 					Align:       consts.Left,
 					Extrapolate: false,
 				})
 			})
 		})
 	})
-// FOOTER
+	// FOOTER
 	m.RegisterFooter(func() {
 		m.Row(20, func() {
 			m.Col(12, func() {
@@ -165,7 +164,7 @@ func GeneratePDFReciept(order Order) bytes.Buffer {
 			})
 		})
 	})
-// ORDER TIPS
+	// ORDER TIPS
 	m.Row(20, func() {
 		if order.Tips > 0.1 {
 			m.Col(3, func() {
@@ -184,67 +183,67 @@ func GeneratePDFReciept(order Order) bytes.Buffer {
 			})
 		}
 	})
-// ORDER PRODUCTS
-	for i, prod := range order.Products{
+	// ORDER PRODUCTS
+	for i, prod := range order.Products {
 		m.Row(10, func() {
 			m.Row(6, func() {
-				m.Text(fmt.Sprintf("%d x %s", prod.Quantity,prod.Item_Name), props.Text{
+				m.Text(fmt.Sprintf("%d x %s", prod.Quantity, prod.Item_Name), props.Text{
 					Top:   3,
 					Style: consts.Bold,
 					Align: consts.Left,
 				})
-		})
-		if len(prod.Option_Answers) > 0 {
-			m.Row(10,func() {
-				//map answers
-				for _,answer := range prod.Option_Answers {
+			})
+			if len(prod.Option_Answers) > 0 {
+				m.Row(10, func() {
+					//map answers
+					for _, answer := range prod.Option_Answers {
+						m.Col(6, func() {
+							m.Text(fmt.Sprintf("  +%s", answer), props.Text{
+								Top:   3 + float64(i)*3,
+								Style: consts.Bold,
+								Align: consts.Left,
+							})
+						})
+					}
+				})
+			}
+			if len(prod.Extra_Ingredients) > 0 {
+				m.Row(10, func() {
+					//map extra ingredients
+					for i, extra := range prod.Extra_Ingredients {
+						m.Col(6, func() {
+							m.Text(fmt.Sprintf("  +%s", extra), props.Text{
+								Top:   3 + float64(i)*3,
+								Style: consts.Bold,
+								Align: consts.Left,
+							})
+						})
+					}
+				})
+			}
+			if prod.Comment != "" {
+				m.Row(10, func() {
+					//map extra ingredients
 					m.Col(6, func() {
-						m.Text(fmt.Sprintf("  +%s",answer), props.Text{
-							Top:   3 + float64(i)*3,
+						m.Text(fmt.Sprintf(" Σχόλιο +%s", prod.Comment), props.Text{
+							Top:   3,
 							Style: consts.Bold,
 							Align: consts.Left,
 						})
-					})
-				}
-			})
-		}
-		if len(prod.Extra_Ingredients) > 0 {
-			m.Row(10,func() {
-				//map extra ingredients
-				for i,extra := range prod.Extra_Ingredients {
-					m.Col(6, func() {
-						m.Text(fmt.Sprintf("  +%s",extra), props.Text{
-							Top:   3 + float64(i)*3,
-							Style: consts.Bold,
-							Align: consts.Left,
-						})
-					})
-				}
-			})
-		}
-		if prod.Comment != "" {
-			m.Row(10,func() {
-				//map extra ingredients
-				m.Col(6, func() {
-					m.Text(fmt.Sprintf(" Σχόλιο +%s",prod.Comment), props.Text{
-						Top:   3,
-						Style: consts.Bold,
-						Align: consts.Left,
 					})
 				})
-			})
-		}
-		m.Col(3, func() {
-			m.Text(fmt.Sprintf("%.2f €",prod.Total_Price), props.Text{
-				Top:   5,
-				Style: consts.Bold,
-				Align: consts.Right,
+			}
+			m.Col(3, func() {
+				m.Text(fmt.Sprintf("%.2f €", prod.Total_Price), props.Text{
+					Top:   5,
+					Style: consts.Bold,
+					Align: consts.Right,
+				})
 			})
 		})
-	})
-}
-// ORDER COMMENTS
-	if order.Comments != ""{
+	}
+	// ORDER COMMENTS
+	if order.Comments != "" {
 		m.Row(20, func() {
 			m.Col(2, func() {
 				m.Text("Σχόλια:", props.Text{
@@ -266,15 +265,15 @@ func GeneratePDFReciept(order Order) bytes.Buffer {
 	}
 
 	// PAYMENT TYPE AND TOTAL
-	m.Row(20,func() {
-		m.Col(12,func() {
-			m.Text("#######################################",props.Text{
-				Top:5,
+	m.Row(20, func() {
+		m.Col(12, func() {
+			m.Text("#######################################", props.Text{
+				Top:   5,
 				Style: consts.Bold,
 				Align: consts.Center,
 			})
-			m.Text(fmt.Sprintf("ΕΞΟΦΛΗΣΗ ΜΕ: %s",order.Payment_Type),props.Text{
-				Top:10,
+			m.Text(fmt.Sprintf("ΕΞΟΦΛΗΣΗ ΜΕ: %s", order.Payment_Type), props.Text{
+				Top:   10,
 				Style: consts.Bold,
 				Align: consts.Center,
 			})
@@ -283,13 +282,13 @@ func GeneratePDFReciept(order Order) bytes.Buffer {
 				Style: consts.Bold,
 				Align: consts.Center,
 			})
-			m.Text(fmt.Sprintf("%.2f €",order.After_Discount_Price), props.Text{
+			m.Text(fmt.Sprintf("%.2f €", order.After_Discount_Price), props.Text{
 				Top:   15,
 				Style: consts.Bold,
 				Align: consts.Right,
 			})
-			m.Text("#######################################",props.Text{
-				Top:20,
+			m.Text("#######################################", props.Text{
+				Top:   20,
 				Style: consts.Bold,
 				Align: consts.Center,
 			})
@@ -298,47 +297,46 @@ func GeneratePDFReciept(order Order) bytes.Buffer {
 	// USER DETAILS
 
 	m.Row(25, func() {
-		m.Col(12,func() {
-			m.Text(fmt.Sprintf("ΟΝ/ΜΟ : %s %s",order.Name ,order.Surname), props.Text{
-				Top:3,
+		m.Col(12, func() {
+			m.Text(fmt.Sprintf("ΟΝ/ΜΟ : %s %s", order.Name, order.Surname), props.Text{
+				Top:         3,
 				Align:       consts.Left,
 				Extrapolate: false,
 			})
-			m.Text(fmt.Sprintf("ΚΙΝΗΤΟ : %d",order.Phone), props.Text{
-				Top: 6,
+			m.Text(fmt.Sprintf("ΚΙΝΗΤΟ : %d", order.Phone), props.Text{
+				Top:         6,
 				Align:       consts.Left,
 				Extrapolate: false,
 			})
-			m.Text(fmt.Sprintf("ΠΟΛΗ : %s, %s",order.Client_Area_Name, order.Client_City_Name), props.Text{
-				Top: 9,
+			m.Text(fmt.Sprintf("ΠΟΛΗ : %s, %s", order.Client_Area_Name, order.Client_City_Name), props.Text{
+				Top:         9,
 				Align:       consts.Left,
 				Extrapolate: false,
 			})
-			m.Text(fmt.Sprintf("ΟΔΟΣ : %s %s",order.Client_Address_Name, order.Client_Address_Number), props.Text{
-				Top: 12,
+			m.Text(fmt.Sprintf("ΟΔΟΣ : %s %s", order.Client_Address_Name, order.Client_Address_Number), props.Text{
+				Top:         12,
 				Align:       consts.Left,
 				Extrapolate: false,
 			})
-			m.Text(fmt.Sprintf("ΤΚ : %s",order.Client_Zip), props.Text{
-				Top: 15,
+			m.Text(fmt.Sprintf("ΤΚ : %s", order.Client_Zip), props.Text{
+				Top:         15,
 				Align:       consts.Left,
 				Extrapolate: false,
 			})
-			m.Text(fmt.Sprintf("ΟΡΟΦΟΣ : %s",order.Floor), props.Text{
-				Top: 18,
+			m.Text(fmt.Sprintf("ΟΡΟΦΟΣ : %s", order.Floor), props.Text{
+				Top:         18,
 				Align:       consts.Left,
 				Extrapolate: false,
 			})
-			m.Text(fmt.Sprintf("ΚΟΥΔΟΥΝΙ : %s",order.Bell_name), props.Text{
-				Top: 21,
+			m.Text(fmt.Sprintf("ΚΟΥΔΟΥΝΙ : %s", order.Bell_name), props.Text{
+				Top:         21,
 				Align:       consts.Left,
 				Extrapolate: false,
 			})
 		})
 	})
 
-
-	output,err := m.Output()
+	output, err := m.Output()
 	// err := m.OutputFileAndClose(fmt.Sprintf("assets/pdfs/order-%d.pdf",order.ID))
 	if err != nil {
 		fmt.Println("Could not save PDF:", err)
@@ -353,8 +351,6 @@ func GeneratePDFReciept(order Order) bytes.Buffer {
 func getHeader() []string {
 	return []string{"Quantity", "Name", "Price"}
 }
-
-
 
 func getDarkGrayColor() color.Color {
 	return color.Color{

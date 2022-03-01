@@ -77,7 +77,9 @@ func RegisterProductHandler(c *gin.Context) {
 		ContexJsonResponse(c, "Error on choices search", 500, nil, res.Error)
 		return
 	}
-	product.Choices = choices
+	if len(choice_ids) != 0 {
+		product.Choices = choices
+	}
 
 	// Get ingredients ids
 	var ingredient_ids []int64
@@ -95,7 +97,10 @@ func RegisterProductHandler(c *gin.Context) {
 		ContexJsonResponse(c, "Error on ingredients  search", 500, nil, res.Error)
 		return
 	}
-	product.Ingredients = ingredients
+
+	if len(ingredients_) != 0 {
+		product.Ingredients = ingredients
+	}
 	// choicess_ := c.Request.FormValue("choices")
 	// if err := json.Unmarshal([]byte(choicess_), &product.Choices); err != nil {
 	// 	ContexJsonResponse(c, "Error on choices unmarshal", 500, nil, err)
