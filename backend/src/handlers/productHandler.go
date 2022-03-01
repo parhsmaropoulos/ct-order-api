@@ -83,7 +83,6 @@ func RegisterProductHandler(c *gin.Context) {
 
 	// Get ingredients ids
 	var ingredient_ids []int64
-
 	ingredients_ := c.Request.FormValue("ingredients_id")
 	if err := json.Unmarshal([]byte(ingredients_), &ingredient_ids); err != nil {
 		ContexJsonResponse(c, "Error on ingredients unmarshal", 500, nil, err)
@@ -98,7 +97,7 @@ func RegisterProductHandler(c *gin.Context) {
 		return
 	}
 
-	if len(ingredients_) != 0 {
+	if len(ingredient_ids) != 0 {
 		product.Ingredients = ingredients
 	}
 	// choicess_ := c.Request.FormValue("choices")
